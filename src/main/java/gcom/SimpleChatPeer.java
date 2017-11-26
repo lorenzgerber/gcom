@@ -1,4 +1,5 @@
 package gcom;
+
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -9,6 +10,7 @@ import java.util.List;
 public class SimpleChatPeer {
 	ChatServer server;
 	List<ChatServer> peers = new ArrayList<>();
+	UnreliableBasicBroadcaster broadcaster = new UnreliableBasicBroadcaster();
 	Registry registry;
 	String name;
 
@@ -32,12 +34,11 @@ public class SimpleChatPeer {
 	}
 
 	public void sendMessage(String message) {
-		for (ChatServer peer : peers) {
-			try {
-				peer.deliverMessage(message);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		try {
+			broadcaster.broadcastMessage(message, peers);
+		} catch (RemoteException e) {
+			System.err.println("Error while sending message!");
+			e.printStackTrace();
 		}
 	}
 

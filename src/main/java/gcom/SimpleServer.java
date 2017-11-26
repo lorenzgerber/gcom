@@ -1,4 +1,5 @@
 package gcom;
+
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -8,7 +9,7 @@ public class SimpleServer extends UnicastRemoteObject implements ChatServer {
 	private static final long serialVersionUID = -8851476756715325706L;
 	String name;
 	Registry registry;
-	
+
 	public SimpleServer(String name) throws RemoteException {
 		this.name = name;
 		try {
@@ -21,7 +22,7 @@ public class SimpleServer extends UnicastRemoteObject implements ChatServer {
 
 	@Override
 	public boolean deliverMessage(String message) throws RemoteException {
-		System.out.println("["+name+" received] "+message);
+		System.out.println("[" + name + " received] " + message);
 		return true;
 	}
 
