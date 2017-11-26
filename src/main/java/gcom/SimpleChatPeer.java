@@ -4,13 +4,9 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SimpleChatPeer {
 	ChatServer server;
-	List<ChatServer> peers = new ArrayList<>();
-	UnreliableBasicBroadcaster broadcaster = new UnreliableBasicBroadcaster();
 	Registry registry;
 	String name;
 
@@ -24,10 +20,10 @@ public class SimpleChatPeer {
 		}
 	}
 
-	public void connectTo(String name) {
+	public void join(String name) {
 		try {
-			ChatServer peer = (ChatServer) registry.lookup(name);
-			peers.add(peer);
+			ChatServer leader = (ChatServer) registry.lookup(name);
+			server.join(leader);
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
 		}
@@ -35,9 +31,9 @@ public class SimpleChatPeer {
 
 	public void sendMessage(String message) {
 		try {
-			broadcaster.broadcastMessage(message, peers);
+			server.sendMessage(message);
+			server.deliverMessage(message);
 		} catch (RemoteException e) {
-			System.err.println("Error while sending message!");
 			e.printStackTrace();
 		}
 	}
@@ -45,15 +41,21 @@ public class SimpleChatPeer {
 	public static void main(String[] args) {
 		String name1 = "client1";
 		String name2 = "client2";
+		String name3 = "client3";
 
-		SimpleChatPeer peer1 = new SimpleChatPeer(name1);
+		SimpleChatPeer leader = new SimpleChatPeer(name1);
 		SimpleChatPeer peer2 = new SimpleChatPeer(name2);
+		SimpleChatPeer peer3 = new SimpleChatPeer(name3);
 
-		peer1.connectTo(name2);
-		peer2.connectTo(name1);
+		peer2.join(name1);
 
-		peer1.sendMessage("Hello is anyone there?");
+		leader.sendMessage("Hello is anyone there?");
 		peer2.sendMessage("Sure, I'm here!");
+
+		peer3.join(name1);
+
+		peer3.sendMessage("Client 3 here. Who can hear me?");
+		leader.sendMessage("Leader to everyone: Party is over, everybody out!");
 
 		System.exit(0);
 	}
