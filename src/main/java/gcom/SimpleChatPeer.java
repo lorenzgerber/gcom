@@ -1,18 +1,14 @@
 package gcom;
 
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
 public class SimpleChatPeer {
 	ChatServer server;
-	Registry registry;
 	String name;
 
 	public SimpleChatPeer(String name) {
 		this.name = name;
 		try {
-			registry = LocateRegistry.getRegistry();
 			server = new SimpleServer(name);
 		} catch (RemoteException e) {
 			e.printStackTrace();
