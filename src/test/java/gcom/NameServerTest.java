@@ -5,18 +5,19 @@ import static org.hamcrest.CoreMatchers.*;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class NameServerTest {
-	NameServer server;
+	NameServerInterface server;
 
 	@BeforeClass
 	public static void initialize() {
 		try {
-			LocateRegistry.createRegistry(1099);
+			LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

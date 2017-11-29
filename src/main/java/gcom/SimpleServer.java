@@ -1,5 +1,6 @@
 package gcom;
 
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -10,16 +11,20 @@ import java.util.List;
 public class SimpleServer extends UnicastRemoteObject implements ChatServer {
 	private static final long serialVersionUID = -8851476756715325706L;
 	String name;
-	Registry registry;
+	Registry remoteRegistry;
 	List<ChatServer> peers = new ArrayList<>();
 	UnreliableBasicBroadcaster broadcaster = new UnreliableBasicBroadcaster();
+	private NameServerInterface nameServer;
+
+	// static final String nameServerHost = "hathi.cs.umu.se";
+	static final String nameServerHost = "localhost";
 
 	public SimpleServer(String name) throws RemoteException {
 		this.name = name;
 		try {
-			registry = LocateRegistry.getRegistry();
-			registry.rebind(name, this);
-		} catch (RemoteException e) {
+			remoteRegistry = LocateRegistry.getRegistry(nameServerHost);
+			nameServer = (NameServerInterface) remoteRegistry.lookup(NameServer.nameServerName);
+		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
 		}
 	}
@@ -31,8 +36,17 @@ public class SimpleServer extends UnicastRemoteObject implements ChatServer {
 	}
 
 	@Override
-	public void join(ChatServer leader) throws RemoteException {
-		leader.addToGroup(this);
+	public void join(String group) throws RemoteException {
+		ChatServer leader = nameServer.getLeader(group);
+		if (leader == null) {
+			System.out.println("No current leader");
+			peers.add(this);
+			System.out.println("Attempting to set leader");
+			nameServer.setLeader(group, this);
+			System.out.println("Leader set");
+		} else {
+			leader.addToGroup(this);
+		}
 	}
 
 	@Override
@@ -43,7 +57,9 @@ public class SimpleServer extends UnicastRemoteObject implements ChatServer {
 	@Override
 	public void addToGroup(ChatServer peer) throws RemoteException {
 		for (ChatServer member : peers) {
-			member.addPeer(peer);
+			if (!member.equals(this)) {
+				member.addPeer(peer);
+			}
 			peer.addPeer(member);
 		}
 		peers.add(peer);
