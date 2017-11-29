@@ -1,7 +1,5 @@
 #!/bin/bash
-cd bin
-# Start RMI registry
-rmiregistry -J-Djava.rmi.server.useCodebaseOnly=false
+cd build/classes/main
 # Launch the name server
 java -Djava.rmi.server.useCodebaseOnly=false gcom.NameServer
 
