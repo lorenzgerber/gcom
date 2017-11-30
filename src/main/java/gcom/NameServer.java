@@ -5,13 +5,21 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class NameServer extends UnicastRemoteObject implements NameServerInterface {
 
 	public static final String nameServerName = "GComNameServer";
 	private static final long serialVersionUID = 6563464540429779982L;
-	Registry registry;
-	HashMap<String, ChatServer> table;
+	private Registry registry;
+	private HashMap<String, ChatServer> table;
+
+	static Logger LOGGER = Logger.getLogger(NameServer.class.getSimpleName());
+	static {
+		System.setProperty("java.util.logging.SimpleFormatter.format", "[%4$-4s] %5$s%n");
+		LOGGER.setLevel(Level.INFO);
+	}
 
 	public NameServer() throws RemoteException {
 		try {
@@ -26,24 +34,24 @@ public class NameServer extends UnicastRemoteObject implements NameServerInterfa
 
 	@Override
 	public ChatServer getLeader(String group) throws RemoteException {
-		System.out.println("Getting leader for group " + group);
+		LOGGER.fine("Getting leader for group " + group);
 		ChatServer ret = table.getOrDefault(group, null);
-		System.out.println("Leader is " + ret);
+		LOGGER.fine("Group leader is " + ret);
 		return ret;
 	}
 
 	@Override
 	public boolean setLeader(String group, ChatServer leader) throws RemoteException {
-		System.out.println("Setting leader for group " + group);
+		LOGGER.fine("Setting leader for group " + group);
 		table.put(group, leader);
-		System.out.println("Leader set");
+		LOGGER.fine("Leader set");
 		return true;
 	}
 
 	public static void main(String[] args) throws RemoteException {
 
 		NameServerInterface server = new NameServer();
-		System.out.println("Name server started");
+		LOGGER.info("Name server started");
 		while (true) {
 			try {
 				Thread.sleep(100);

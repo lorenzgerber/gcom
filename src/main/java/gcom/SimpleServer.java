@@ -10,10 +10,10 @@ import java.util.List;
 
 public class SimpleServer extends UnicastRemoteObject implements ChatServer {
 	private static final long serialVersionUID = -8851476756715325706L;
-	String name;
-	Registry remoteRegistry;
-	List<ChatServer> peers = new ArrayList<>();
-	UnreliableBasicBroadcaster broadcaster = new UnreliableBasicBroadcaster();
+	private String name;
+	private Registry remoteRegistry;
+	private List<ChatServer> peers = new ArrayList<>();
+	private UnreliableBasicBroadcaster broadcaster = new UnreliableBasicBroadcaster();
 	private NameServerInterface nameServer;
 
 	// static final String nameServerHost = "hathi.cs.umu.se";
