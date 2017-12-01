@@ -3,7 +3,7 @@ package gcom;
 import java.rmi.RemoteException;
 
 public class SimpleChatPeer {
-	ChatServer server;
+	Node server;
 	String name;
 
 	public SimpleChatPeer(String name) {

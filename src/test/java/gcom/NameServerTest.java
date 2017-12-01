@@ -12,7 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class NameServerTest {
-	NameServerInterface server;
+	NameServer server;
 
 	@BeforeClass
 	public static void initialize() {
@@ -25,7 +25,7 @@ public class NameServerTest {
 
 	@Before
 	public void setup() throws RemoteException {
-		server = new NameServer();
+		server = new SimpleNameServer();
 	}
 
 	@Test
