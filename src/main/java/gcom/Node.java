@@ -2,20 +2,18 @@ package gcom;
 
 import java.rmi.RemoteException;
 
-public interface Node {
-	/**
-	 * Send a message to the group
-	 * 
-	 * @throws RemoteException
-	 */
-	public void sendMessage(String message) throws RemoteException;
+public class Node implements INode {
 
-	/**
-	 * This server joins the specified group.
-	 * 
-	 * @param group
-	 *            name of the group to join
-	 * @throws RemoteException
-	 */
-	public void join(String group) throws RemoteException;
+	@Override
+	public void sendMessage(String message) throws RemoteException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void join(String group) throws RemoteException {
+		// TODO Auto-generated method stub
+
+	}
+
 }

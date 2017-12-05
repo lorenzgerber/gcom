@@ -8,7 +8,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleServer extends UnicastRemoteObject implements ChatServer, Node {
+public class SimpleServer extends UnicastRemoteObject implements ChatServer, INode {
 	private static final long serialVersionUID = -8851476756715325706L;
 	private String name;
 	private Registry remoteRegistry;
