@@ -33,7 +33,7 @@ public class Debugger implements IOrderer, IMulticaster {
 	}
 
 	@Override
-	public void cancelSubscription(ISubscriber subscriber) {
+	public void unSubscribe(ISubscriber subscriber) {
 		// TODO Auto-generated method stub
 
 	}
