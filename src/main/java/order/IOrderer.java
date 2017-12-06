@@ -40,7 +40,7 @@ public interface IOrderer {
 	 * @param subscriber
 	 *            the subscriber
 	 */
-	public void cancelSubscription(ISubscriber subscriber);
+	public void unSubscribe(ISubscriber subscriber);
 
 	/**
 	 * Set the multicaster that should be used for sending out messages.

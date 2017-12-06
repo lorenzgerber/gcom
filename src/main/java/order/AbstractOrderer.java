@@ -17,7 +17,7 @@ public abstract class AbstractOrderer implements IOrderer {
 	}
 
 	@Override
-	public void cancelSubscription(ISubscriber subscriber) {
+	public void unSubscribe(ISubscriber subscriber) {
 		subscribers.remove(subscriber);
 	}
 
