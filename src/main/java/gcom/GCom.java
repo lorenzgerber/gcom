@@ -39,7 +39,7 @@ public interface GCom {
 	 * @param subscriber
 	 *            the subscriber
 	 */
-	public void cancelSubscription(ISubscriber subscriber);
+	public void unSubscribe(ISubscriber subscriber);
 
 	/**
 	 * Specify ordering and multicasting configurations.
