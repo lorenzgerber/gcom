@@ -49,31 +49,37 @@ public class OrdererTester {
 		assertThat(actual, is(expected));
 	}
 
-	public void testReceive(IOrderer orderer) {
+	public void receiveWithoutSubscriber(IOrderer orderer, Message<?> message) {
 		assertThat(orderer.receive(message), is(true));
+	}
 
-		// Add subscriber
+	public void receiveSingleSubscriber(IOrderer orderer, Message<?> message) {
 		ISubscriber sub = mock(ISubscriber.class);
 		orderer.subscribe(sub);
 
 		assertThat(orderer.receive(message), is(true));
 		verify(sub).deliverMessage(message.data);
+	}
 
-		// Add second subscriber
+	public void receiveMultipleSubscribers(IOrderer orderer, Message<?> message) {
+		ISubscriber sub = mock(ISubscriber.class);
 		ISubscriber sub2 = mock(ISubscriber.class);
+		orderer.subscribe(sub);
 		orderer.subscribe(sub2);
 
 		assertThat(orderer.receive(message2), is(true));
 		verify(sub).deliverMessage(message2.data);
 		verify(sub2).deliverMessage(message2.data);
+	}
 
-		// Remove subscribers
+	public void testCancelSubscription(IOrderer orderer, Message<?> message) {
+		ISubscriber sub = mock(ISubscriber.class);
+		orderer.subscribe(sub);
+
 		orderer.unSubscribe(sub);
-		orderer.unSubscribe(sub2);
 
-		assertThat(orderer.receive(message3), is(true));
-		verify(sub, never()).deliverMessage(message3.data);
-		verify(sub2, never()).deliverMessage(message3.data);
+		assertThat(orderer.receive(message), is(true));
+		verify(sub, never()).deliverMessage(message.data);
 	}
 
 }

@@ -14,6 +14,7 @@ public class UnorderedOrdererTest {
 	Message<String> message = new Message<>(1, "Hello");
 	Message<String> message2 = new Message<>(2, "Hello again");
 	Message<String> message3 = new Message<>(3, "Goodbye");
+	private OrdererTester tester = new OrdererTester();
 
 	@Before
 	public void setUp() throws Exception {
@@ -31,8 +32,13 @@ public class UnorderedOrdererTest {
 
 	@Test
 	public void receiveTest() {
-		OrdererTester tester = new OrdererTester();
-		tester.testReceive(orderer);
+		tester.receiveWithoutSubscriber(orderer, message);
+		tester.receiveSingleSubscriber(orderer, message);
+	}
+
+	@Test
+	public void testSubscription() {
+		tester.testCancelSubscription(orderer, message);
 	}
 
 	@Test
