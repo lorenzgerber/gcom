@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import communication.IMulticaster;
+import gcom.INode;
 import gcom.ISubscriber;
 
 public class UnorderedOrdererTest {
@@ -32,16 +33,16 @@ public class UnorderedOrdererTest {
 	@Test
 	public void sendTest() {
 		// No failures
-		List<Integer> expected = Collections.emptyList();
+		List<INode> expected = Collections.emptyList();
 		when(multicaster.multicast(message)).thenReturn(expected);
 
-		List<Integer> actual = orderer.send(message);
+		List<INode> actual = orderer.send(message);
 
 		assertThat(actual, is(expected));
 		verify(multicaster).multicast(message);
 
 		// Single failure
-		expected = Arrays.asList(2);
+		expected = Arrays.asList(mock(INode.class));
 		when(multicaster.multicast(message)).thenReturn(expected);
 
 		actual = orderer.send(message);
@@ -49,7 +50,7 @@ public class UnorderedOrdererTest {
 		assertThat(actual, is(expected));
 
 		// Multiple failures
-		expected = Arrays.asList(2, 3, 4);
+		expected = Arrays.asList(mock(INode.class), mock(INode.class), mock(INode.class));
 		when(multicaster.multicast(message)).thenReturn(expected);
 
 		actual = orderer.send(message);

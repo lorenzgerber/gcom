@@ -1,5 +1,6 @@
 package order;
 
+import java.util.Collections;
 import java.util.List;
 
 import gcom.INode;
@@ -7,7 +8,7 @@ import gcom.INode;
 public class Message<T> {
 	public final int id;
 	public final T data;
-	private List<INode> recipients;
+	private List<INode> recipients = Collections.emptyList();
 
 	public Message(int id, T data) {
 		this.id = id;

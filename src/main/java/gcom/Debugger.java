@@ -9,13 +9,13 @@ import order.Message;
 public class Debugger implements IOrderer, IMulticaster {
 
 	@Override
-	public List<Integer> multicast(Message<?> message) {
+	public List<INode> multicast(Message<?> message) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<Integer> send(Message<?> message) {
+	public List<INode> send(Message<?> message) {
 		// TODO Auto-generated method stub
 		return null;
 	}

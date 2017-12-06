@@ -3,6 +3,7 @@ package order;
 import java.util.List;
 
 import communication.IMulticaster;
+import gcom.INode;
 import gcom.ISubscriber;
 
 public interface IOrderer {
@@ -12,9 +13,9 @@ public interface IOrderer {
 	 * 
 	 * @param message
 	 *            the message to send
-	 * @return a list of IDs of failed nodes
+	 * @return a list of failed nodes
 	 */
-	public List<Integer> send(Message<?> message);
+	public List<INode> send(Message<?> message);
 
 	/**
 	 * Receive a message and order it correctly before delivering it to subscribers.

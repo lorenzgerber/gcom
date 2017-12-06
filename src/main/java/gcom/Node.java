@@ -7,6 +7,12 @@ import order.Message;
 public class Node implements GCom, INode {
 
 	@Override
+	public int getId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
 	public void join(String group) {
 		// TODO Auto-generated method stub
 
@@ -53,5 +59,4 @@ public class Node implements GCom, INode {
 		// TODO Auto-generated method stub
 
 	}
-
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import communication.IMulticaster;
+import gcom.INode;
 import gcom.ISubscriber;
 
 public class UnorderedOrderer implements IOrderer {
@@ -16,7 +17,7 @@ public class UnorderedOrderer implements IOrderer {
 	}
 
 	@Override
-	public List<Integer> send(Message<?> message) {
+	public List<INode> send(Message<?> message) {
 		return multicaster.multicast(message);
 	}
 

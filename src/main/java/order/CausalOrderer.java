@@ -3,12 +3,13 @@ package order;
 import java.util.List;
 
 import communication.IMulticaster;
+import gcom.INode;
 import gcom.ISubscriber;
 
 public class CausalOrderer implements IOrderer {
 
 	@Override
-	public List<Integer> send(Message<?> message) {
+	public List<INode> send(Message<?> message) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -2,6 +2,7 @@ package communication;
 
 import java.util.List;
 
+import gcom.INode;
 import order.Message;
 
 public interface IMulticaster {
@@ -10,7 +11,7 @@ public interface IMulticaster {
 	 * 
 	 * @param message
 	 *            the message to send
-	 * @return a list of IDs of nodes that failed to receive the message
+	 * @return a list of nodes that failed to receive the message
 	 */
-	public List<Integer> multicast(Message<?> message);
+	public List<INode> multicast(Message<?> message);
 }
