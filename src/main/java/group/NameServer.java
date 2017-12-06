@@ -11,7 +11,7 @@ public class NameServer implements INameServer {
 	}
 
 	@Override
-	public boolean setLeader(INode leader) {
+	public boolean setLeader(String group, INode leader) {
 		// TODO Auto-generated method stub
 		return false;
 	}
