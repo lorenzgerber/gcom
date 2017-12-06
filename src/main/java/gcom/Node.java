@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.UUID;
 
 import communication.IMulticaster;
 import group.NameServer;
@@ -16,6 +17,7 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 
 
 	private static final long serialVersionUID = 6210826964208775888L;
+	private UUID nodeID;
 	private String name;
 	private String nameServerHost;
 	private NameServer nameServer;
@@ -26,6 +28,8 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 	
 	
 	public Node(String name, String nameServerHost) throws RemoteException {
+		
+		this.nodeID = UUID.randomUUID();
 		this.name = name;
 		this.nameServerHost = nameServerHost;
 		try {
@@ -37,9 +41,9 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 	}
 
 	@Override
-	public int getId() {
-		// TODO Auto-generated method stub
-		return 0;
+	public UUID getId() {
+		
+		return nodeID;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package gcom;
 
 import java.rmi.RemoteException;
+import java.util.UUID;
 
 import order.Message;
 
@@ -10,7 +11,7 @@ public interface INode {
 	 * 
 	 * @return the ID
 	 */
-	public int getId() throws RemoteException;
+	public UUID getId() throws RemoteException;
 
 	/**
 	 * Deliver the message to the orderer for ordering.
