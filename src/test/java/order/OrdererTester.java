@@ -68,8 +68,8 @@ public class OrdererTester {
 		verify(sub2).deliverMessage(message2.data);
 
 		// Remove subscribers
-		orderer.cancelSubscription(sub);
-		orderer.cancelSubscription(sub2);
+		orderer.unSubscribe(sub);
+		orderer.unSubscribe(sub2);
 
 		assertThat(orderer.receive(message3), is(true));
 		verify(sub, never()).deliverMessage(message3.data);
