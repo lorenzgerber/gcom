@@ -1,16 +1,11 @@
 package order;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import communication.IMulticaster;
 import gcom.INode;
-import gcom.ISubscriber;
 
-public class UnorderedOrderer implements IOrderer {
-
-	private List<ISubscriber> subscribers = new ArrayList<>();
-	private IMulticaster multicaster;
+public class UnorderedOrderer extends AbstractOrderer {
 
 	public UnorderedOrderer(IMulticaster multicaster) {
 		this.multicaster = multicaster;
@@ -23,26 +18,8 @@ public class UnorderedOrderer implements IOrderer {
 
 	@Override
 	public boolean receive(Message<?> message) {
-		for (ISubscriber subscriber : subscribers) {
-			subscriber.deliverMessage(message.data);
-		}
-
+		subscribers.forEach(sub -> sub.deliverMessage(message.data));
 		return true;
-	}
-
-	@Override
-	public void subscribe(ISubscriber subscriber) {
-		subscribers.add(subscriber);
-	}
-
-	@Override
-	public void cancelSubscription(ISubscriber subscriber) {
-		subscribers.remove(subscriber);
-	}
-
-	@Override
-	public void setMulticaster(IMulticaster multicaster) {
-		this.multicaster = multicaster;
 	}
 
 }

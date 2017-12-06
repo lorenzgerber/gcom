@@ -1,15 +1,17 @@
 package order;
 
-import static org.mockito.Mockito.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import communication.IMulticaster;
 
-public class UnorderedOrdererTest {
+public class CausalOrdererTest {
 
-	UnorderedOrderer orderer;
+	CausalOrderer orderer;
 	IMulticaster multicaster;
 	Message<String> message = new Message<>(1, "Hello");
 	Message<String> message2 = new Message<>(2, "Hello again");
@@ -18,11 +20,11 @@ public class UnorderedOrdererTest {
 	@Before
 	public void setUp() throws Exception {
 		multicaster = mock(IMulticaster.class);
-		orderer = new UnorderedOrderer(multicaster);
+		orderer = new CausalOrderer(multicaster);
 	}
 
 	@Test
-	public void sendTests() {
+	public void basicSendTests() {
 		OrdererTester tester = new OrdererTester();
 		tester.sendNoFailures(orderer, multicaster);
 		tester.sendSingleFailure(orderer, multicaster);
@@ -30,20 +32,26 @@ public class UnorderedOrdererTest {
 	}
 
 	@Test
-	public void receiveTest() {
+	public void basicReceiveTests() {
 		OrdererTester tester = new OrdererTester();
 		tester.testReceive(orderer);
 	}
 
 	@Test
-	public void setMulticasterTest() {
+	public void testSendVectorClock() {
+		int id = 0;
+		long expected = 0L;
+		orderer.setId(id);
+		// No send failures
 		orderer.send(message);
-		verify(multicaster).multicast(message);
+		expected++;
+		// Vector clock should have been incremented
+		assertThat(message.getVectorClock().get(id), is(expected));
 
-		IMulticaster newMulticaster = mock(IMulticaster.class);
-		orderer.setMulticaster(newMulticaster);
+		// Failure should also increment
 		orderer.send(message);
-		verify(newMulticaster).multicast(message);
+		expected++;
+		assertThat(message.getVectorClock().get(id), is(expected));
 	}
 
 }
