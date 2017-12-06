@@ -1,27 +1,47 @@
 package order;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import communication.IMulticaster;
 import gcom.ISubscriber;
 
 public class UnorderedOrderer implements IOrderer {
 
-	@Override
-	public List<Integer> send(Message message) {
-		// TODO Auto-generated method stub
-		return null;
+	private List<ISubscriber> subscribers = new ArrayList<>();
+	private IMulticaster multicaster;
+
+	public UnorderedOrderer(IMulticaster multicaster) {
+		this.multicaster = multicaster;
 	}
 
 	@Override
-	public boolean receive(Message message) {
-		// TODO Auto-generated method stub
-		return false;
+	public List<Integer> send(Message<?> message) {
+		return multicaster.multicast(message);
+	}
+
+	@Override
+	public boolean receive(Message<?> message) {
+		for (ISubscriber subscriber : subscribers) {
+			subscriber.deliverMessage(message.data);
+		}
+
+		return true;
 	}
 
 	@Override
 	public void subscribe(ISubscriber subscriber) {
-		// TODO Auto-generated method stub
+		subscribers.add(subscriber);
+	}
 
+	@Override
+	public void cancelSubscription(ISubscriber subscriber) {
+		subscribers.remove(subscriber);
+	}
+
+	@Override
+	public void setMulticaster(IMulticaster multicaster) {
+		this.multicaster = multicaster;
 	}
 
 }

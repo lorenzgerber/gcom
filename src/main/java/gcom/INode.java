@@ -9,7 +9,7 @@ public interface INode {
 	 * @param message
 	 *            the message
 	 */
-	public void deliver(Message message);
+	public void deliver(Message<?> message);
 
 	/**
 	 * Add this node to the group.

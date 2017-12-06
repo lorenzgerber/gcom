@@ -34,6 +34,14 @@ public interface GCom {
 	public void subscribe(ISubscriber subscriber);
 
 	/**
+	 * Remove the specified subscriber.
+	 * 
+	 * @param subscriber
+	 *            the subscriber
+	 */
+	public void cancelSubscription(ISubscriber subscriber);
+
+	/**
 	 * Specify ordering and multicasting configurations.
 	 * 
 	 * @param orderer

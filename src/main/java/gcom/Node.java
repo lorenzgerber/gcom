@@ -37,13 +37,19 @@ public class Node implements GCom, INode {
 	}
 
 	@Override
-	public void deliver(Message message) {
+	public void deliver(Message<?> message) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void addToGroup(INode node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void cancelSubscription(ISubscriber subscriber) {
 		// TODO Auto-generated method stub
 
 	}

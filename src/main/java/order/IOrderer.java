@@ -2,6 +2,7 @@ package order;
 
 import java.util.List;
 
+import communication.IMulticaster;
 import gcom.ISubscriber;
 
 public interface IOrderer {
@@ -13,7 +14,7 @@ public interface IOrderer {
 	 *            the message to send
 	 * @return a list of IDs of failed nodes
 	 */
-	public List<Integer> send(Message message);
+	public List<Integer> send(Message<?> message);
 
 	/**
 	 * Receive a message and order it correctly before delivering it to subscribers.
@@ -22,7 +23,7 @@ public interface IOrderer {
 	 *            the received message
 	 * @return true if successful
 	 */
-	public boolean receive(Message message);
+	public boolean receive(Message<?> message);
 
 	/**
 	 * Add a subscriber that should get ordered messages.
@@ -31,4 +32,20 @@ public interface IOrderer {
 	 *            the new subscriber
 	 */
 	public void subscribe(ISubscriber subscriber);
+
+	/**
+	 * Remove the specified subscriber.
+	 * 
+	 * @param subscriber
+	 *            the subscriber
+	 */
+	public void cancelSubscription(ISubscriber subscriber);
+
+	/**
+	 * Set the multicaster that should be used for sending out messages.
+	 * 
+	 * @param multicaster
+	 *            the multicaster
+	 */
+	public void setMulticaster(IMulticaster multicaster);
 }

@@ -12,5 +12,5 @@ public interface IMulticaster {
 	 *            the message to send
 	 * @return a list of IDs of nodes that failed to receive the message
 	 */
-	public List<Integer> multicast(Message message);
+	public List<Integer> multicast(Message<?> message);
 }
