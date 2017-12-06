@@ -86,7 +86,7 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 	}
 
 	@Override
-	public void cancelSubscription(ISubscriber subscriber) {
+	public void unSubscribe(ISubscriber subscriber) {
 		// TODO Auto-generated method stub
 
 	}
