@@ -19,7 +19,7 @@ public class NameServer extends UnicastRemoteObject implements INameServer {
 	private static final long serialVersionUID = -8461849108178765576L;
 	public static final String nameServer = "gcomNameServer";
 	private Registry registry;
-	private HashMap<String, Node> nodeList;
+	private HashMap<String, INode> nodeList;
 	
 	static Logger LOGGER = Logger.getLogger(NameServer.class.getSimpleName());
 	static {
@@ -41,13 +41,17 @@ public class NameServer extends UnicastRemoteObject implements INameServer {
 
 	@Override
 	public INode getLeader(String group) {
-		// TODO Auto-generated method stub
-		return null;
+		LOGGER.fine("Getting leader for group " + group);
+		INode ret = nodeList.getOrDefault(group, null);
+		LOGGER.fine("Group leader is " + ret);
+		return ret;
 	}
 
 	@Override
 	public boolean setLeader(String group, INode leader) {
-		// TODO Auto-generated method stub
+		LOGGER.fine("Setting leader for group " + group);
+		nodeList.put(group, leader);
+		LOGGER.fine("Leader set");
 		return false;
 	}
 	
