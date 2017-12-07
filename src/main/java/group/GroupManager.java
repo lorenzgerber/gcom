@@ -1,16 +1,19 @@
 package group;
 
+import java.rmi.RemoteException;
 import java.util.UUID;
 
 import gcom.INode;
 
 public class GroupManager {
-	
-	NameServer nameServer;
-	
-	public GroupManager(NameServer nameServer) {
+
+	INameServer nameServer;
+	INode parent;
+	boolean isLeader = true;
+
+	public GroupManager(INameServer nameServer, INode parent) {
 		this.nameServer = nameServer;
-		
+		this.parent = parent;
 	}
 
 	/**
@@ -21,8 +24,23 @@ public class GroupManager {
 	 * @return the assigned node ID in this group
 	 */
 	public UUID join(String group) {
-		// TODO implement this
-		return null;
+		UUID uuid = null;
+		try {
+			INode leader = nameServer.getLeader(group);
+			if (leader == null) {
+				// There is no leader, so we create the group and become leader.
+				isLeader = true;
+				nameServer.setLeader(group, parent);
+				uuid = UUID.randomUUID();
+			} else {
+				// Ask the leader to add us to the group and give us a UUID
+				uuid = leader.addToGroup(parent);
+			}
+		} catch (RemoteException e1) {
+			System.err.println("The name service is down! Unable to continue, exiting...");
+			System.exit(-1);
+		}
+		return uuid;
 	}
 
 	/**

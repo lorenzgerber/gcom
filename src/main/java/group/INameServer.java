@@ -1,8 +1,11 @@
 package group;
 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
 import gcom.INode;
 
-public interface INameServer {
+public interface INameServer extends Remote {
 	/**
 	 * Get a reference to the leader of the specified group.
 	 * 
@@ -10,7 +13,7 @@ public interface INameServer {
 	 *            name of the group
 	 * @return a reference to the leader
 	 */
-	public INode getLeader(String group);
+	public INode getLeader(String group) throws RemoteException;
 
 	/**
 	 * Set the leader of a group.
@@ -21,5 +24,5 @@ public interface INameServer {
 	 *            the new leader
 	 * @return true if successful
 	 */
-	public boolean setLeader(String group, INode leader);
+	public boolean setLeader(String group, INode leader) throws RemoteException;
 }

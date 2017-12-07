@@ -14,8 +14,6 @@ import order.IOrderer;
 import order.Message;
 
 public class Node extends UnicastRemoteObject implements GCom, INode {
-	
-
 
 	private static final long serialVersionUID = 6210826964208775888L;
 	private UUID nodeID;
@@ -26,11 +24,9 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 	private IOrderer orderer;
 	private IMulticaster multicaster;
 	private GroupManager groupManager;
-	
-	
-	
+
 	public Node(String name, String nameServerHost) throws RemoteException {
-		
+
 		this.nodeID = UUID.randomUUID();
 		this.name = name;
 		this.nameServerHost = nameServerHost;
@@ -40,14 +36,14 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
 		}
-		
-		this.groupManager = new GroupManager(nameServer);
-		
+
+		this.groupManager = new GroupManager(nameServer, this);
+
 	}
 
 	@Override
 	public UUID getId() {
-		
+
 		return nodeID;
 	}
 
@@ -88,9 +84,8 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 	}
 
 	@Override
-	public void addToGroup(INode node) {
-		groupManager.addToGroup(node);
-
+	public UUID addToGroup(INode node) {
+		return groupManager.addToGroup(node);
 	}
 
 	@Override

@@ -1,11 +1,12 @@
 package gcom;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.UUID;
 
 import order.Message;
 
-public interface INode {
+public interface INode extends Remote {
 	/**
 	 * Get the ID of this node.
 	 * 
@@ -28,6 +29,7 @@ public interface INode {
 	 * 
 	 * @param node
 	 *            the new node to add
+	 * @return a uuid assigned from the leader, or null from other members
 	 */
-	public void addToGroup(INode node) throws RemoteException;
+	public UUID addToGroup(INode node) throws RemoteException;
 }
