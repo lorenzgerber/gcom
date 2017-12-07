@@ -32,4 +32,14 @@ public interface INode extends Remote {
 	 * @return a uuid assigned from the leader, or null from other members
 	 */
 	public UUID addToGroup(INode node) throws RemoteException;
+	
+	/**
+	 * Remove this node from the group.
+	 * 
+	 * The leader is responsible that all members remove a leaving node
+	 * @param node
+	 * 			the node to remove
+	 * @return uuid of the leavning node
+	 */
+	public void removeFromGroup(INode node) throws RemoteException;
 }

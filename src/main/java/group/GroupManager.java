@@ -74,6 +74,8 @@ public class GroupManager {
 				try {
 					peer.addToGroup(node);
 				} catch (RemoteException e) {
+					// do we need this if we get an 
+					// exception? same below.
 					removeMember(peer);
 				}
 				try {
@@ -94,6 +96,39 @@ public class GroupManager {
 		}
 
 		return uuid;
+	}
+	
+	/**
+	 * remove the provided node from the group. When called on the leader, this should make
+	 * all members remove the provided node.
+	 * 
+	 * @param node
+	 * @return the uuid of the removed node.
+	 */
+	public void removeFromGroup(INode node) {
+		if (isLeader) {
+			Iterator<INode> iter = peers.iterator();
+			while (iter.hasNext()) {
+				INode peer = iter.next();
+				// Do not call removeFromGroup on self
+				if (peer.equals(parent)) {
+					continue;
+				}
+
+				// Remove the indicated node from each group member and add all members to the new node.
+				try {
+					peer.removeFromGroup(node);
+				} catch (RemoteException e) {
+					// if remove throws exception, this peer has also left
+					// initially, we just ignore that.
+				}
+			}
+
+			peers.remove(node);
+		} else {
+			peers.remove(node);
+		}
+
 	}
 
 	/**

@@ -93,4 +93,9 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 		// TODO Auto-generated method stub
 
 	}
+
+	@Override
+	public void removeFromGroup(INode node) throws RemoteException {
+		groupManager.removeFromGroup(node);
+	}
 }
