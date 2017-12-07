@@ -34,6 +34,7 @@ public class UnorderedOrdererTest {
 	public void receiveTest() {
 		tester.receiveWithoutSubscriber(orderer, message);
 		tester.receiveSingleSubscriber(orderer, message);
+		tester.receiveMultipleSubscribers(orderer, message);
 	}
 
 	@Test

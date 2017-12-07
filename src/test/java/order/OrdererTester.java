@@ -67,9 +67,9 @@ public class OrdererTester {
 		orderer.subscribe(sub);
 		orderer.subscribe(sub2);
 
-		assertThat(orderer.receive(message2), is(true));
-		verify(sub).deliverMessage(message2.data);
-		verify(sub2).deliverMessage(message2.data);
+		assertThat(orderer.receive(message), is(true));
+		verify(sub).deliverMessage(message.data);
+		verify(sub2).deliverMessage(message.data);
 	}
 
 	public void testCancelSubscription(IOrderer orderer, Message<?> message) {

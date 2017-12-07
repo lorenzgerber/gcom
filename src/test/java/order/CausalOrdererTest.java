@@ -50,6 +50,8 @@ public class CausalOrdererTest {
 		tester.receiveWithoutSubscriber(orderer, message);
 		orderer.setId(0);
 		tester.receiveSingleSubscriber(orderer, message);
+		orderer.setId(0);
+		tester.receiveMultipleSubscribers(orderer, message);
 	}
 
 	@Test
@@ -78,6 +80,20 @@ public class CausalOrdererTest {
 		assertThat(message.getVectorClock().get(id), is(expected));
 	}
 
+	/**
+	 * A message without vector clock cannot be ordered and must thus be discarder.
+	 * This could happen if a node thinks that the messages do not need to be
+	 * ordered and so uses an UnorderedOrderer.
+	 */
+	@Test
+	public void unorderedMessage() {
+		assertThat(orderer.receive(message), is(false));
+	}
+
+	/**
+	 * Messages from a single sender must be delivered in FIFO order (from the
+	 * senders point of view).
+	 */
 	@Test
 	public void reversedMessages() {
 		// Id of sender and receiver
@@ -96,9 +112,9 @@ public class CausalOrdererTest {
 		HashMap<Integer, Long> clock1 = new HashMap<>();
 		HashMap<Integer, Long> clock2 = new HashMap<>();
 		// First clock is for the first message sent
-		clock1.put(1, 1L);
+		clock1.put(sender, 1L);
 		// Set clock2 to 2 since this is the second message
-		clock2.put(1, 2L);
+		clock2.put(sender, 2L);
 		message.setVectorClock(clock1);
 		message2.setVectorClock(clock2);
 
@@ -113,4 +129,45 @@ public class CausalOrdererTest {
 		mockOrder.verify(sub).deliverMessage(message2.data);
 	}
 
+	/**
+	 * A CausalOrderer need to wait for messages that "caused" the received message
+	 * to be sent. I.e if node A sends message m1 to nodes B and C, and node B sends
+	 * message m2 after delivering m1, then C must deliver m1 before m2 even if they
+	 * are received in reversed order.
+	 */
+	@Test
+	public void causalDependency() {
+		int receiver = 0;
+		int sender1 = 1;
+		int sender2 = 2;
+		message.sender = sender1;
+		message2.sender = sender2;
+		orderer.setId(receiver);
+
+		// Add subscriber
+		ISubscriber sub = mock(ISubscriber.class);
+		orderer.subscribe(sub);
+		// We want to check the order of invocations for this subscriber
+		InOrder mockOrder = inOrder(sub);
+
+		HashMap<Integer, Long> clock1 = new HashMap<>();
+		HashMap<Integer, Long> clock2 = new HashMap<>();
+		// First clock is for the first message sent
+		clock1.put(sender1, 1L);
+		// The second message "knows" about/was "caused" by the first
+		clock2.put(sender1, 1L);
+		clock2.put(sender2, 1L);
+		message.setVectorClock(clock1);
+		message2.setVectorClock(clock2);
+
+		// Receive second message first
+		orderer.receive(message2);
+		// This message should not be delivered yet
+		verify(sub, never()).deliverMessage(message2.data);
+		// Receive the first message
+		orderer.receive(message);
+
+		mockOrder.verify(sub).deliverMessage(message.data);
+		mockOrder.verify(sub).deliverMessage(message2.data);
+	}
 }
