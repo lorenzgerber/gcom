@@ -5,6 +5,13 @@ import java.util.UUID;
 import gcom.INode;
 
 public class GroupManager {
+	
+	NameServer nameServer;
+	
+	public GroupManager(NameServer nameServer) {
+		this.nameServer = nameServer;
+		
+	}
 
 	/**
 	 * Join the specified group.

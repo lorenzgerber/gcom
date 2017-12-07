@@ -8,6 +8,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.UUID;
 
 import communication.IMulticaster;
+import group.GroupManager;
 import group.NameServer;
 import order.IOrderer;
 import order.Message;
@@ -24,6 +25,7 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 	private Registry remoteRegistry;
 	private IOrderer orderer;
 	private IMulticaster multicaster;
+	private GroupManager groupManager;
 	
 	
 	
@@ -37,7 +39,10 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 			nameServer = (NameServer) remoteRegistry.lookup(NameServer.nameServer);
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
-		} 
+		}
+		
+		this.groupManager = new GroupManager(nameServer);
+		
 	}
 
 	@Override
