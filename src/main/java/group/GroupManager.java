@@ -39,6 +39,7 @@ public class GroupManager {
 				nameServer.setLeader(group, parent);
 				uuid = UUID.randomUUID();
 			} else {
+				isLeader = false;
 				// Ask the leader to add us to the group and give us a UUID
 				uuid = leader.addToGroup(parent);
 			}
@@ -60,6 +61,7 @@ public class GroupManager {
 	public UUID addToGroup(INode node) {
 		UUID uuid = null;
 		if (isLeader) {
+			uuid = UUID.randomUUID();
 			Iterator<INode> iter = peers.iterator();
 			while (iter.hasNext()) {
 				INode peer = iter.next();

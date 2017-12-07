@@ -18,6 +18,7 @@ public class GroupManagerTest {
 	private GroupManager manager;
 	private INode node;
 	private INameServer nameServer;
+	private String group = "SuperGroup";
 
 	@Before
 	public void setUp() throws Exception {
@@ -28,7 +29,6 @@ public class GroupManagerTest {
 
 	@Test
 	public void joinGroup() throws RemoteException {
-		String group = "SuperGroup";
 		UUID uuid = UUID.randomUUID();
 		INode leader = mock(INode.class);
 
@@ -40,12 +40,42 @@ public class GroupManagerTest {
 
 	@Test
 	public void createNewGroup() throws RemoteException {
-		String group = "new group";
-
 		when(nameServer.getLeader(group)).thenReturn(null);
 
 		assertThat(manager.join(group), is(notNullValue()));
 		verify(nameServer).setLeader(group, node);
+	}
+
+	@Test
+	public void addToNonLeader() throws RemoteException {
+		UUID uuid = UUID.randomUUID();
+		INode leader = mock(INode.class);
+
+		when(nameServer.getLeader(group)).thenReturn(leader);
+		when(leader.addToGroup(node)).thenReturn(uuid);
+
+		manager.join(group);
+		assertThat(manager.addToGroup(mock(INode.class)), is(nullValue()));
+	}
+
+	@Test
+	public void addToLeader() throws RemoteException {
+		when(nameServer.getLeader(group)).thenReturn(null);
+
+		manager.join(group);
+		assertThat(manager.addToGroup(mock(INode.class)), is(notNullValue()));
+	}
+
+	@Test
+	public void addToLeaderWithMembers() throws RemoteException {
+		INode member1 = mock(INode.class);
+		INode member2 = mock(INode.class);
+
+		when(nameServer.getLeader(group)).thenReturn(null);
+
+		manager.join(group);
+		assertThat(manager.addToGroup(member1), is(notNullValue()));
+		assertThat(manager.addToGroup(member2), is(notNullValue()));
 	}
 
 }
