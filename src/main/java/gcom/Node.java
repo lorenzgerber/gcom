@@ -53,8 +53,7 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 
 	@Override
 	public void join(String group) {
-		// TODO Auto-generated method stub
-
+		groupManager.join(group);
 	}
 
 	@Override
@@ -65,7 +64,7 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 
 	@Override
 	public void leave() {
-		// TODO Auto-generated method stub
+		groupManager.leave();
 
 	}
 
@@ -90,7 +89,7 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 
 	@Override
 	public void addToGroup(INode node) {
-		// TODO Auto-generated method stub
+		groupManager.addToGroup(node);
 
 	}
 
