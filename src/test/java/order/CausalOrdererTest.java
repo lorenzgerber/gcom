@@ -18,11 +18,10 @@ import gcom.ISubscriber;
 
 public class CausalOrdererTest {
 
-	CausalOrderer orderer;
-	IMulticaster multicaster;
-	Message<String> message = new Message<>(1, "Hello");
-	Message<String> message2 = new Message<>(2, "Hello again");
-	Message<String> message3 = new Message<>(3, "Goodbye");
+	private CausalOrderer orderer;
+	private IMulticaster multicaster;
+	private Message<String> message = new Message<>(1, "Hello");
+	private Message<String> message2 = new Message<>(2, "Hello again");
 	private OrdererTester tester = new OrdererTester();
 
 	@Before

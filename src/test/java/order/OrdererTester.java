@@ -17,9 +17,7 @@ import gcom.ISubscriber;
 
 public class OrdererTester {
 
-	Message<String> message = new Message<>(1, "Hello");
-	Message<String> message2 = new Message<>(2, "Hello again");
-	Message<String> message3 = new Message<>(3, "Goodbye");
+	private Message<String> message = new Message<>(1, "Hello");
 
 	public void sendNoFailures(IOrderer orderer, IMulticaster mock) {
 		List<INode> expected = Collections.emptyList();
