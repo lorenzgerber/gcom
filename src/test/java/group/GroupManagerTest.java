@@ -77,5 +77,19 @@ public class GroupManagerTest {
 		assertThat(manager.addToGroup(member1), is(notNullValue()));
 		assertThat(manager.addToGroup(member2), is(notNullValue()));
 	}
+	
+	@Test
+	public void removeFromNonLeader() throws RemoteException {
+		UUID uuid = UUID.randomUUID();
+		INode leader = mock(INode.class);
+		INode member = mock(INode.class);
+		when(member.getId()).thenReturn(uuid);
+		when(nameServer.getLeader(group)).thenReturn(leader);
+		manager.join(group);
+		manager.addToGroup(member);
+
+		assertThat(manager.removeFromGroup(member), is(notNullValue()));
+
+	}
 
 }

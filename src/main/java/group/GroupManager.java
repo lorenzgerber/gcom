@@ -105,7 +105,16 @@ public class GroupManager {
 	 * @param node
 	 * @return the uuid of the removed node.
 	 */
-	public void removeFromGroup(INode node) {
+	public UUID removeFromGroup(INode node) {
+
+		UUID nodeID = null;
+		try {
+			nodeID = node.getId();
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		if (isLeader) {
 			Iterator<INode> iter = peers.iterator();
 			while (iter.hasNext()) {
@@ -128,6 +137,8 @@ public class GroupManager {
 		} else {
 			peers.remove(node);
 		}
+		
+		return nodeID;
 
 	}
 
