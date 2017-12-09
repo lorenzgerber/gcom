@@ -88,7 +88,7 @@ public class GroupManagerTest {
 		manager.join(group);
 		manager.addToGroup(member);
 
-		assertThat(manager.removeFromGroup(member), is(notNullValue()));
+		assertThat(manager.removeFromGroup(member), is(uuid));
 
 	}
 	
@@ -101,7 +101,7 @@ public class GroupManagerTest {
 		manager.join(group);
 		manager.addToGroup(member);
 		
-		assertThat(manager.removeFromGroup(member), is(notNullValue()));
+		assertThat(manager.removeFromGroup(member), is(uuid));
 		
 	}
 
