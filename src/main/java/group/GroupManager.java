@@ -50,6 +50,23 @@ public class GroupManager {
 		}
 		return uuid;
 	}
+	
+	/**
+	 * Check if provided node is member in our group
+	 * 
+	 * @param node check this node for membership
+	 * @return true if node is member
+	 */
+	public boolean isMember(INode node) {
+		Iterator<INode> iter = peers.iterator();
+		while(iter.hasNext()) {
+			INode peer = iter.next();
+			if(peer.equals(node)) {
+				return true;
+			}
+		}
+		return false;	
+	}
 
 	/**
 	 * Add the given node to the group. When called on the leader, this should make
@@ -105,15 +122,7 @@ public class GroupManager {
 	 * @param node
 	 * @return the uuid of the removed node.
 	 */
-	public UUID removeFromGroup(INode node) {
-
-		UUID nodeID = null;
-		try {
-			nodeID = node.getId();
-		} catch (RemoteException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	public void removeFromGroup(INode node) {
 		
 		if (isLeader) {
 			Iterator<INode> iter = peers.iterator();
@@ -138,7 +147,7 @@ public class GroupManager {
 			peers.remove(node);
 		}
 		
-		return nodeID;
+		return;
 
 	}
 

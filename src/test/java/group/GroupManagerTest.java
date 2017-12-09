@@ -87,8 +87,9 @@ public class GroupManagerTest {
 		when(nameServer.getLeader(group)).thenReturn(leader);
 		manager.join(group);
 		manager.addToGroup(member);
+		manager.removeFromGroup(member);
 
-		assertThat(manager.removeFromGroup(member), is(uuid));
+		assertThat(manager.isMember(member), is(false));
 
 	}
 	
@@ -100,8 +101,9 @@ public class GroupManagerTest {
 		when(nameServer.getLeader(group)).thenReturn(null);
 		manager.join(group);
 		manager.addToGroup(member);
+		manager.removeFromGroup(member);
 		
-		assertThat(manager.removeFromGroup(member), is(uuid));
+		assertThat(manager.isMember(member), is(false));
 		
 	}
 

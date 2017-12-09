@@ -95,7 +95,7 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 	}
 
 	@Override
-	public UUID removeFromGroup(INode node) throws RemoteException {
-		return groupManager.removeFromGroup(node);
+	public void removeFromGroup(INode node) throws RemoteException {
+		groupManager.removeFromGroup(node);
 	}
 }

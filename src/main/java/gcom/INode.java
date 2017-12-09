@@ -41,5 +41,5 @@ public interface INode extends Remote {
 	 * 			the node to remove
 	 * @return uuid of the leavning node
 	 */
-	public UUID removeFromGroup(INode node) throws RemoteException;
+	public void removeFromGroup(INode node) throws RemoteException;
 }
