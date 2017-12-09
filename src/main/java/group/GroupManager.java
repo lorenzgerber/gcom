@@ -171,4 +171,28 @@ public class GroupManager {
 	private void removeMember(INode member) {
 		// TODO implement this
 	}
+	
+	public boolean isLeader() {
+		return isLeader;
+	}
+	
+	public void requestRemoveFromGroup(INode member) {
+		if(isLeader) {
+			this.removeFromGroup(member);
+		} else {
+			Iterator<INode> iter = peers.iterator();
+			while (iter.hasNext()) {
+				INode peer = iter.next();
+				if (peer.isLeader()) {
+					try {
+						peer.removeFromGroup(member);
+					} catch (RemoteException e) {
+						// If we get an exception, we assume the
+						// leader is down, hence we have to call 
+						// for a new election	
+					}	
+				}	
+			}	
+		}
+	}
 }

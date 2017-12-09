@@ -39,7 +39,21 @@ public interface INode extends Remote {
 	 * The leader is responsible that all members remove a leaving node
 	 * @param node
 	 * 			the node to remove
-	 * @return uuid of the leavning node
 	 */
 	public void removeFromGroup(INode node) throws RemoteException;
+	
+	/**
+	 * Sends a request to the leader, requesting removal of a node
+	 * @param node
+	 * @return
+	 */
+	public void requestRemoveFromGroup(INode node) throws RemoteException;
+	
+	/**
+	 * Check in group module if we are group leader
+	 * @return 
+	 */
+	public Boolean isLeader();
+	
+	
 }
