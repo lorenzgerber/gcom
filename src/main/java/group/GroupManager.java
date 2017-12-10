@@ -12,7 +12,7 @@ public class GroupManager {
 
 	INameServer nameServer;
 	INode parent;
-	boolean isLeader = true;
+	INode currentLeader = null;
 	List<INode> peers;
 
 	public GroupManager(INameServer nameServer, INode parent) {
@@ -32,16 +32,16 @@ public class GroupManager {
 	public UUID join(String group) {
 		UUID uuid = null;
 		try {
-			INode leader = nameServer.getLeader(group);
-			if (leader == null) {
+			INode leaderNameServer = nameServer.getLeader(group);
+			if (leaderNameServer == null) {
 				// There is no leader, so we create the group and become leader.
-				isLeader = true;
+				currentLeader = null;
 				nameServer.setLeader(group, parent);
 				uuid = UUID.randomUUID();
 			} else {
-				isLeader = false;
+				currentLeader = leaderNameServer;
 				// Ask the leader to add us to the group and give us a UUID
-				uuid = leader.addToGroup(parent);
+				uuid = leaderNameServer.addToGroup(parent);
 			}
 		} catch (RemoteException e1) {
 			// TODO: Should we quit or throw exception here?
@@ -50,7 +50,7 @@ public class GroupManager {
 		}
 		return uuid;
 	}
-	
+
 	/**
 	 * Check if provided node is member in our group
 	 * 
@@ -77,7 +77,7 @@ public class GroupManager {
 	 */
 	public UUID addToGroup(INode node) {
 		UUID uuid = null;
-		if (isLeader) {
+		if (currentLeader == null) {
 			uuid = UUID.randomUUID();
 			Iterator<INode> iter = peers.iterator();
 			while (iter.hasNext()) {
@@ -124,7 +124,7 @@ public class GroupManager {
 	 */
 	public void removeFromGroup(INode node) {
 		
-		if (isLeader) {
+		if (currentLeader == null) {
 			Iterator<INode> iter = peers.iterator();
 			while (iter.hasNext()) {
 				INode peer = iter.next();
@@ -173,11 +173,11 @@ public class GroupManager {
 	}
 	
 	public boolean isLeader() {
-		return isLeader;
+		return currentLeader == null;
 	}
 	
 	public void requestRemoveFromGroup(INode member) {
-		if(isLeader) {
+		if(currentLeader == null) {
 			this.removeFromGroup(member);
 		} else {
 			Iterator<INode> iter = peers.iterator();
