@@ -67,7 +67,7 @@ public class GroupManagerTest {
 		manager.join(group);
 		INode newMember = mock(INode.class);
 		manager.addToGroup(newMember);
-		assertThat(manager.peers.containsKey(newMember), is(true));
+		assertThat(manager.peers.containsValue(newMember), is(true));
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class GroupManagerTest {
 		INode newMember = mock(INode.class);
 		manager.addToGroup(newMember);
 		verify(newMember).addToGroup(node);
-		assertThat(manager.peers.containsKey(newMember), is(true));
+		assertThat(manager.peers.containsValue(newMember), is(true));
 	}
 
 	@Test
@@ -93,8 +93,8 @@ public class GroupManagerTest {
 		manager.addToGroup(member2);
 		verify(member1).addToGroup(node);
 		verify(member2).addToGroup(node);
-		assertThat(manager.peers.containsKey(member1), is(true));
-		assertThat(manager.peers.containsKey(member2), is(true));
+		assertThat(manager.peers.containsValue(member1), is(true));
+		assertThat(manager.peers.containsValue(member2), is(true));
 	}
 
 	@Test

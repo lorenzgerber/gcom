@@ -16,14 +16,14 @@ public class GroupManager {
 	INode parent;
 	INode currentLeader = null;
 	IOrderer orderer;
-	HashMap<INode, UUID> peers;
+	HashMap<UUID, INode> peers;
 
 	public GroupManager(INameServer nameServer, INode parent, IOrderer orderer) {
 		this.nameServer = nameServer;
 		this.parent = parent;
 		peers = new HashMap<>();
 		try {
-			peers.put(parent, parent.getId());
+			peers.put(parent.getId(), parent);
 		} catch (RemoteException e) {
 			// should never happen as it's
 			// invoked only local
@@ -79,7 +79,7 @@ public class GroupManager {
 	public void addToGroup(INode node) {
 
 		if (currentLeader == parent) {
-			Iterator<INode> iter = peers.keySet().iterator();
+			Iterator<INode> iter = peers.values().iterator();
 			while (iter.hasNext()) {
 				INode peer = iter.next();
 				// Do not call addToGroup on self
@@ -108,13 +108,13 @@ public class GroupManager {
 				removeMember(node);
 			}
 			try {
-				peers.put(node, node.getId());
+				peers.put(node.getId(), node);
 			} catch (RemoteException e) {
 				// ignore if node has left
 			}
 		} else {
 			try {
-				peers.put(node, node.getId());
+				peers.put(node.getId(), node);
 			} catch (RemoteException e) {
 				// ignore if node has left
 			}
@@ -130,7 +130,7 @@ public class GroupManager {
 	public void removeFromGroup(INode node) {
 
 		if (currentLeader == parent) {
-			Iterator<INode> iter = peers.keySet().iterator();
+			Iterator<INode> iter = peers.values().iterator();
 			while (iter.hasNext()) {
 				INode peer = iter.next();
 				// Do not call removeFromGroup on self
@@ -172,7 +172,7 @@ public class GroupManager {
 	 */
 	public <T> void send(T data) {
 		Message<T> message = new Message<T>(data);
-		message.setRecipients(peers.keySet());
+		message.setRecipients(peers.values());
 		List<INode> failed = orderer.send(message);
 		failed.forEach(n -> requestRemoveFromGroup(n));
 	}
@@ -189,7 +189,7 @@ public class GroupManager {
 		if (currentLeader == parent) {
 			this.removeFromGroup(member);
 		} else {
-			Iterator<INode> iter = peers.keySet().iterator();
+			Iterator<INode> iter = peers.values().iterator();
 			while (iter.hasNext()) {
 				INode peer = iter.next();
 				if (peer.equals(currentLeader)) {
