@@ -33,14 +33,14 @@ public class GroupManagerTest {
 	@Before
 	public void setUp() throws Exception {
 		nameServer = mock(INameServer.class);
-		node = mock(INode.class);
+		node = getMockedNode();
 		orderer = mock(IOrderer.class);
 		manager = new GroupManager(nameServer, node, orderer);
 	}
 
 	@Test
 	public void joinGroup() throws RemoteException {
-		leader = mock(INode.class);
+		leader = getMockedNode();
 
 		when(nameServer.getLeader(group)).thenReturn(leader);
 
@@ -60,12 +60,12 @@ public class GroupManagerTest {
 
 	@Test
 	public void addToNonLeader() throws RemoteException {
-		INode leader = mock(INode.class);
+		INode leader = getMockedNode();
 
 		when(nameServer.getLeader(group)).thenReturn(leader);
 
 		manager.join(group);
-		INode newMember = mock(INode.class);
+		INode newMember = getMockedNode();
 		manager.addToGroup(newMember);
 		assertThat(manager.peers.containsValue(newMember), is(true));
 	}
@@ -75,7 +75,7 @@ public class GroupManagerTest {
 		when(nameServer.getLeader(group)).thenReturn(null);
 
 		manager.join(group);
-		INode newMember = mock(INode.class);
+		INode newMember = getMockedNode();
 		manager.addToGroup(newMember);
 		verify(newMember).addToGroup(node);
 		assertThat(manager.peers.containsValue(newMember), is(true));
@@ -83,8 +83,8 @@ public class GroupManagerTest {
 
 	@Test
 	public void addToLeaderWithMembers() throws RemoteException {
-		INode member1 = mock(INode.class);
-		INode member2 = mock(INode.class);
+		INode member1 = getMockedNode();
+		INode member2 = getMockedNode();
 
 		when(nameServer.getLeader(group)).thenReturn(null);
 		manager.join(group);
@@ -99,10 +99,9 @@ public class GroupManagerTest {
 
 	@Test
 	public void removeFromNonLeader() throws RemoteException {
-		UUID uuid = UUID.randomUUID();
-		INode leader = mock(INode.class);
-		INode member = mock(INode.class);
-		when(member.getId()).thenReturn(uuid);
+		INode leader = getMockedNode();
+		INode member = getMockedNode();
+
 		when(nameServer.getLeader(group)).thenReturn(leader);
 		manager.join(group);
 		manager.addToGroup(member);
@@ -114,9 +113,8 @@ public class GroupManagerTest {
 
 	@Test
 	public void removeFromLeader() throws RemoteException {
-		UUID uuid = UUID.randomUUID();
-		INode member = mock(INode.class);
-		when(member.getId()).thenReturn(uuid);
+		INode member = getMockedNode();
+
 		when(nameServer.getLeader(group)).thenReturn(null);
 		manager.join(group);
 		manager.addToGroup(member);
@@ -181,19 +179,25 @@ public class GroupManagerTest {
 	 */
 	private void setUpGroup() throws RemoteException {
 		members = new ArrayList<>();
-		leader = mock(INode.class);
+		leader = getMockedNode();
 
 		when(nameServer.getLeader(group)).thenReturn(leader);
 		when(leader.isLeader()).thenReturn(true);
-		// when(leader.addToGroup(node)).thenReturn(UUID.randomUUID());
 
 		manager.join(group);
 		// A leader and a member
 		members.add(leader);
-		members.add(mock(INode.class));
+		members.add(getMockedNode());
+
 		// Add them to the manager
 		members.forEach(m -> manager.addToGroup(m));
 		// Make the tested manager a member of the group
 		members.add(node);
+	}
+
+	private INode getMockedNode() throws RemoteException {
+		INode mock = mock(INode.class);
+		when(mock.getId()).thenReturn(UUID.randomUUID());
+		return mock;
 	}
 }
