@@ -182,9 +182,7 @@ public class GroupManager {
 	 */
 	public <T> void send(T data) {
 		Message<T> message = new Message<T>(data);
-		ArrayList<INode> recipients = new ArrayList<>();
-		recipients.addAll(peers.keySet());
-		message.setRecipients(recipients);
+		message.setRecipients(peers.keySet());
 		List<INode> failed = orderer.send(message);
 		failed.forEach(n -> requestRemoveFromGroup(n));
 	}

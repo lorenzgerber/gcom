@@ -1,9 +1,9 @@
 package order;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 
 import gcom.INode;
 
@@ -11,18 +11,18 @@ public class Message<T> implements Serializable {
 	public final T data;
 	protected int sender;
 	protected HashMap<Integer, Long> vectorClock;
-	private List<INode> recipients = Collections.emptyList();
+	private Collection<INode> recipients = Collections.emptyList();
 	private static final long serialVersionUID = 8148518950441165743L;
 
 	public Message(T data) {
 		this.data = data;
 	}
 
-	public List<INode> getRecipients() {
+	public Collection<INode> getRecipients() {
 		return recipients;
 	}
 
-	public void setRecipients(List<INode> recipients) {
+	public void setRecipients(Collection<INode> recipients) {
 		this.recipients = recipients;
 	}
 

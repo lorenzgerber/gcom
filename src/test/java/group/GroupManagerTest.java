@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -127,7 +128,7 @@ public class GroupManagerTest {
 	public void sendToSelf() {
 		String data = "Hello";
 		// We expect to have only the "self" node as recipient
-		List<INode> expected = Arrays.asList(node);
+		Collection<INode> expected = Arrays.asList(node);
 
 		@SuppressWarnings("unchecked")
 		ArgumentCaptor<Message<String>> captor = ArgumentCaptor.forClass(Message.class);
@@ -136,7 +137,8 @@ public class GroupManagerTest {
 		verify(orderer).send(captor.capture());
 		Message<String> sent = captor.getValue();
 		assertThat(sent.data, is(data));
-		assertThat(sent.getRecipients(), is(expected));
+		assertThat(sent.getRecipients().size(), is(expected.size()));
+		assertThat(expected.containsAll(sent.getRecipients()), is(true));
 	}
 
 	@Test
