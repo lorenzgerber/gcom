@@ -88,8 +88,8 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 	}
 
 	@Override
-	public UUID addToGroup(INode node) {
-		return groupManager.addToGroup(node);
+	public void addToGroup(INode node) {
+		groupManager.addToGroup(node);
 	}
 
 	@Override

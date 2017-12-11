@@ -31,7 +31,7 @@ public interface INode extends Remote {
 	 *            the new node to add
 	 * @return a uuid assigned from the leader, or null from other members
 	 */
-	public UUID addToGroup(INode node) throws RemoteException;
+	public void addToGroup(INode node) throws RemoteException;
 	
 	/**
 	 * Remove this node from the group.

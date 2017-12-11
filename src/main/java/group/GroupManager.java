@@ -2,6 +2,7 @@ package group;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -17,11 +18,20 @@ public class GroupManager {
 	INode currentLeader = null;
 	List<INode> peers;
 	IOrderer orderer;
+	HashMap<INode, UUID> qeers;
 
 	public GroupManager(INameServer nameServer, INode parent, IOrderer orderer) {
 		this.nameServer = nameServer;
 		this.parent = parent;
 		peers = new ArrayList<>();
+		qeers = new HashMap<>();
+		try {
+			qeers.put(parent, parent.getId());
+		} catch (RemoteException e) {
+			// should never happen as it's
+			// invoked only local
+		}
+		
 		peers.add(parent);
 		this.orderer = orderer;
 	}
@@ -33,26 +43,23 @@ public class GroupManager {
 	 *            name of the group to join
 	 * @return the assigned node ID in this group
 	 */
-	public UUID join(String group) {
-		UUID uuid = null;
+	public void join(String group) {
 		try {
 			INode leaderNameServer = nameServer.getLeader(group);
 			if (leaderNameServer == null) {
 				// There is no leader, so we create the group and become leader.
 				currentLeader = parent;
 				nameServer.setLeader(group, parent);
-				uuid = UUID.randomUUID();
 			} else {
 				currentLeader = leaderNameServer;
 				// Ask the leader to add us to the group and give us a UUID
-				uuid = leaderNameServer.addToGroup(parent);
+				leaderNameServer.addToGroup(parent);
 			}
 		} catch (RemoteException e1) {
 			// TODO: Should we quit or throw exception here?
 			System.err.println("The name service is down! Unable to continue...");
 			System.exit(-1);
 		}
-		return uuid;
 	}
 
 	/**
@@ -63,7 +70,7 @@ public class GroupManager {
 	 * @return true if node is member
 	 */
 	public boolean isMember(INode node) {
-		Iterator<INode> iter = peers.iterator();
+		Iterator<INode> iter = qeers.keySet().iterator();
 		while (iter.hasNext()) {
 			INode peer = iter.next();
 			if (peer.equals(node)) {
@@ -78,13 +85,11 @@ public class GroupManager {
 	 * all members add the new node.
 	 * 
 	 * @param node
-	 * @return the uuid of the new member if this is the leader, null otherwise.
 	 */
-	public UUID addToGroup(INode node) {
-		UUID uuid = null;
+	public void addToGroup(INode node) {
+		
 		if (currentLeader == parent) {
-			uuid = UUID.randomUUID();
-			Iterator<INode> iter = peers.iterator();
+			Iterator<INode> iter = qeers.keySet().iterator();
 			while (iter.hasNext()) {
 				INode peer = iter.next();
 				// Do not call addToGroup on self
@@ -116,8 +121,6 @@ public class GroupManager {
 		} else {
 			peers.add(node);
 		}
-
-		return uuid;
 	}
 
 	/**
@@ -125,7 +128,6 @@ public class GroupManager {
 	 * should make all members remove the provided node.
 	 * 
 	 * @param node
-	 * @return the uuid of the removed node.
 	 */
 	public void removeFromGroup(INode node) {
 		
