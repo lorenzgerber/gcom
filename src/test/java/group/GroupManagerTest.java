@@ -26,6 +26,8 @@ public class GroupManagerTest {
 	private INameServer nameServer;
 	private IOrderer orderer;
 	private String group = "SuperGroup";
+	private List<INode> members;
+	private INode leader;
 
 	@Before
 	public void setUp() throws Exception {
@@ -148,6 +150,20 @@ public class GroupManagerTest {
 		assertThat(expected.containsAll(sent.getRecipients()), is(true));
 	}
 
+	@Test
+	public void sendToFailedNode() throws RemoteException {
+		String data = "Hello";
+		setUpGroup();
+		INode failed = members.get(1);
+
+		when(orderer.send(any())).thenReturn(Arrays.asList(failed));
+
+		manager.send(data);
+		verify(orderer).send(any());
+		verify(leader).isLeader();
+		verify(leader).removeFromGroup(any());
+	}
+
 	/**
 	 * Set up a group.
 	 * 
@@ -155,12 +171,14 @@ public class GroupManagerTest {
 	 * @throws RemoteException
 	 */
 	private List<INode> setUpGroup() throws RemoteException {
-		List<INode> members = new ArrayList<>();
-		INode leader = mock(INode.class);
+		members = new ArrayList<>();
+		leader = mock(INode.class);
 
 		when(nameServer.getLeader(group)).thenReturn(leader);
+		when(leader.isLeader()).thenReturn(true);
 		when(leader.addToGroup(node)).thenReturn(UUID.randomUUID());
 
+		manager.join(group);
 		// A leader and a member
 		members.add(leader);
 		members.add(mock(INode.class));

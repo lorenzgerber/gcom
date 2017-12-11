@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 import gcom.INode;
@@ -184,7 +185,8 @@ public class GroupManager {
 		ArrayList<INode> recipients = new ArrayList<>();
 		recipients.addAll(peers.keySet());
 		message.setRecipients(recipients);
-		orderer.send(message);
+		List<INode> failed = orderer.send(message);
+		failed.forEach(n -> requestRemoveFromGroup(n));
 	}
 
 	private void removeMember(INode member) {
