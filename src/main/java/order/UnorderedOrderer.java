@@ -22,4 +22,9 @@ public class UnorderedOrderer extends AbstractOrderer {
 		return true;
 	}
 
+	@Override
+	public void reset() {
+		// We do not need to do anything here since there is no ordering in this class
+	}
+
 }

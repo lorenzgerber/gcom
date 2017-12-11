@@ -116,4 +116,11 @@ public class CausalOrderer extends AbstractOrderer {
 		}
 		return shouldWait;
 	}
+
+	@Override
+	public void reset() {
+		// Reset the vector clock and buffer
+		vectorClock = new HashMap<>();
+		buffer = new ArrayList<>();
+	}
 }

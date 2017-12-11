@@ -55,6 +55,8 @@ public class GroupManager {
 			System.err.println("The name service is down! Unable to continue...");
 			System.exit(-1);
 		}
+		// Reset the orderer always when joining a new group.
+		orderer.reset();
 	}
 
 	/**

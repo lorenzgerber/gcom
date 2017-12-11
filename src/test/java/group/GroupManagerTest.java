@@ -46,6 +46,8 @@ public class GroupManagerTest {
 
 		manager.join(group);
 		verify(leader).addToGroup(node);
+		// Orderer must reset when joining a new group
+		verify(orderer).reset();
 	}
 
 	@Test

@@ -49,4 +49,9 @@ public interface IOrderer {
 	 *            the multicaster
 	 */
 	public void setMulticaster(IMulticaster multicaster);
+
+	/**
+	 * Reset the orderer. This should be called when joining a new group.
+	 */
+	public void reset();
 }

@@ -44,4 +44,10 @@ public class Debugger implements IOrderer, IMulticaster {
 
 	}
 
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+
+	}
+
 }
