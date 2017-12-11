@@ -185,13 +185,13 @@ public class GroupManager {
 	}
 
 	public void requestRemoveFromGroup(INode member) {
-		if(currentLeader == null) {
+		if(currentLeader == parent) {
 			this.removeFromGroup(member);
 		} else {
 			Iterator<INode> iter = peers.iterator();
 			while (iter.hasNext()) {
 				INode peer = iter.next();
-				if (peer.isLeader()) {
+				if (peer.equals(currentLeader)) {
 					try {
 						peer.removeFromGroup(member);
 					} catch (RemoteException e) {
