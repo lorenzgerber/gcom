@@ -1,7 +1,6 @@
 package group;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -16,14 +15,12 @@ public class GroupManager {
 	INameServer nameServer;
 	INode parent;
 	INode currentLeader = null;
-	//List<INode> peers;
 	IOrderer orderer;
 	HashMap<INode, UUID> peers;
 
 	public GroupManager(INameServer nameServer, INode parent, IOrderer orderer) {
 		this.nameServer = nameServer;
 		this.parent = parent;
-		//peers = new ArrayList<>();
 		peers = new HashMap<>();
 		try {
 			peers.put(parent, parent.getId());
@@ -31,8 +28,7 @@ public class GroupManager {
 			// should never happen as it's
 			// invoked only local
 		}
-		
-		//peers.add(parent);
+
 		this.orderer = orderer;
 	}
 
@@ -41,7 +37,6 @@ public class GroupManager {
 	 * 
 	 * @param group
 	 *            name of the group to join
-	 * @return the assigned node ID in this group
 	 */
 	public void join(String group) {
 		try {
@@ -87,7 +82,7 @@ public class GroupManager {
 	 * @param node
 	 */
 	public void addToGroup(INode node) {
-		
+
 		if (currentLeader == parent) {
 			Iterator<INode> iter = peers.keySet().iterator();
 			while (iter.hasNext()) {
@@ -138,7 +133,7 @@ public class GroupManager {
 	 * @param node
 	 */
 	public void removeFromGroup(INode node) {
-		
+
 		if (currentLeader == parent) {
 			Iterator<INode> iter = peers.keySet().iterator();
 			while (iter.hasNext()) {
@@ -196,7 +191,7 @@ public class GroupManager {
 	}
 
 	public void requestRemoveFromGroup(INode member) {
-		if(currentLeader == parent) {
+		if (currentLeader == parent) {
 			this.removeFromGroup(member);
 		} else {
 			Iterator<INode> iter = peers.keySet().iterator();
