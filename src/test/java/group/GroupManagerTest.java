@@ -39,33 +39,32 @@ public class GroupManagerTest {
 
 	@Test
 	public void joinGroup() throws RemoteException {
-		UUID uuid = UUID.randomUUID();
-		INode leader = mock(INode.class);
+		leader = mock(INode.class);
 
 		when(nameServer.getLeader(group)).thenReturn(leader);
-		when(leader.addToGroup(node)).thenReturn(uuid);
 
-		assertThat(manager.join(group), is(uuid));
+		manager.join(group);
+		verify(leader).addToGroup(node);
 	}
 
 	@Test
 	public void createNewGroup() throws RemoteException {
 		when(nameServer.getLeader(group)).thenReturn(null);
 
-		assertThat(manager.join(group), is(notNullValue()));
+		manager.join(group);
 		verify(nameServer).setLeader(group, node);
 	}
 
 	@Test
 	public void addToNonLeader() throws RemoteException {
-		UUID uuid = UUID.randomUUID();
 		INode leader = mock(INode.class);
 
 		when(nameServer.getLeader(group)).thenReturn(leader);
-		when(leader.addToGroup(node)).thenReturn(uuid);
 
 		manager.join(group);
-		assertThat(manager.addToGroup(mock(INode.class)), is(nullValue()));
+		INode newMember = mock(INode.class);
+		manager.addToGroup(newMember);
+		assertThat(manager.peers.containsKey(newMember), is(true));
 	}
 
 	@Test
@@ -73,7 +72,10 @@ public class GroupManagerTest {
 		when(nameServer.getLeader(group)).thenReturn(null);
 
 		manager.join(group);
-		assertThat(manager.addToGroup(mock(INode.class)), is(notNullValue()));
+		INode newMember = mock(INode.class);
+		manager.addToGroup(newMember);
+		verify(newMember).addToGroup(node);
+		assertThat(manager.peers.containsKey(newMember), is(true));
 	}
 
 	@Test
@@ -82,10 +84,14 @@ public class GroupManagerTest {
 		INode member2 = mock(INode.class);
 
 		when(nameServer.getLeader(group)).thenReturn(null);
-
 		manager.join(group);
-		assertThat(manager.addToGroup(member1), is(notNullValue()));
-		assertThat(manager.addToGroup(member2), is(notNullValue()));
+
+		manager.addToGroup(member1);
+		manager.addToGroup(member2);
+		verify(member1).addToGroup(node);
+		verify(member2).addToGroup(node);
+		assertThat(manager.peers.containsKey(member1), is(true));
+		assertThat(manager.peers.containsKey(member2), is(true));
 	}
 
 	@Test
@@ -160,8 +166,7 @@ public class GroupManagerTest {
 
 		manager.send(data);
 		verify(orderer).send(any());
-		verify(leader).isLeader();
-		verify(leader).removeFromGroup(any());
+		verify(leader).removeFromGroup(failed);
 	}
 
 	/**
@@ -176,7 +181,7 @@ public class GroupManagerTest {
 
 		when(nameServer.getLeader(group)).thenReturn(leader);
 		when(leader.isLeader()).thenReturn(true);
-		when(leader.addToGroup(node)).thenReturn(UUID.randomUUID());
+		// when(leader.addToGroup(node)).thenReturn(UUID.randomUUID());
 
 		manager.join(group);
 		// A leader and a member
