@@ -54,6 +54,6 @@ public interface INode extends Remote {
 	 * 
 	 * @return true if this is the leader
 	 */
-	public Boolean isLeader();
+	public Boolean isLeader() throws RemoteException;
 
 }

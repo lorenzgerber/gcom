@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import gcom.INode;
-import gcom.Node;
 
 public class NameServer extends UnicastRemoteObject implements INameServer {
 	
@@ -57,6 +56,7 @@ public class NameServer extends UnicastRemoteObject implements INameServer {
 	
 	public static void main(String[] args) throws RemoteException {
 		
+		@SuppressWarnings("unused")
 		NameServer server = new NameServer();
 		LOGGER.info("Name server started");
 		while (true) {

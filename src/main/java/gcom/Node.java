@@ -7,9 +7,9 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.UUID;
 
-import communication.IMulticaster;
 import communication.UnreliableMulticaster;
 import group.GroupManager;
+import group.INameServer;
 import group.NameServer;
 import order.IOrderer;
 import order.Message;
@@ -19,28 +19,26 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 
 	private static final long serialVersionUID = 6210826964208775888L;
 	private UUID nodeID;
-	private String name;
-	private String nameServerHost;
-	private NameServer nameServer;
+	private INameServer nameServer;
 	private Registry remoteRegistry;
 	private IOrderer orderer;
-	private IMulticaster multicaster;
 	private GroupManager groupManager;
 
-	public Node(String name, String nameServerHost) throws RemoteException {
+	public Node(String nameServerHost) throws RemoteException {
+		this(nameServerHost, new UnorderedOrderer(new UnreliableMulticaster()));
+	}
+
+	public Node(String nameServerHost, IOrderer orderer) throws RemoteException {
 
 		this.nodeID = UUID.randomUUID();
-		this.name = name;
-		this.nameServerHost = nameServerHost;
 		try {
 			remoteRegistry = LocateRegistry.getRegistry(nameServerHost);
-			nameServer = (NameServer) remoteRegistry.lookup(NameServer.nameServer);
+			nameServer = (INameServer) remoteRegistry.lookup(NameServer.nameServer);
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
 		}
 
-		this.multicaster = new UnreliableMulticaster();
-		this.orderer = new UnorderedOrderer(multicaster);
+		this.orderer = orderer;
 		this.groupManager = new GroupManager(nameServer, this, orderer);
 
 	}
@@ -75,16 +73,14 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 	}
 
 	@Override
-	public void setConfig(IOrderer orderer, IMulticaster multicaster) {
+	public void setOrderer(IOrderer orderer) {
 		this.orderer = orderer;
-		this.multicaster = multicaster;
 
 	}
 
 	@Override
 	public void deliver(Message<?> message) {
-		// TODO Auto-generated method stub
-
+		orderer.receive(message);
 	}
 
 	@Override

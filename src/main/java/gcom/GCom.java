@@ -1,6 +1,5 @@
 package gcom;
 
-import communication.IMulticaster;
 import order.IOrderer;
 
 public interface GCom {
@@ -46,8 +45,6 @@ public interface GCom {
 	 * 
 	 * @param orderer
 	 *            the orderer to use
-	 * @param multicaster
-	 *            the multicaster to use
 	 */
-	public void setConfig(IOrderer orderer, IMulticaster multicaster);
+	public void setOrderer(IOrderer orderer);
 }
