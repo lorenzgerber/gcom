@@ -8,10 +8,12 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.UUID;
 
 import communication.IMulticaster;
+import communication.UnreliableMulticaster;
 import group.GroupManager;
 import group.NameServer;
 import order.IOrderer;
 import order.Message;
+import order.UnorderedOrderer;
 
 public class Node extends UnicastRemoteObject implements GCom, INode {
 
@@ -37,7 +39,9 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 			e.printStackTrace();
 		}
 
-		this.groupManager = new GroupManager(nameServer, this);
+		this.multicaster = new UnreliableMulticaster();
+		this.orderer = new UnorderedOrderer(multicaster);
+		this.groupManager = new GroupManager(nameServer, this, orderer);
 
 	}
 

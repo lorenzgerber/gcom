@@ -8,15 +8,13 @@ import java.util.List;
 import gcom.INode;
 
 public class Message<T> implements Serializable {
-	public final int id;
 	public final T data;
 	protected int sender;
 	protected HashMap<Integer, Long> vectorClock;
 	private List<INode> recipients = Collections.emptyList();
 	private static final long serialVersionUID = 8148518950441165743L;
 
-	public Message(int id, T data) {
-		this.id = id;
+	public Message(T data) {
 		this.data = data;
 	}
 

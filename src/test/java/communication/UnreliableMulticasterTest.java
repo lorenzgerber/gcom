@@ -18,7 +18,7 @@ import order.Message;
 public class UnreliableMulticasterTest {
 
 	UnreliableMulticaster multicaster;
-	Message<String> message = new Message<>(1, "Hello");
+	Message<String> message = new Message<>("Hello");
 
 	@Before
 	public void setUp() throws Exception {

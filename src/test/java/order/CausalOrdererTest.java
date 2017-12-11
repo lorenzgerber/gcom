@@ -20,8 +20,8 @@ public class CausalOrdererTest {
 
 	private CausalOrderer orderer;
 	private IMulticaster multicaster;
-	private Message<String> message = new Message<>(1, "Hello");
-	private Message<String> message2 = new Message<>(2, "Hello again");
+	private Message<String> message = new Message<>("Hello");
+	private Message<String> message2 = new Message<>("Hello again");
 	private OrdererTester tester = new OrdererTester();
 
 	@Before
