@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.UUID;
 
 import gcom.INode;
@@ -16,23 +15,23 @@ public class GroupManager {
 	INameServer nameServer;
 	INode parent;
 	INode currentLeader = null;
-	List<INode> peers;
+	//List<INode> peers;
 	IOrderer orderer;
-	HashMap<INode, UUID> qeers;
+	HashMap<INode, UUID> peers;
 
 	public GroupManager(INameServer nameServer, INode parent, IOrderer orderer) {
 		this.nameServer = nameServer;
 		this.parent = parent;
-		peers = new ArrayList<>();
-		qeers = new HashMap<>();
+		//peers = new ArrayList<>();
+		peers = new HashMap<>();
 		try {
-			qeers.put(parent, parent.getId());
+			peers.put(parent, parent.getId());
 		} catch (RemoteException e) {
 			// should never happen as it's
 			// invoked only local
 		}
 		
-		peers.add(parent);
+		//peers.add(parent);
 		this.orderer = orderer;
 	}
 
@@ -70,7 +69,7 @@ public class GroupManager {
 	 * @return true if node is member
 	 */
 	public boolean isMember(INode node) {
-		Iterator<INode> iter = qeers.keySet().iterator();
+		Iterator<INode> iter = peers.keySet().iterator();
 		while (iter.hasNext()) {
 			INode peer = iter.next();
 			if (peer.equals(node)) {
@@ -89,7 +88,7 @@ public class GroupManager {
 	public void addToGroup(INode node) {
 		
 		if (currentLeader == parent) {
-			Iterator<INode> iter = qeers.keySet().iterator();
+			Iterator<INode> iter = peers.keySet().iterator();
 			while (iter.hasNext()) {
 				INode peer = iter.next();
 				// Do not call addToGroup on self
@@ -117,9 +116,17 @@ public class GroupManager {
 			} catch (RemoteException e) {
 				removeMember(node);
 			}
-			peers.add(node);
+			try {
+				peers.put(node, node.getId());
+			} catch (RemoteException e) {
+				// ignore if node has left
+			}
 		} else {
-			peers.add(node);
+			try {
+				peers.put(node, node.getId());
+			} catch (RemoteException e) {
+				// ignore if node has left
+			}
 		}
 	}
 
@@ -132,7 +139,7 @@ public class GroupManager {
 	public void removeFromGroup(INode node) {
 		
 		if (currentLeader == parent) {
-			Iterator<INode> iter = peers.iterator();
+			Iterator<INode> iter = peers.keySet().iterator();
 			while (iter.hasNext()) {
 				INode peer = iter.next();
 				// Do not call removeFromGroup on self
@@ -174,7 +181,9 @@ public class GroupManager {
 	 */
 	public <T> void send(T data) {
 		Message<T> message = new Message<T>(data);
-		message.setRecipients(peers);
+		ArrayList<INode> recipients = new ArrayList<>();
+		recipients.addAll(peers.keySet());
+		message.setRecipients(recipients);
 		orderer.send(message);
 	}
 
@@ -190,7 +199,7 @@ public class GroupManager {
 		if(currentLeader == parent) {
 			this.removeFromGroup(member);
 		} else {
-			Iterator<INode> iter = peers.iterator();
+			Iterator<INode> iter = peers.keySet().iterator();
 			while (iter.hasNext()) {
 				INode peer = iter.next();
 				if (peer.equals(currentLeader)) {
