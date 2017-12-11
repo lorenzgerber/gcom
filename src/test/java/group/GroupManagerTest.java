@@ -145,7 +145,8 @@ public class GroupManagerTest {
 	public void sendToGroup() throws RemoteException {
 		String data = "Hello";
 
-		List<INode> expected = setUpGroup();
+		setUpGroup();
+		List<INode> expected = members;
 
 		@SuppressWarnings("unchecked")
 		ArgumentCaptor<Message<String>> captor = ArgumentCaptor.forClass(Message.class);
@@ -172,12 +173,11 @@ public class GroupManagerTest {
 	}
 
 	/**
-	 * Set up a group.
+	 * Set up a group. (Initialize the class fields members and leader).
 	 * 
-	 * @return the list of members
 	 * @throws RemoteException
 	 */
-	private List<INode> setUpGroup() throws RemoteException {
+	private void setUpGroup() throws RemoteException {
 		members = new ArrayList<>();
 		leader = mock(INode.class);
 
@@ -193,6 +193,5 @@ public class GroupManagerTest {
 		members.forEach(m -> manager.addToGroup(m));
 		// Make the tested manager a member of the group
 		members.add(node);
-		return members;
 	}
 }

@@ -65,14 +65,7 @@ public class GroupManager {
 	 * @return true if node is member
 	 */
 	public boolean isMember(INode node) {
-		Iterator<INode> iter = peers.keySet().iterator();
-		while (iter.hasNext()) {
-			INode peer = iter.next();
-			if (peer.equals(node)) {
-				return true;
-			}
-		}
-		return false;
+		return peers.keySet().contains(node);
 	}
 
 	/**
