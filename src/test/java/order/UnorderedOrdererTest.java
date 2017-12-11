@@ -11,7 +11,7 @@ public class UnorderedOrdererTest {
 
 	private UnorderedOrderer orderer;
 	private IMulticaster multicaster;
-	private Message<String> message = new Message<>(1, "Hello");
+	private Message<String> message = new Message<>("Hello");
 	private OrdererTester tester = new OrdererTester();
 
 	@Before

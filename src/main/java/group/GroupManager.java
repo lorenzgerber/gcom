@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 import gcom.INode;
+import order.IOrderer;
+import order.Message;
 
 public class GroupManager {
 
@@ -14,12 +16,14 @@ public class GroupManager {
 	INode parent;
 	INode currentLeader = null;
 	List<INode> peers;
+	IOrderer orderer;
 
-	public GroupManager(INameServer nameServer, INode parent) {
+	public GroupManager(INameServer nameServer, INode parent, IOrderer orderer) {
 		this.nameServer = nameServer;
 		this.parent = parent;
 		peers = new ArrayList<>();
 		peers.add(parent);
+		this.orderer = orderer;
 	}
 
 	/**
@@ -35,7 +39,7 @@ public class GroupManager {
 			INode leaderNameServer = nameServer.getLeader(group);
 			if (leaderNameServer == null) {
 				// There is no leader, so we create the group and become leader.
-				currentLeader = null;
+				currentLeader = parent;
 				nameServer.setLeader(group, parent);
 				uuid = UUID.randomUUID();
 			} else {
@@ -54,18 +58,19 @@ public class GroupManager {
 	/**
 	 * Check if provided node is member in our group
 	 * 
-	 * @param node check this node for membership
+	 * @param node
+	 *            check this node for membership
 	 * @return true if node is member
 	 */
 	public boolean isMember(INode node) {
 		Iterator<INode> iter = peers.iterator();
-		while(iter.hasNext()) {
+		while (iter.hasNext()) {
 			INode peer = iter.next();
-			if(peer.equals(node)) {
+			if (peer.equals(node)) {
 				return true;
 			}
 		}
-		return false;	
+		return false;
 	}
 
 	/**
@@ -77,7 +82,7 @@ public class GroupManager {
 	 */
 	public UUID addToGroup(INode node) {
 		UUID uuid = null;
-		if (currentLeader == null) {
+		if (currentLeader == parent) {
 			uuid = UUID.randomUUID();
 			Iterator<INode> iter = peers.iterator();
 			while (iter.hasNext()) {
@@ -91,7 +96,7 @@ public class GroupManager {
 				try {
 					peer.addToGroup(node);
 				} catch (RemoteException e) {
-					// do we need this if we get an 
+					// do we need this if we get an
 					// exception? same below.
 					removeMember(peer);
 				}
@@ -114,17 +119,17 @@ public class GroupManager {
 
 		return uuid;
 	}
-	
+
 	/**
-	 * remove the provided node from the group. When called on the leader, this should make
-	 * all members remove the provided node.
+	 * remove the provided node from the group. When called on the leader, this
+	 * should make all members remove the provided node.
 	 * 
 	 * @param node
 	 * @return the uuid of the removed node.
 	 */
 	public void removeFromGroup(INode node) {
 		
-		if (currentLeader == null) {
+		if (currentLeader == parent) {
 			Iterator<INode> iter = peers.iterator();
 			while (iter.hasNext()) {
 				INode peer = iter.next();
@@ -133,7 +138,8 @@ public class GroupManager {
 					continue;
 				}
 
-				// Remove the indicated node from each group member and add all members to the new node.
+				// Remove the indicated node from each group member and add all members to the
+				// new node.
 				try {
 					peer.removeFromGroup(node);
 				} catch (RemoteException e) {
@@ -146,7 +152,7 @@ public class GroupManager {
 		} else {
 			peers.remove(node);
 		}
-		
+
 		return;
 
 	}
@@ -165,17 +171,19 @@ public class GroupManager {
 	 *            the data to send
 	 */
 	public <T> void send(T data) {
-		// TODO implement this
+		Message<T> message = new Message<T>(data);
+		message.setRecipients(peers);
+		orderer.send(message);
 	}
 
 	private void removeMember(INode member) {
 		// TODO implement this
 	}
-	
+
 	public boolean isLeader() {
 		return currentLeader == null;
 	}
-	
+
 	public void requestRemoveFromGroup(INode member) {
 		if(currentLeader == null) {
 			this.removeFromGroup(member);
@@ -188,11 +196,11 @@ public class GroupManager {
 						peer.removeFromGroup(member);
 					} catch (RemoteException e) {
 						// If we get an exception, we assume the
-						// leader is down, hence we have to call 
-						// for a new election	
-					}	
-				}	
-			}	
+						// leader is down, hence we have to call
+						// for a new election
+					}
+				}
+			}
 		}
 	}
 }
