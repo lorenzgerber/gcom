@@ -93,17 +93,13 @@ public class GroupManager {
 
 			// Add ourself to the new node
 			tryToAdd(parent, node);
-			try {
-				peers.put(node, node.getId());
-			} catch (RemoteException e) {
-				// No need to do anything
-			}
-		} else {
-			try {
-				peers.put(node, node.getId());
-			} catch (RemoteException e) {
-				// ignore if node has left
-			}
+		}
+
+		// Add the node to our peers
+		try {
+			peers.put(node, node.getId());
+		} catch (RemoteException e) {
+			// ignore if node has left
 		}
 	}
 
@@ -133,11 +129,10 @@ public class GroupManager {
 					// initially, we just ignore that.
 				}
 			}
-
-			peers.remove(node);
-		} else {
-			peers.remove(node);
 		}
+
+		// Remove from self
+		peers.remove(node);
 
 		return;
 
@@ -169,7 +164,7 @@ public class GroupManager {
 	}
 
 	public boolean isLeader() {
-		return currentLeader == parent;
+		return currentLeader.equals(parent);
 	}
 
 	/**
