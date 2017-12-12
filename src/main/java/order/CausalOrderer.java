@@ -3,24 +3,21 @@ package order;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import communication.IMulticaster;
 import gcom.INode;
 
 public class CausalOrderer extends AbstractOrderer {
-	private int id;
-	private HashMap<Integer, Long> vectorClock = new HashMap<>();
+	private UUID id;
+	private HashMap<UUID, Long> vectorClock = new HashMap<>();
 	/*
 	 * TODO: use a smarter buffer (with timeout?) to make it possible to discard
 	 * messages and possibly detect failing nodes in this way.
 	 */
 	private List<Message<?>> buffer = new ArrayList<>();
 
-	public CausalOrderer(IMulticaster multicaster) {
-		this(-1, multicaster);
-	}
-
-	public CausalOrderer(int id, IMulticaster multicaster) {
+	public CausalOrderer(UUID id, IMulticaster multicaster) {
 		this.id = id;
 		this.multicaster = multicaster;
 		// Initialize the vector clock
@@ -75,11 +72,10 @@ public class CausalOrderer extends AbstractOrderer {
 	 * @param id
 	 *            the new id.
 	 */
-	public void setId(int id) {
+	public void setId(UUID id) {
 		this.id = id;
 		// Changing id means that we (re)joined a group and must zero the clock
-		vectorClock = new HashMap<>();
-		vectorClock.putIfAbsent(id, (long) 0);
+		reset();
 	}
 
 	/**
@@ -90,12 +86,11 @@ public class CausalOrderer extends AbstractOrderer {
 	 * @return
 	 */
 	private boolean isAheadOfTime(Message<?> message) {
-		HashMap<Integer, Long> mClock = message.getVectorClock();
+		HashMap<UUID, Long> mClock = message.getVectorClock();
 		boolean shouldWait = false;
-		for (Integer id : mClock.keySet()) {
+		for (UUID id : mClock.keySet()) {
 			// Initialize clock if this is the first message from this node
 			vectorClock.putIfAbsent(id, 0L);
-			mClock.putIfAbsent(id, 0L);
 
 			// Senders clock should be exactly one ahead since we must deliver the messages
 			// in FIFO order.
@@ -103,13 +98,9 @@ public class CausalOrderer extends AbstractOrderer {
 				if (mClock.get(message.sender) != vectorClock.get(message.sender) + 1) {
 					shouldWait = true;
 					break;
-				} else {
-					continue;
 				}
-
-			}
-			// We must wait for any message that could have "caused" this one to be sent
-			if (mClock.get(id) > vectorClock.get(id)) {
+			} else if (mClock.get(id) > vectorClock.get(id)) {
+				// We must wait for any message that could have "caused" this one to be sent
 				shouldWait = true;
 				break;
 			}
