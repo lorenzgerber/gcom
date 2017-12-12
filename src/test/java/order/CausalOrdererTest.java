@@ -42,16 +42,16 @@ public class CausalOrdererTest {
 
 	@Test
 	public void basicReceiveTests() {
-		HashMap<UUID, Long> clock = new HashMap<>();
-		clock.put(id, 1L);
-		message.sender = id;
-		message.setVectorClock(clock);
-
+		// Send message first to initialize the message and orderer clocks.
+		// Reset in between to start from clean state.
 		orderer.reset();
+		orderer.send(message);
 		tester.receiveWithoutSubscriber(orderer, message);
 		orderer.reset();
+		orderer.send(message);
 		tester.receiveSingleSubscriber(orderer, message);
 		orderer.reset();
+		orderer.send(message);
 		tester.receiveMultipleSubscribers(orderer, message);
 	}
 
@@ -59,6 +59,7 @@ public class CausalOrdererTest {
 	public void testSubscription() {
 		HashMap<UUID, Long> clock = new HashMap<>();
 		clock.put(id, 1L);
+		message.sender = id;
 		message.setVectorClock(clock);
 
 		tester.testCancelSubscription(orderer, message);
