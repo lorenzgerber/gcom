@@ -40,23 +40,19 @@ public class GroupManager {
 	 * 
 	 * @param group
 	 *            name of the group to join
+	 * @throws RemoteException
+	 *             if unable to join
 	 */
-	public void join(String group) {
-		try {
-			INode leaderNameServer = nameServer.getLeader(group);
-			if (leaderNameServer == null) {
-				// There is no leader, so we create the group and become leader.
-				currentLeader = parent;
-				nameServer.setLeader(group, parent);
-			} else {
-				currentLeader = leaderNameServer;
-				// Ask the leader to add us to the group and give us a UUID
-				leaderNameServer.addToGroup(parent);
-			}
-		} catch (RemoteException e1) {
-			// TODO: Should we quit or throw exception here?
-			System.err.println("The name service is down! Unable to continue...");
-			System.exit(-1);
+	public void join(String group) throws RemoteException {
+		INode leaderNameServer = nameServer.getLeader(group);
+		if (leaderNameServer == null) {
+			// There is no leader, so we create the group and become leader.
+			currentLeader = parent;
+			nameServer.setLeader(group, parent);
+		} else {
+			currentLeader = leaderNameServer;
+			// Ask the leader to add us to the group
+			leaderNameServer.addToGroup(parent);
 		}
 		// Reset the orderer always when joining a new group.
 		orderer.reset();

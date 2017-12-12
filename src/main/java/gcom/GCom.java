@@ -1,5 +1,7 @@
 package gcom;
 
+import java.rmi.RemoteException;
+
 import order.IOrderer;
 
 public interface GCom {
@@ -8,8 +10,10 @@ public interface GCom {
 	 * 
 	 * @param group
 	 *            name of the group
+	 * @throws RemoteException
+	 *             if unable to join/create the group
 	 */
-	public void join(String group);
+	public void join(String group) throws RemoteException;
 
 	/**
 	 * Send a message to the group.
