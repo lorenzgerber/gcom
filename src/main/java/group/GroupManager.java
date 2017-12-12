@@ -162,9 +162,6 @@ public class GroupManager {
 		// TODO implement this
 	}
 
-	public boolean isLeader() {
-		return currentLeader.equals(parent);
-	}
 
 	/**
 	 * Request to leader for removal of node from group

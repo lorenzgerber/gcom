@@ -56,11 +56,4 @@ public interface INode extends Remote {
 	 */
 	public void updateLeader() throws RemoteException;
 
-	/**
-	 * Check in group module if we are group leader
-	 * 
-	 * @return true if this is the leader
-	 */
-	public Boolean isLeader() throws RemoteException;
-
 }

@@ -81,9 +81,4 @@ public class INodeTest {
 		// Nothing special should happen
 	}
 
-	@Test
-	public void checkLeader() throws RemoteException {
-		// The node should be its own leader at the beginning
-		assertThat(node.isLeader(), is(true));
-	}
 }

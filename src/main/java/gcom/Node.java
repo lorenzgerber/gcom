@@ -104,10 +104,6 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 		groupManager.requestRemoveFromGroup(node);
 	}
 
-	@Override
-	public Boolean isLeader() {
-		return groupManager.isLeader();
-	}
 
 	@Override
 	public void updateLeader() throws RemoteException {

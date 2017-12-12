@@ -182,7 +182,6 @@ public class GroupManagerTest {
 		leader = getMockedNode();
 
 		when(nameServer.getLeader(group)).thenReturn(leader);
-		when(leader.isLeader()).thenReturn(true);
 
 		manager.join(group);
 		// A leader and a member
