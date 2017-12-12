@@ -39,23 +39,19 @@ public class GroupManager {
 	 * 
 	 * @param group
 	 *            name of the group to join
+	 * @throws RemoteException
+	 *             if unable to join
 	 */
-	public void join(String group) {
-		try {
-			INode leaderNameServer = nameServer.getLeader(group);
-			if (leaderNameServer == null) {
-				// There is no leader, so we create the group and become leader.
-				currentLeader = parent;
-				nameServer.setLeader(group, parent);
-			} else {
-				currentLeader = leaderNameServer;
-				// Ask the leader to add us to the group and give us a UUID
-				leaderNameServer.addToGroup(parent);
-			}
-		} catch (RemoteException e1) {
-			// TODO: Should we quit or throw exception here?
-			System.err.println("The name service is down! Unable to continue...");
-			System.exit(-1);
+	public void join(String group) throws RemoteException {
+		INode leaderNameServer = nameServer.getLeader(group);
+		if (leaderNameServer == null) {
+			// There is no leader, so we create the group and become leader.
+			currentLeader = parent;
+			nameServer.setLeader(group, parent);
+		} else {
+			currentLeader = leaderNameServer;
+			// Ask the leader to add us to the group
+			leaderNameServer.addToGroup(parent);
 		}
 		// Reset the orderer always when joining a new group.
 		this.currentGroup = group; 
@@ -97,17 +93,13 @@ public class GroupManager {
 
 			// Add ourself to the new node
 			tryToAdd(parent, node);
-			try {
-				peers.put(node, node.getId());
-			} catch (RemoteException e) {
-				// No need to do anything
-			}
-		} else {
-			try {
-				peers.put(node, node.getId());
-			} catch (RemoteException e) {
-				// ignore if node has left
-			}
+		}
+
+		// Add the node to our peers
+		try {
+			peers.put(node, node.getId());
+		} catch (RemoteException e) {
+			// ignore if node has left
 		}
 	}
 
@@ -137,11 +129,10 @@ public class GroupManager {
 					// initially, we just ignore that.
 				}
 			}
-
-			peers.remove(node);
-		} else {
-			peers.remove(node);
 		}
+
+		// Remove from self
+		peers.remove(node);
 
 		return;
 
@@ -172,7 +163,7 @@ public class GroupManager {
 	}
 
 	public boolean isLeader() {
-		return currentLeader == null;
+		return currentLeader.equals(parent);
 	}
 
 	/**

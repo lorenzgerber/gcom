@@ -45,12 +45,11 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 
 	@Override
 	public UUID getId() {
-
 		return nodeID;
 	}
 
 	@Override
-	public void join(String group) {
+	public void join(String group) throws RemoteException {
 		groupManager.join(group);
 	}
 
