@@ -121,6 +121,7 @@ public class CausalOrderer extends AbstractOrderer {
 	public void reset() {
 		// Reset the vector clock and buffer
 		vectorClock = new HashMap<>();
+		vectorClock.putIfAbsent(id, (long) 0);
 		buffer = new ArrayList<>();
 	}
 }

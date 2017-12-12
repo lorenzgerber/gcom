@@ -169,4 +169,19 @@ public class CausalOrdererTest {
 		mockOrder.verify(sub).deliverMessage(message.data);
 		mockOrder.verify(sub).deliverMessage(message2.data);
 	}
+
+	@Test
+	public void testReset() {
+		int id = 0;
+		long expected = 0L;
+		orderer.setId(id);
+		// No send failures
+		orderer.send(message);
+
+		orderer.reset();
+		// Clock should now be reset
+		orderer.send(message);
+		expected++;
+		assertThat(message.getVectorClock().get(id), is(expected));
+	}
 }
