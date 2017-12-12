@@ -23,6 +23,7 @@ public class GroupManager {
 	public GroupManager(INameServer nameServer, INode parent, IOrderer orderer) {
 		this.nameServer = nameServer;
 		this.parent = parent;
+		currentLeader = parent;
 		peers = new HashMap<>();
 		try {
 			peers.put(parent, parent.getId());
@@ -77,7 +78,7 @@ public class GroupManager {
 	 */
 	public void addToGroup(INode node) {
 
-		if (currentLeader == parent) {
+		if (isLeader()) {
 			Iterator<INode> iter = peers.keySet().iterator();
 			while (iter.hasNext()) {
 				INode peer = iter.next();
