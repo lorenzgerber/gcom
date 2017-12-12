@@ -91,29 +91,16 @@ public class GroupManager {
 				}
 
 				// Add the new node to each group member and add all members to the new node.
-				try {
-					peer.addToGroup(node);
-				} catch (RemoteException e) {
-					// do we need this if we get an
-					// exception? same below.
-					removeMember(peer);
-				}
-				try {
-					node.addToGroup(peer);
-				} catch (RemoteException e) {
-					removeMember(node);
-				}
+				tryToAdd(node, peer);
+				tryToAdd(peer, node);
 			}
 
-			try {
-				node.addToGroup(parent);
-			} catch (RemoteException e) {
-				removeMember(node);
-			}
+			// Add ourself to the new node
+			tryToAdd(parent, node);
 			try {
 				peers.put(node, node.getId());
 			} catch (RemoteException e) {
-				// ignore if node has left
+				// No need to do anything
 			}
 		} else {
 			try {
@@ -199,22 +186,28 @@ public class GroupManager {
 	 *            node to remove
 	 */
 	public void requestRemoveFromGroup(INode member) {
-		if (isLeader()) {
-			this.removeFromGroup(member);
-		} else {
-			Iterator<INode> iter = peers.keySet().iterator();
-			while (iter.hasNext()) {
-				INode peer = iter.next();
-				if (peer.equals(currentLeader)) {
-					try {
-						peer.removeFromGroup(member);
-					} catch (RemoteException e) {
-						// If we get an exception, we assume the
-						// leader is down, hence we have to call
-						// for a new election
-					}
-				}
-			}
+		try {
+			currentLeader.removeFromGroup(member);
+		} catch (RemoteException e) {
+			// If we get an exception, we assume the
+			// leader is down, hence we have to call
+			// for a new election
+		}
+	}
+
+	/**
+	 * Attempt to add added to receivers group.
+	 * 
+	 * @param added
+	 *            the node to be added
+	 * @param receiver
+	 *            the node to add to
+	 */
+	private void tryToAdd(INode added, INode receiver) {
+		try {
+			receiver.addToGroup(added);
+		} catch (RemoteException e) {
+			removeMember(receiver);
 		}
 	}
 }
