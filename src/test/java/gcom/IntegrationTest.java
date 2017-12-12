@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,10 +21,12 @@ import order.IOrderer;
 
 public class IntegrationTest {
 
+	private static final String group = "test group";
+	private static final String LOCALHOST = "localhost";
 	static NameServer nameServer;
 	private Node gcom;
-	private String group = "Some group name here";
 	private ISubscriber clientApplication = mock(ISubscriber.class);
+	private String data = "Hello";
 
 	@BeforeClass
 	public static void initialize() throws RemoteException {
@@ -38,14 +41,17 @@ public class IntegrationTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gcom = new Node("localhost");
+		gcom = new Node(LOCALHOST);
 		gcom.subscribe(clientApplication);
+	}
+
+	@After
+	public void cleanUp() {
+		nameServer.setLeader(group, null);
 	}
 
 	@Test
 	public void sendMessageToSelf() {
-		String data = "Hello";
-
 		gcom.Send(data);
 		verify(clientApplication).deliverMessage(data);
 	}
@@ -57,14 +63,13 @@ public class IntegrationTest {
 		assertThat(nameServer.getLeader(group).getId(), is(gcom.getId()));
 
 		// Make a group member
-		GCom member = new Node("localhost");
+		GCom member = new Node(LOCALHOST);
 		// Create a client for the member
 		ISubscriber memberClient = mock(ISubscriber.class);
 		member.subscribe(memberClient);
 		member.join(group);
 		assertThat(nameServer.getLeader(group).getId(), is(gcom.getId()));
 
-		String data = "Hello members";
 		gcom.Send(data);
 
 		verify(clientApplication).deliverMessage(data);
@@ -72,12 +77,21 @@ public class IntegrationTest {
 	}
 
 	@Test
+	public void joinExistingGroup() throws RemoteException {
+		GCom leader = new Node(LOCALHOST);
+		leader.join(group);
+		gcom.join(group);
+
+		leader.Send(data);
+
+		verify(clientApplication).deliverMessage(data);
+	}
+
+	@Test
 	public void useCausalOrderer() {
 		IMulticaster multicaster = new UnreliableMulticaster();
 		IOrderer causal = new CausalOrderer(gcom.getId(), multicaster);
 		gcom.setOrderer(causal);
-
-		String data = "Hello";
 
 		gcom.subscribe(clientApplication);
 		gcom.Send(data);
