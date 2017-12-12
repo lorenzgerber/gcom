@@ -15,6 +15,7 @@ public class GroupManager {
 
 	INameServer nameServer;
 	INode parent;
+	String currentGroup;
 	INode currentLeader = null;
 	IOrderer orderer;
 	HashMap<INode, UUID> peers;
@@ -59,6 +60,7 @@ public class GroupManager {
 			System.exit(-1);
 		}
 		// Reset the orderer always when joining a new group.
+		this.currentGroup = group; 
 		orderer.reset();
 	}
 
@@ -190,7 +192,7 @@ public class GroupManager {
 	}
 
 	/**
-	 * Request to leader
+	 * Request to leader for removal of node from group
 	 * 
 	 * The request for removal is directed to the leader. This will assure that it
 	 * is regularly checked whether the leader is still alive.
@@ -217,4 +219,45 @@ public class GroupManager {
 			}
 		}
 	}
+	
+	/**
+	 * Replace a crashed leader
+	 * 
+	 * This method is called by the node that
+	 * realizes that the leader is not reachable.
+	 * First the node calls the nameserver to update
+	 * with his ID. Then it iterates over the list
+	 * of nodes and tells them to update.
+	 */
+	public void setLeaderGlobal() {
+		INode leaderNameServer = null;
+		
+		// check if current leader ID is the same as in the name server
+		try {
+			leaderNameServer = nameServer.getLeader(currentGroup);
+		} catch (RemoteException e) {
+			// If the NameServer does not reply,
+			// we should shutdown
+		}
+		
+		if(leaderNameServer.equals(currentLeader)) {
+			try {
+				nameServer.setLeader(currentGroup, parent);
+			} catch (RemoteException e) {
+				// If the NameServer is inaccessible
+				// we should shutdown
+			}
+		} else {
+			this.currentLeader = leaderNameServer;			
+		}
+		
+		// iterate over all nodes and make them call updateLeaderLocal()
+		
+	}
+	
+	public void updateLeaderLocal() {
+		// request leaderID from Nameserver and update the local value
+		
+	}
+	
 }
