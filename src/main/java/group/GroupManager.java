@@ -1,6 +1,7 @@
 package group;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -21,6 +22,8 @@ public class GroupManager {
 	public GroupManager(INameServer nameServer, INode parent, IOrderer orderer) {
 		this.nameServer = nameServer;
 		this.parent = parent;
+		// We start out as the leader of our own private group
+		currentLeader = parent;
 		peers = new HashMap<>();
 		try {
 			peers.put(parent, parent.getId());
@@ -78,7 +81,7 @@ public class GroupManager {
 	 */
 	public void addToGroup(INode node) {
 
-		if (currentLeader == parent) {
+		if (isLeader()) {
 			Iterator<INode> iter = peers.keySet().iterator();
 			while (iter.hasNext()) {
 				INode peer = iter.next();
@@ -129,7 +132,7 @@ public class GroupManager {
 	 */
 	public void removeFromGroup(INode node) {
 
-		if (currentLeader == parent) {
+		if (isLeader()) {
 			Iterator<INode> iter = peers.keySet().iterator();
 			while (iter.hasNext()) {
 				INode peer = iter.next();
@@ -172,7 +175,8 @@ public class GroupManager {
 	 */
 	public <T> void send(T data) {
 		Message<T> message = new Message<T>(data);
-		message.setRecipients(peers.keySet());
+		ArrayList<INode> recipients = new ArrayList<>(peers.keySet());
+		message.setRecipients(recipients);
 		List<INode> failed = orderer.send(message);
 		failed.forEach(n -> requestRemoveFromGroup(n));
 	}
@@ -182,20 +186,20 @@ public class GroupManager {
 	}
 
 	public boolean isLeader() {
-		return currentLeader == null;
+		return currentLeader == parent;
 	}
 
 	/**
 	 * Request to leader
 	 * 
-	 * The request for removal is directed to the
-	 * leader. This will assure that it is regularly
-	 * checked whether the leader is still alive.
+	 * The request for removal is directed to the leader. This will assure that it
+	 * is regularly checked whether the leader is still alive.
 	 * 
-	 * @param member node to remove
+	 * @param member
+	 *            node to remove
 	 */
 	public void requestRemoveFromGroup(INode member) {
-		if (currentLeader == parent) {
+		if (isLeader()) {
 			this.removeFromGroup(member);
 		} else {
 			Iterator<INode> iter = peers.keySet().iterator();

@@ -56,8 +56,7 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 
 	@Override
 	public <T> void Send(T data) {
-		// TODO Auto-generated method stub
-
+		groupManager.send(data);
 	}
 
 	@Override
@@ -68,8 +67,7 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 
 	@Override
 	public void subscribe(ISubscriber subscriber) {
-		// TODO Auto-generated method stub
-
+		orderer.subscribe(subscriber);
 	}
 
 	@Override
@@ -106,7 +104,6 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 
 	@Override
 	public Boolean isLeader() {
-		groupManager.isLeader();
-		return null;
+		return groupManager.isLeader();
 	}
 }

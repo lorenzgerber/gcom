@@ -34,7 +34,7 @@ public class UnreliableMulticasterTest {
 		assertThat(actual, is(expected));
 
 		// Send to one
-		List<INode> recipients = mockRecipients(1);
+		ArrayList<INode> recipients = mockRecipients(1);
 		message.setRecipients(recipients);
 
 		actual = multicaster.multicast(message);
@@ -54,7 +54,7 @@ public class UnreliableMulticasterTest {
 	@Test
 	public void testFailedMulticasting() throws RemoteException {
 		// Send to single that fails
-		List<INode> recipients = failingMockRecipients(1);
+		ArrayList<INode> recipients = failingMockRecipients(1);
 		message.setRecipients(recipients);
 
 		List<INode> expected = recipients;
@@ -85,8 +85,8 @@ public class UnreliableMulticasterTest {
 		verifyDelivery(message, recipients);
 	}
 
-	private List<INode> mockRecipients(int num) {
-		List<INode> recipients = new ArrayList<>();
+	private ArrayList<INode> mockRecipients(int num) {
+		ArrayList<INode> recipients = new ArrayList<>();
 		for (int i = 0; i < num; i++) {
 			recipients.add(mock(INode.class));
 		}
@@ -94,8 +94,8 @@ public class UnreliableMulticasterTest {
 		return recipients;
 	}
 
-	private List<INode> failingMockRecipients(int num) throws RemoteException {
-		List<INode> recipients = mockRecipients(num);
+	private ArrayList<INode> failingMockRecipients(int num) throws RemoteException {
+		ArrayList<INode> recipients = mockRecipients(num);
 		for (INode node : recipients) {
 			doThrow(new RemoteException()).when(node).deliver(any());
 		}
