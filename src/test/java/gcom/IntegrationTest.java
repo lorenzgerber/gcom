@@ -12,7 +12,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import communication.IMulticaster;
+import communication.UnreliableMulticaster;
 import group.NameServer;
+import order.CausalOrderer;
+import order.IOrderer;
 
 public class IntegrationTest {
 
@@ -47,7 +51,7 @@ public class IntegrationTest {
 	}
 
 	@Test
-	public void createGroupAndAddMember() throws RemoteException {
+	public void createGroupSendToMember() throws RemoteException {
 		// Create the group by joining it
 		gcom.join(group);
 		assertThat(nameServer.getLeader(group).getId(), is(gcom.getId()));
@@ -65,6 +69,19 @@ public class IntegrationTest {
 
 		verify(clientApplication).deliverMessage(data);
 		verify(memberClient).deliverMessage(data);
+	}
+
+	@Test
+	public void useCausalOrderer() {
+		IMulticaster multicaster = new UnreliableMulticaster();
+		IOrderer causal = new CausalOrderer(gcom.getId(), multicaster);
+		gcom.setOrderer(causal);
+
+		String data = "Hello";
+
+		gcom.subscribe(clientApplication);
+		gcom.Send(data);
+		verify(clientApplication).deliverMessage(data);
 	}
 
 }

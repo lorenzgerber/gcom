@@ -48,6 +48,13 @@ public interface INode extends Remote {
 	 * @param node
 	 */
 	public void requestRemoveFromGroup(INode node) throws RemoteException;
+	
+	/**
+	 * Induce Node to request leader from NameServer
+	 * 
+	 * @throws RemoteException
+	 */
+	public void updateLeader() throws RemoteException;
 
 	/**
 	 * Check in group module if we are group leader

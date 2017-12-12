@@ -3,13 +3,14 @@ package order;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 import gcom.INode;
 
 public class Message<T> implements Serializable {
 	public final T data;
-	protected int sender;
-	protected HashMap<Integer, Long> vectorClock;
+	protected UUID sender;
+	protected HashMap<UUID, Long> vectorClock;
 	private ArrayList<INode> recipients = new ArrayList<>();
 	private static final long serialVersionUID = 8148518950441165743L;
 
@@ -25,11 +26,11 @@ public class Message<T> implements Serializable {
 		this.recipients = recipients;
 	}
 
-	protected void setVectorClock(HashMap<Integer, Long> vectorClock) {
+	protected void setVectorClock(HashMap<UUID, Long> vectorClock) {
 		this.vectorClock = vectorClock;
 	}
 
-	protected HashMap<Integer, Long> getVectorClock() {
+	protected HashMap<UUID, Long> getVectorClock() {
 		return vectorClock;
 	}
 

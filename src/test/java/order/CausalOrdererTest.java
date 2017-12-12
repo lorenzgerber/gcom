@@ -8,6 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.inOrder;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +20,7 @@ import gcom.ISubscriber;
 public class CausalOrdererTest {
 
 	private CausalOrderer orderer;
+	private UUID id = UUID.randomUUID();
 	private IMulticaster multicaster;
 	private Message<String> message = new Message<>("Hello");
 	private Message<String> message2 = new Message<>("Hello again");
@@ -27,7 +29,7 @@ public class CausalOrdererTest {
 	@Before
 	public void setUp() throws Exception {
 		multicaster = mock(IMulticaster.class);
-		orderer = new CausalOrderer(multicaster);
+		orderer = new CausalOrderer(id, multicaster);
 	}
 
 	@Test
@@ -40,23 +42,24 @@ public class CausalOrdererTest {
 
 	@Test
 	public void basicReceiveTests() {
-		HashMap<Integer, Long> clock = new HashMap<>();
-		clock.put(0, 1L);
-		message.setVectorClock(clock);
-		message2.setVectorClock(clock);
-
-		orderer.setId(0);
+		// Send message first to initialize the message and orderer clocks.
+		// Reset in between to start from clean state.
+		orderer.reset();
+		orderer.send(message);
 		tester.receiveWithoutSubscriber(orderer, message);
-		orderer.setId(0);
+		orderer.reset();
+		orderer.send(message);
 		tester.receiveSingleSubscriber(orderer, message);
-		orderer.setId(0);
+		orderer.reset();
+		orderer.send(message);
 		tester.receiveMultipleSubscribers(orderer, message);
 	}
 
 	@Test
 	public void testSubscription() {
-		HashMap<Integer, Long> clock = new HashMap<>();
-		clock.put(0, 1L);
+		HashMap<UUID, Long> clock = new HashMap<>();
+		clock.put(id, 1L);
+		message.sender = id;
 		message.setVectorClock(clock);
 
 		tester.testCancelSubscription(orderer, message);
@@ -64,9 +67,7 @@ public class CausalOrdererTest {
 
 	@Test
 	public void testSendVectorClock() {
-		int id = 0;
 		long expected = 0L;
-		orderer.setId(id);
 		// No send failures
 		orderer.send(message);
 		expected++;
@@ -96,8 +97,8 @@ public class CausalOrdererTest {
 	@Test
 	public void reversedMessages() {
 		// Id of sender and receiver
-		int receiver = 0;
-		int sender = 1;
+		UUID receiver = id;
+		UUID sender = UUID.randomUUID();
 		message.sender = sender;
 		message2.sender = sender;
 		orderer.setId(receiver);
@@ -108,8 +109,8 @@ public class CausalOrdererTest {
 		// We want to check the order of invocations for this subscriber
 		InOrder mockOrder = inOrder(sub);
 
-		HashMap<Integer, Long> clock1 = new HashMap<>();
-		HashMap<Integer, Long> clock2 = new HashMap<>();
+		HashMap<UUID, Long> clock1 = new HashMap<>();
+		HashMap<UUID, Long> clock2 = new HashMap<>();
 		// First clock is for the first message sent
 		clock1.put(sender, 1L);
 		// Set clock2 to 2 since this is the second message
@@ -136,9 +137,9 @@ public class CausalOrdererTest {
 	 */
 	@Test
 	public void causalDependency() {
-		int receiver = 0;
-		int sender1 = 1;
-		int sender2 = 2;
+		UUID receiver = id;
+		UUID sender1 = UUID.randomUUID();
+		UUID sender2 = UUID.randomUUID();
 		message.sender = sender1;
 		message2.sender = sender2;
 		orderer.setId(receiver);
@@ -149,8 +150,8 @@ public class CausalOrdererTest {
 		// We want to check the order of invocations for this subscriber
 		InOrder mockOrder = inOrder(sub);
 
-		HashMap<Integer, Long> clock1 = new HashMap<>();
-		HashMap<Integer, Long> clock2 = new HashMap<>();
+		HashMap<UUID, Long> clock1 = new HashMap<>();
+		HashMap<UUID, Long> clock2 = new HashMap<>();
 		// First clock is for the first message sent
 		clock1.put(sender1, 1L);
 		// The second message "knows" about/was "caused" by the first
@@ -168,5 +169,18 @@ public class CausalOrdererTest {
 
 		mockOrder.verify(sub).deliverMessage(message.data);
 		mockOrder.verify(sub).deliverMessage(message2.data);
+	}
+
+	@Test
+	public void testReset() {
+		long expected = 0L;
+		// No send failures
+		orderer.send(message);
+		// Not incrementing expected...
+		orderer.reset();
+		// Clock should now be reset
+		orderer.send(message);
+		expected++;
+		assertThat(message.getVectorClock().get(id), is(expected));
 	}
 }

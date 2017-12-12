@@ -1,6 +1,7 @@
 package group;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -90,29 +91,16 @@ public class GroupManager {
 				}
 
 				// Add the new node to each group member and add all members to the new node.
-				try {
-					peer.addToGroup(node);
-				} catch (RemoteException e) {
-					// do we need this if we get an
-					// exception? same below.
-					removeMember(peer);
-				}
-				try {
-					node.addToGroup(peer);
-				} catch (RemoteException e) {
-					removeMember(node);
-				}
+				tryToAdd(node, peer);
+				tryToAdd(peer, node);
 			}
 
-			try {
-				node.addToGroup(parent);
-			} catch (RemoteException e) {
-				removeMember(node);
-			}
+			// Add ourself to the new node
+			tryToAdd(parent, node);
 			try {
 				peers.put(node, node.getId());
 			} catch (RemoteException e) {
-				// ignore if node has left
+				// No need to do anything
 			}
 		} else {
 			try {
@@ -174,7 +162,7 @@ public class GroupManager {
 	 */
 	public <T> void send(T data) {
 		Message<T> message = new Message<T>(data);
-		message.setRecipients(peers.keySet());
+		message.setRecipients(new ArrayList<INode> (peers.keySet()));
 		List<INode> failed = orderer.send(message);
 		failed.forEach(n -> requestRemoveFromGroup(n));
 	}
@@ -197,22 +185,28 @@ public class GroupManager {
 	 * @param member node to remove
 	 */
 	public void requestRemoveFromGroup(INode member) {
-		if (currentLeader == parent) {
-			this.removeFromGroup(member);
-		} else {
-			Iterator<INode> iter = peers.keySet().iterator();
-			while (iter.hasNext()) {
-				INode peer = iter.next();
-				if (peer.equals(currentLeader)) {
-					try {
-						peer.removeFromGroup(member);
-					} catch (RemoteException e) {
-						// If we get an exception, we assume the
-						// leader is down, hence we have to call
-						// for a new election
-					}
-				}
-			}
+		try {
+			currentLeader.removeFromGroup(member);
+		} catch (RemoteException e) {
+			// If we get an exception, we assume the
+			// leader is down, hence we have to call
+			// for a new election
+		}
+	}
+
+	/**
+	 * Attempt to add added to receivers group.
+	 * 
+	 * @param added
+	 *            the node to be added
+	 * @param receiver
+	 *            the node to add to
+	 */
+	private void tryToAdd(INode added, INode receiver) {
+		try {
+			receiver.addToGroup(added);
+		} catch (RemoteException e) {
+			removeMember(receiver);
 		}
 	}
 	
@@ -221,6 +215,7 @@ public class GroupManager {
 	 * 
 	 * This method is called by the node that
 	 * realizes that the leader is not reachable.
+	 * 
 	 * First the node calls the nameserver to update
 	 * with his ID. Then it iterates over the list
 	 * of nodes and tells them to update.
@@ -238,7 +233,23 @@ public class GroupManager {
 		
 		if(leaderNameServer.equals(currentLeader)) {
 			try {
+				
 				nameServer.setLeader(currentGroup, parent);
+				
+				// iterate over all nodes and make them call updateLocal()
+				Iterator<INode> iter = peers.keySet().iterator();
+				while (iter.hasNext()) {
+					INode peer = iter.next();
+					
+					if (peer != parent) {
+						try {
+							peer.updateLeader();
+						} catch (RemoteException e) {
+							// ignore in this case
+						}				
+					}	
+				}
+				
 			} catch (RemoteException e) {
 				// If the NameServer is inaccessible
 				// we should shutdown
@@ -246,24 +257,18 @@ public class GroupManager {
 		} else {
 			this.currentLeader = leaderNameServer;			
 		}
-		
-		// iterate over all nodes and make them call updateLeaderLocal()
-		Iterator<INode> iter = peers.keySet().iterator();
-		while (iter.hasNext()) {
-			INode peer = iter.next();
-			
-			if (peer != parent) {
-				updateLeaderLocal(peer)				
-			}
-			
-		}
-		
-		
 	}
 	
-	public void updateLeaderLocal() {
+	/**
+	 * Update Leader to current NameServer data
+	 * 
+	 */
+	public void updateLeader() {
 		// request leaderID from Nameserver and update the local value
-		
+		try {
+			this.currentLeader = nameServer.getLeader(currentGroup);
+		} catch (RemoteException e) {
+			// so it be
+		}
 	}
-	
 }
