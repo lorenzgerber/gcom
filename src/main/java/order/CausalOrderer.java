@@ -92,9 +92,15 @@ public class CausalOrderer extends AbstractOrderer {
 			// Initialize clock if this is the first message from this node
 			vectorClock.putIfAbsent(id, 0L);
 
-			// Senders clock should be exactly one ahead since we must deliver the messages
-			// in FIFO order.
-			if (id == message.sender) {
+			if (id.equals(this.id)) {
+				// We received our own message. The clocks should be equal.
+				if (mClock.get(message.sender) != vectorClock.get(message.sender)) {
+					shouldWait = true;
+					break;
+				}
+			} else if (id.equals(message.sender)) {
+				// Senders clock must be exactly one ahead (if not self) since we must deliver
+				// the messages in FIFO order.
 				if (mClock.get(message.sender) != vectorClock.get(message.sender) + 1) {
 					shouldWait = true;
 					break;
