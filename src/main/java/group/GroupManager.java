@@ -55,7 +55,7 @@ public class GroupManager {
 			leaderNameServer.addToGroup(parent);
 		}
 		// Reset the orderer always when joining a new group.
-		this.currentGroup = group; 
+		this.currentGroup = group;
 		orderer.reset();
 	}
 
@@ -112,7 +112,7 @@ public class GroupManager {
 	 */
 	public void removeFromGroup(INode node) {
 
-		if (currentLeader == parent) {
+		if (isLeader()) {
 			Iterator<INode> iter = peers.keySet().iterator();
 			while (iter.hasNext()) {
 				INode peer = iter.next();
@@ -154,7 +154,7 @@ public class GroupManager {
 	 */
 	public <T> void send(T data) {
 		Message<T> message = new Message<T>(data);
-		message.setRecipients(new ArrayList<INode> (peers.keySet()));
+		message.setRecipients(new ArrayList<INode>(peers.keySet()));
 		List<INode> failed = orderer.send(message);
 		failed.forEach(n -> requestRemoveFromGroup(n));
 	}
@@ -163,15 +163,14 @@ public class GroupManager {
 		// TODO implement this
 	}
 
-
 	/**
 	 * Request to leader for removal of node from group
 	 * 
-	 * The request for removal is directed to the
-	 * leader. This will assure that it is regularly
-	 * checked whether the leader is still alive.
+	 * The request for removal is directed to the leader. This will assure that it
+	 * is regularly checked whether the leader is still alive.
 	 * 
-	 * @param member node to remove
+	 * @param member
+	 *            node to remove
 	 */
 	public void requestRemoveFromGroup(INode member) {
 		try {
@@ -198,20 +197,19 @@ public class GroupManager {
 			removeMember(receiver);
 		}
 	}
-	
+
 	/**
 	 * Replace a crashed leader
 	 * 
-	 * This method is called by the node that
-	 * realizes that the leader is not reachable.
+	 * This method is called by the node that realizes that the leader is not
+	 * reachable.
 	 * 
-	 * First the node calls the nameserver to update
-	 * with his ID. Then it iterates over the list
-	 * of nodes and tells them to update.
+	 * First the node calls the nameserver to update with his ID. Then it iterates
+	 * over the list of nodes and tells them to update.
 	 */
 	public void setLeaderGlobal() {
 		INode leaderNameServer = null;
-		
+
 		// check if current leader ID is the same as in the name server
 		try {
 			leaderNameServer = nameServer.getLeader(currentGroup);
@@ -219,35 +217,35 @@ public class GroupManager {
 			// If the NameServer does not reply,
 			// we should shutdown
 		}
-		
-		if(leaderNameServer.equals(currentLeader)) {
+
+		if (leaderNameServer.equals(currentLeader)) {
 			try {
-				
+
 				nameServer.setLeader(currentGroup, parent);
-				
+
 				// iterate over all nodes and make them call updateLocal()
 				Iterator<INode> iter = peers.keySet().iterator();
 				while (iter.hasNext()) {
 					INode peer = iter.next();
-					
+
 					if (peer != parent) {
 						try {
 							peer.updateLeader();
 						} catch (RemoteException e) {
 							// ignore in this case
-						}				
-					}	
+						}
+					}
 				}
-				
+
 			} catch (RemoteException e) {
 				// If the NameServer is inaccessible
 				// we should shutdown
 			}
 		} else {
-			this.currentLeader = leaderNameServer;			
+			this.currentLeader = leaderNameServer;
 		}
 	}
-	
+
 	/**
 	 * Update Leader to current NameServer data
 	 * 
@@ -259,5 +257,9 @@ public class GroupManager {
 		} catch (RemoteException e) {
 			// so it be
 		}
+	}
+
+	private boolean isLeader() {
+		return currentLeader.equals(parent);
 	}
 }
