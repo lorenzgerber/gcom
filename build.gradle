@@ -13,3 +13,4 @@ dependencies {
 }
 
 mainClassName = "gcom.Node"
+mainClassName = "chatapp.ChatApp"

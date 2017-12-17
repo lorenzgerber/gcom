@@ -32,13 +32,13 @@
       </MenuBar>
       <HBox prefHeight="400.0" prefWidth="200.0">
          <children>
-            <TextArea editable="false" prefHeight="200.0" prefWidth="400.0" />
-            <Button alignment="BOTTOM_RIGHT" mnemonicParsing="false" text="Send" />
+            <TextArea id="messageArea" fx:id="messageArea" editable="false" prefHeight="200.0" prefWidth="400.0" />
+            <Button alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#sendButtonPressed" text="Send" />
          </children>
       </HBox>
       <VBox prefHeight="200.0" prefWidth="100.0">
          <children>
-            <TextField alignment="BOTTOM_CENTER" />
+            <TextField id="textEntry" fx:id="inputArea" alignment="BOTTOM_CENTER" />
          </children>
       </VBox>
    </children>
