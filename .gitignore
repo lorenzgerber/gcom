@@ -27,5 +27,3 @@ build
 .project
 .settings
 /bin/
-gradle
-gradlew*
