@@ -18,6 +18,7 @@ import communication.UnreliableMulticaster;
 import group.NameServer;
 import order.CausalOrderer;
 import order.IOrderer;
+import order.UnorderedOrderer;
 
 public class IntegrationTest {
 
@@ -95,6 +96,22 @@ public class IntegrationTest {
 
 		gcom.subscribe(clientApplication);
 		gcom.Send(data);
+		verify(clientApplication).deliverMessage(data);
+	}
+
+	@Test
+	public void holdMessages() {
+		IOrderer orderer = new UnorderedOrderer(new UnreliableMulticaster());
+		Debugger debugger = new Debugger(orderer);
+		gcom.setOrderer(debugger);
+
+		debugger.holdMessages();
+
+		gcom.subscribe(clientApplication);
+		gcom.Send(data);
+		verify(clientApplication, never()).deliverMessage(data);
+
+		debugger.releaseMessages();
 		verify(clientApplication).deliverMessage(data);
 	}
 

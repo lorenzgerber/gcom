@@ -1,53 +1,63 @@
 package gcom;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import communication.IMulticaster;
 import order.IOrderer;
 import order.Message;
 
-public class Debugger implements IOrderer, IMulticaster {
+public class Debugger implements IOrderer {
 
-	@Override
-	public List<INode> multicast(Message<?> message) {
-		// TODO Auto-generated method stub
-		return null;
+	private IOrderer orderer;
+	private boolean holdMessages = false;
+	private List<Message<?>> heldMessages = new ArrayList<Message<?>>();
+
+	public Debugger(IOrderer orderer) {
+		this.orderer = orderer;
+	}
+
+	public void holdMessages() {
+		holdMessages = true;
+	}
+
+	public void releaseMessages() {
+		holdMessages = false;
+		heldMessages.forEach(m -> orderer.receive(m));
 	}
 
 	@Override
 	public List<INode> send(Message<?> message) {
-		// TODO Auto-generated method stub
-		return null;
+		return orderer.send(message);
 	}
 
 	@Override
 	public boolean receive(Message<?> message) {
-		// TODO Auto-generated method stub
-		return false;
+		if (holdMessages) {
+			heldMessages.add(message);
+			return true;
+		}
+		return orderer.receive(message);
 	}
 
 	@Override
 	public void subscribe(ISubscriber subscriber) {
-		// TODO Auto-generated method stub
-
+		orderer.subscribe(subscriber);
 	}
 
 	@Override
 	public void unSubscribe(ISubscriber subscriber) {
-		// TODO Auto-generated method stub
-
+		orderer.unSubscribe(subscriber);
 	}
 
 	@Override
 	public void setMulticaster(IMulticaster multicaster) {
-		// TODO Auto-generated method stub
-
+		orderer.setMulticaster(multicaster);
 	}
 
 	@Override
 	public void reset() {
-		// TODO Auto-generated method stub
-
+		orderer.reset();
 	}
 
 }
