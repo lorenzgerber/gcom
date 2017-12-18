@@ -14,3 +14,10 @@ dependencies {
 
 mainClassName = "gcom.Node"
 mainClassName = "chatapp.ChatApp"
+
+task copyFxmlToClasses(type:Copy,dependsOn:[build]) {
+   copy {
+     from "./src/main/java/chatapp/ChatApp.fxml"       
+     into "./build/classes/java/main/chatapp"
+    }
+}

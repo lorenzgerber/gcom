@@ -1,3 +1,3 @@
 #!/bin/bash
-cd bin
+cd build/classes/java/main
 java chatapp.ChatApp
