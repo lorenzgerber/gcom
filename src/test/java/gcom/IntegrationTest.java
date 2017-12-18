@@ -12,6 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.InOrder;
 
 import communication.IMulticaster;
 import communication.UnreliableMulticaster;
@@ -105,7 +106,7 @@ public class IntegrationTest {
 		Debugger debugger = new Debugger(orderer);
 		gcom.setOrderer(debugger);
 
-		debugger.holdMessages();
+		debugger.holdMessages(true);
 
 		gcom.subscribe(clientApplication);
 		gcom.Send(data);
@@ -113,6 +114,33 @@ public class IntegrationTest {
 
 		debugger.releaseMessages();
 		verify(clientApplication).deliverMessage(data);
+	}
+
+	@Test
+	public void orderCorrectly() {
+		IMulticaster multicaster = new UnreliableMulticaster();
+		IOrderer causal = new CausalOrderer(gcom.getId(), multicaster);
+		Debugger debugger = new Debugger(causal);
+		gcom.setOrderer(debugger);
+		InOrder mockOrder = inOrder(clientApplication);
+		gcom.subscribe(clientApplication);
+
+		debugger.holdMessages(true);
+
+		gcom.Send(data);
+		String data2 = "Second message";
+
+		debugger.holdMessages(false);
+		gcom.Send(data2);
+
+		// The second message should not arrive before the first
+		verify(clientApplication, never()).deliverMessage(data2);
+
+		// Now we release the first message
+		debugger.releaseMessages();
+		// both messages should now be delivered in order
+		mockOrder.verify(clientApplication).deliverMessage(data);
+		mockOrder.verify(clientApplication).deliverMessage(data2);
 	}
 
 }

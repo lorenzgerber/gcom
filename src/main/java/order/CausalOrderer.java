@@ -10,7 +10,10 @@ import gcom.INode;
 
 public class CausalOrderer extends AbstractOrderer {
 	private UUID id;
+	// The vector clock is for received messages
 	private HashMap<UUID, Long> vectorClock = new HashMap<>();
+	// A clock to keep track of (the number of) sent messages
+	private long clock = 0;
 	/*
 	 * TODO: use a smarter buffer (with timeout?) to make it possible to discard
 	 * messages and possibly detect failing nodes in this way.
@@ -27,8 +30,15 @@ public class CausalOrderer extends AbstractOrderer {
 
 	@Override
 	public List<INode> send(Message<?> message) {
-		vectorClock.compute(id, (k, v) -> v += 1);
-		message.setVectorClock(vectorClock);
+		// Copy vector clock to attach to message
+		HashMap<UUID, Long> messageClock = new HashMap<>();
+		vectorClock.forEach((k, v) -> messageClock.put(k, v));
+		// Increase the clock but not the vector clock (this is only increased when
+		// receiving messages)
+		clock += 1;
+		messageClock.compute(id, (k, v) -> v = clock);
+
+		message.setVectorClock(messageClock);
 		message.sender = id;
 
 		return multicaster.multicast(message);
@@ -92,14 +102,8 @@ public class CausalOrderer extends AbstractOrderer {
 			// Initialize clock if this is the first message from this node
 			vectorClock.putIfAbsent(id, 0L);
 
-			if (id.equals(this.id)) {
-				// We received our own message. The clocks should be equal.
-				if (mClock.get(message.sender) != vectorClock.get(message.sender)) {
-					shouldWait = true;
-					break;
-				}
-			} else if (id.equals(message.sender)) {
-				// Senders clock must be exactly one ahead (if not self) since we must deliver
+			if (id.equals(message.sender)) {
+				// Senders clock must be exactly one ahead since we must deliver
 				// the messages in FIFO order.
 				if (mClock.get(message.sender) != vectorClock.get(message.sender) + 1) {
 					shouldWait = true;
@@ -120,5 +124,6 @@ public class CausalOrderer extends AbstractOrderer {
 		vectorClock = new HashMap<>();
 		vectorClock.putIfAbsent(id, (long) 0);
 		buffer = new ArrayList<>();
+		clock = 0;
 	}
 }

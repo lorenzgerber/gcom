@@ -17,8 +17,8 @@ public class Debugger implements IOrderer {
 		this.orderer = orderer;
 	}
 
-	public void holdMessages() {
-		holdMessages = true;
+	public void holdMessages(boolean hold) {
+		holdMessages = hold;
 	}
 
 	public void releaseMessages() {
@@ -36,8 +36,9 @@ public class Debugger implements IOrderer {
 		if (holdMessages) {
 			heldMessages.add(message);
 			return true;
+		} else {
+			return orderer.receive(message);
 		}
-		return orderer.receive(message);
 	}
 
 	@Override
