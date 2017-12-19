@@ -105,7 +105,7 @@ public class GroupManagerTest {
 		when(nameServer.getLeader(group)).thenReturn(leader);
 		manager.join(group);
 		manager.addToGroup(member);
-		manager.removeFromGroup(member);
+		manager.removeMember(member);
 
 		assertThat(manager.peers.containsKey(member), is(false));
 	}
@@ -117,7 +117,7 @@ public class GroupManagerTest {
 		when(nameServer.getLeader(group)).thenReturn(null);
 		manager.join(group);
 		manager.addToGroup(member);
-		manager.removeFromGroup(member);
+		manager.removeMember(member);
 
 		assertThat(manager.peers.containsKey(member), is(false));
 	}
@@ -131,11 +131,39 @@ public class GroupManagerTest {
 		manager.join(group);
 		manager.addToGroup(member);
 		manager.addToGroup(badMember);
-		manager.removeFromGroup(badMember);
+		manager.removeMember(badMember);
 
 		assertThat(manager.peers.containsKey(badMember), is(false));
 		assertThat(manager.peers.containsKey(member), is(true));
 		verify(member).removeFromGroup(badMember);
+	}
+
+	@Test
+	public void removeFromFailedNode() throws RemoteException {
+		INode failedMember = getMockedNode();
+		INode badMember = getMockedNode();
+		INode regular = getMockedNode();
+		// The failed member will throw an exception when trying to remove badMember,
+		// and should thus be removed as well
+		doThrow(new RemoteException()).when(failedMember).removeFromGroup(badMember);
+		// Stub the node to forward calls to manager
+		doAnswer(inv -> {
+			manager.removeMember((INode) inv.getArguments()[0]);
+			return null;
+		}).when(node).removeFromGroup(failedMember);
+
+		when(nameServer.getLeader(group)).thenReturn(null);
+		manager.join(group);
+		manager.addToGroup(failedMember);
+		manager.addToGroup(badMember);
+		manager.addToGroup(regular);
+
+		manager.removeMember(badMember);
+
+		assertThat(manager.peers.containsKey(badMember), is(false));
+		assertThat(manager.peers.containsKey(failedMember), is(false));
+		verify(regular).removeFromGroup(badMember);
+		verify(regular).removeFromGroup(failedMember);
 	}
 
 	@Test

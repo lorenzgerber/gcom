@@ -95,14 +95,14 @@ public class GroupManager {
 	}
 
 	/**
-	 * remove the provided node from the group. When called on the leader, this
-	 * should make all members remove the provided node.
+	 * Remove the provided node. When called on the leader, this should make all
+	 * members remove the provided node.
 	 * 
 	 * @param node
 	 */
-	public void removeFromGroup(INode node) {
-
+	public void removeMember(INode node) {
 		if (isLeader()) {
+			List<INode> failed = new ArrayList<>();
 			Iterator<INode> iter = peers.keySet().iterator();
 			while (iter.hasNext()) {
 				INode peer = iter.next();
@@ -111,21 +111,21 @@ public class GroupManager {
 					continue;
 				}
 
-				// Remove the indicated node from each group member and add all members to the
-				// new node.
+				// Remove the indicated node from each group member
 				try {
 					peer.removeFromGroup(node);
 				} catch (RemoteException e) {
 					// if remove throws exception, this peer has also left
-					tryRemoveFromGroup(peer);
+					// Note: we cannot remove while in the loop, just store for now.
+					failed.add(peer);
 				}
 			}
+
+			failed.forEach(p -> tryRemoveFromGroup(p));
 		}
 
 		// Remove from self
 		peers.remove(node);
-
-		return;
 	}
 
 	/**
@@ -209,7 +209,7 @@ public class GroupManager {
 		try {
 			receiver.addToGroup(added);
 		} catch (RemoteException e) {
-			removeFromGroup(receiver);
+			tryRemoveFromGroup(receiver);
 		}
 	}
 
