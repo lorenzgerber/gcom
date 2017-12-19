@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import gcom.INode;
@@ -143,7 +144,31 @@ public class GroupManager {
 	 * Leave the current group.
 	 */
 	public void leave() {
-		// TODO implement this
+		try {
+			if (isLeader()) {
+				// Try to find someone else to be leader
+				Optional<INode> other = peers.keySet().stream().filter(n -> !n.equals(parent)).findAny();
+				if (other.isPresent()) {
+					electLeader(other.get());
+				} else {
+					// We are the only ones left, set leader to null
+					nameServer.setLeader(currentGroup, null);
+				}
+			} else {
+				currentLeader.requestRemoveFromGroup(parent);
+			}
+		} catch (RemoteException e) {
+			// We are leaving anyway
+		}
+
+		// Reset our list of peers
+		peers = new HashMap<>();
+		try {
+			peers.put(parent, parent.getId());
+		} catch (RemoteException e) {
+			// Our parent should never be remote
+		}
+
 	}
 
 	/**
@@ -256,6 +281,20 @@ public class GroupManager {
 			this.currentLeader = nameServer.getLeader(currentGroup);
 		} catch (RemoteException e) {
 			// so it be
+		}
+	}
+
+	private void electLeader(INode newLeader) throws RemoteException {
+		nameServer.setLeader(currentGroup, newLeader);
+		// Update all nodes
+		Iterator<INode> iter = peers.keySet().iterator();
+		while (iter.hasNext()) {
+			INode peer = iter.next();
+			try {
+				peer.updateLeader();
+			} catch (RemoteException e) {
+				newLeader.requestRemoveFromGroup(peer);
+			}
 		}
 	}
 

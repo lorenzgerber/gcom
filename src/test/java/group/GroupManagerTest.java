@@ -172,6 +172,47 @@ public class GroupManagerTest {
 		verify(leader).removeFromGroup(failed);
 	}
 
+	@Test
+	public void leaveNoGroup() throws RemoteException {
+		// Leaving without belonging to a group should be safe.
+		manager.leave();
+		// The groups leader must not be changed!
+		verify(nameServer, never()).setLeader(group, null);
+		assertThat(manager.peers.keySet().size(), is(1));
+	}
+
+	@Test
+	public void leaveSingleMemberGroup() throws RemoteException {
+		manager.join(group);
+		manager.leave();
+		// This leader should be set to null to indicate that the group is empty
+		verify(nameServer).setLeader(group, null);
+		assertThat(manager.peers.keySet().size(), is(1));
+	}
+
+	@Test
+	public void leaveGroupWithMembers() throws RemoteException {
+		setUpGroup();
+		manager.leave();
+		verify(leader).requestRemoveFromGroup(node);
+		verify(nameServer, never()).setLeader(group, null);
+		assertThat(manager.peers.keySet().size(), is(1));
+	}
+
+	@Test
+	public void leaveGroupAsLeader() throws RemoteException {
+		when(nameServer.getLeader(group)).thenReturn(null);
+		manager.join(group);
+
+		INode nextLeader = getMockedNode();
+		manager.addToGroup(nextLeader);
+		manager.leave();
+
+		verify(nameServer).setLeader(group, nextLeader);
+		verify(nextLeader).updateLeader();
+		assertThat(manager.peers.keySet().size(), is(1));
+	}
+
 	/**
 	 * Set up a group. (Initialize the class fields members and leader).
 	 * 

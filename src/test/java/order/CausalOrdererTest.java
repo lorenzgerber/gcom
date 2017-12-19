@@ -19,7 +19,7 @@ import gcom.ISubscriber;
 
 public class CausalOrdererTest {
 
-	private CausalOrderer orderer;
+	private IOrderer orderer;
 	private UUID id = UUID.randomUUID();
 	private IMulticaster multicaster;
 	private Message<String> message = new Message<>("Hello");

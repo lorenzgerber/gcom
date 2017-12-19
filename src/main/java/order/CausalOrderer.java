@@ -51,13 +51,6 @@ public class CausalOrderer extends AbstractOrderer {
 			return false;
 		}
 
-		/*
-		 * TODO: We should probably check if the sender id == our id. Any broadcaster
-		 * should send the message back to the sender, so this will happen. In this case
-		 * it would be good to check if the vector clock matches our own, in order to
-		 * detect multiple nodes with the same id. (Did someone forget to set id?)
-		 */
-
 		if (isAheadOfTime(message)) {
 			buffer.add(message);
 		} else {

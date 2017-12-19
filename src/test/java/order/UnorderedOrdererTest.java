@@ -9,7 +9,7 @@ import communication.IMulticaster;
 
 public class UnorderedOrdererTest {
 
-	private UnorderedOrderer orderer;
+	private IOrderer orderer;
 	private IMulticaster multicaster;
 	private Message<String> message = new Message<>("Hello");
 	private OrdererTester tester = new OrdererTester();
