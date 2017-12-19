@@ -61,17 +61,6 @@ public class GroupManager {
 	}
 
 	/**
-	 * Check if provided node is member in our group
-	 * 
-	 * @param node
-	 *            check this node for membership
-	 * @return true if node is member
-	 */
-	public boolean isMember(INode node) {
-		return peers.keySet().contains(node);
-	}
-
-	/**
 	 * Add the given node to the group. When called on the leader, this should make
 	 * all members add the new node.
 	 * 

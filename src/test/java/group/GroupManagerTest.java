@@ -107,8 +107,7 @@ public class GroupManagerTest {
 		manager.addToGroup(member);
 		manager.removeFromGroup(member);
 
-		assertThat(manager.isMember(member), is(false));
-
+		assertThat(manager.peers.containsKey(member), is(false));
 	}
 
 	@Test
@@ -120,8 +119,23 @@ public class GroupManagerTest {
 		manager.addToGroup(member);
 		manager.removeFromGroup(member);
 
-		assertThat(manager.isMember(member), is(false));
+		assertThat(manager.peers.containsKey(member), is(false));
+	}
 
+	@Test
+	public void leaderShouldRemoveFromOthers() throws RemoteException {
+		INode member = getMockedNode();
+		INode badMember = getMockedNode();
+
+		when(nameServer.getLeader(group)).thenReturn(null);
+		manager.join(group);
+		manager.addToGroup(member);
+		manager.addToGroup(badMember);
+		manager.removeFromGroup(badMember);
+
+		assertThat(manager.peers.containsKey(badMember), is(false));
+		assertThat(manager.peers.containsKey(member), is(true));
+		verify(member).removeFromGroup(badMember);
 	}
 
 	@Test
@@ -213,6 +227,14 @@ public class GroupManagerTest {
 		assertThat(manager.peers.keySet().size(), is(1));
 	}
 
+	@Test
+	public void updateLeader() throws RemoteException {
+		// Updating should be done by asking the name server for the current leader
+		setUpGroup();
+		manager.updateLeader();
+		verify(nameServer).getLeader(group);
+	}
+
 	/**
 	 * Set up a group. (Initialize the class fields members and leader).
 	 * 
@@ -223,8 +245,10 @@ public class GroupManagerTest {
 		leader = getMockedNode();
 
 		when(nameServer.getLeader(group)).thenReturn(leader);
-
 		manager.join(group);
+		// Reset the name server so that any calls made during join are reset
+		reset(nameServer);
+		when(nameServer.getLeader(group)).thenReturn(leader);
 		// A leader and a member
 		members.add(leader);
 		members.add(getMockedNode());
