@@ -150,7 +150,7 @@ public class GroupManagerTest {
 		doAnswer(inv -> {
 			manager.removeMember((INode) inv.getArguments()[0]);
 			return null;
-		}).when(node).removeFromGroup(failedMember);
+		}).when(node).removeFromGroup(any());
 
 		when(nameServer.getLeader(group)).thenReturn(null);
 		manager.join(group);
@@ -164,6 +164,44 @@ public class GroupManagerTest {
 		assertThat(manager.peers.containsKey(failedMember), is(false));
 		verify(regular).removeFromGroup(badMember);
 		verify(regular).removeFromGroup(failedMember);
+	}
+
+	/**
+	 * Just testing a single failed node is not enough, as there is some recursion
+	 * going on if multiple nodes fail. Here we test that two failing nodes are
+	 * correctly removed.
+	 */
+	@Test
+	public void removeMultipleFailed() throws RemoteException {
+		INode failedMember1 = getMockedNode();
+		INode failedMember2 = getMockedNode();
+		INode badMember = getMockedNode();
+		INode regular = getMockedNode();
+		// The failed member will throw an exception when trying to remove badMember,
+		// and should thus be removed as well
+		doThrow(new RemoteException()).when(failedMember1).removeFromGroup(badMember);
+		doThrow(new RemoteException()).when(failedMember2).removeFromGroup(badMember);
+		// Stub the node to forward calls to manager
+		doAnswer(inv -> {
+			manager.removeMember((INode) inv.getArguments()[0]);
+			return null;
+		}).when(node).removeFromGroup(any());
+
+		when(nameServer.getLeader(group)).thenReturn(null);
+		manager.join(group);
+		manager.addToGroup(failedMember1);
+		manager.addToGroup(failedMember2);
+		manager.addToGroup(badMember);
+		manager.addToGroup(regular);
+
+		manager.removeMember(badMember);
+
+		assertThat(manager.peers.containsKey(badMember), is(false));
+		assertThat(manager.peers.containsKey(failedMember1), is(false));
+		assertThat(manager.peers.containsKey(failedMember2), is(false));
+		verify(regular).removeFromGroup(badMember);
+		verify(regular).removeFromGroup(failedMember1);
+		verify(regular).removeFromGroup(failedMember2);
 	}
 
 	@Test

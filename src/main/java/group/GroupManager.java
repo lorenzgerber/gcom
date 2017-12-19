@@ -102,11 +102,12 @@ public class GroupManager {
 	 */
 	public void removeMember(INode node) {
 		if (isLeader()) {
+			// The leader need to make sure everyone removes the node.
 			List<INode> failed = new ArrayList<>();
 			Iterator<INode> iter = peers.keySet().iterator();
 			while (iter.hasNext()) {
 				INode peer = iter.next();
-				// Do not call removeFromGroup on self
+				// Do not remove from self yet
 				if (peer.equals(parent)) {
 					continue;
 				}
