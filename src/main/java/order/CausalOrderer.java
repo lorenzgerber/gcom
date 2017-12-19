@@ -76,19 +76,6 @@ public class CausalOrderer extends AbstractOrderer {
 	}
 
 	/**
-	 * Set the ID of this orderer (should be the same as the node id). This also
-	 * clears the vector clock.
-	 * 
-	 * @param id
-	 *            the new id.
-	 */
-	public void setId(UUID id) {
-		this.id = id;
-		// Changing id means that we (re)joined a group and must zero the clock
-		reset();
-	}
-
-	/**
 	 * Check if this message must wait on some other message before delivery.
 	 * 
 	 * @param message

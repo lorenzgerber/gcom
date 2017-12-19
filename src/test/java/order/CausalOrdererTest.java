@@ -96,12 +96,10 @@ public class CausalOrdererTest {
 	 */
 	@Test
 	public void reversedMessages() {
-		// Id of sender and receiver
-		UUID receiver = id;
+		// Id of sender
 		UUID sender = UUID.randomUUID();
 		message.sender = sender;
 		message2.sender = sender;
-		orderer.setId(receiver);
 
 		// Add subscriber
 		ISubscriber sub = mock(ISubscriber.class);
@@ -137,12 +135,10 @@ public class CausalOrdererTest {
 	 */
 	@Test
 	public void causalDependency() {
-		UUID receiver = id;
 		UUID sender1 = UUID.randomUUID();
 		UUID sender2 = UUID.randomUUID();
 		message.sender = sender1;
 		message2.sender = sender2;
-		orderer.setId(receiver);
 
 		// Add subscriber
 		ISubscriber sub = mock(ISubscriber.class);

@@ -17,10 +17,20 @@ public class Debugger implements IOrderer {
 		this.orderer = orderer;
 	}
 
+	/**
+	 * Should the debugger hold back messages? Note that setting hold to false does
+	 * not release held messages.
+	 * 
+	 * @param hold
+	 *            true for holding messages, false otherwise
+	 */
 	public void holdMessages(boolean hold) {
 		holdMessages = hold;
 	}
 
+	/**
+	 * Release any held messages and stop catching new ones.
+	 */
 	public void releaseMessages() {
 		holdMessages = false;
 		heldMessages.forEach(m -> orderer.receive(m));
