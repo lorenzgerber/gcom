@@ -28,3 +28,10 @@ task copyStartMenuFxmlToClasses(type:Copy,dependsOn:[build]) {
      into "./build/classes/java/main/chatapp"
     }
 }
+
+task copyDebugAppFxmlToClasses(type:Copy,dependsOn:[build]) {
+   copy {
+     from "./src/main/java/chatapp/DebugApp.fxml"       
+     into "./build/classes/java/main/chatapp"
+    }
+}

@@ -5,7 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
-public class ChatAppController {
+public class DebugAppController {
 	
 	@FXML 
 	private TextField inputArea; 
@@ -19,12 +19,7 @@ public class ChatAppController {
 		System.out.println("send the text to everybody");
 	}
 	
-	
-	
-	
-
-	
-	public void initialize() {
+	public void intitialize() {
 		
 	}
 

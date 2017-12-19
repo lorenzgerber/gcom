@@ -11,10 +11,10 @@ public class ChatApp extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		  Parent root = FXMLLoader.load(getClass().getResource("ChatApp.fxml"));
+		  Parent root = FXMLLoader.load(getClass().getResource("startMenu.fxml"));
 		  
 		  Scene scene = new Scene(root);
-		  stage.setTitle("Chat App");
+		  stage.setTitle("GCOM Demo Apps");
 		  stage.setScene(scene);
 		  stage.show();    	
 	}

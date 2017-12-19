@@ -1,6 +1,67 @@
 package chatapp;
 
+import java.io.IOException;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
 public class StartMenuController {
+	
+	@FXML
+	private void chatAppButtonPressed(ActionEvent event) {
+		// do some stuff on button press
+		System.out.println("Open new window");
+		startChatApp();
+	}
+	
+	@FXML
+	private void debugAppButtonPressed(ActionEvent event) {
+		// do some stuff on button press
+		System.out.println("Open new window");
+		startDebugApp();
+	}
+	
+	public Stage startChatApp() {
+		
+		FXMLLoader loader = new FXMLLoader(
+				getClass().getResource("ChatApp.fxml"));
+		
+		Stage stage = new Stage(StageStyle.DECORATED);
+		try {
+			stage.setScene(	new Scene( (Pane) loader.load()));
+		} catch (IOException e) {
+			// ignore for the moment
+		}
+		
+		ChatAppController chatController = 
+				loader.<ChatAppController>getController();
+		stage.show();
+		return stage;
+	}
+	
+	public Stage startDebugApp() {
+		
+		FXMLLoader loader = new FXMLLoader(
+				getClass().getResource("DebugApp.fxml"));
+		
+		Stage stage = new Stage(StageStyle.DECORATED);
+		try {
+			stage.setScene(	new Scene( (Pane) loader.load()));
+		} catch (IOException e) {
+			// ignore for the moment
+		}
+		
+		DebugAppController debugController = 
+				loader.<DebugAppController>getController();
+		stage.show();
+		return stage;
+	}
+	
 	
 	public void initialize() {
 		
