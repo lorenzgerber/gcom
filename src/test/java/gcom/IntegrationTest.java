@@ -107,7 +107,6 @@ public class IntegrationTest {
 
 		debugger.holdMessages(true);
 
-		gcom.subscribe(clientApplication);
 		gcom.Send(data);
 		verify(clientApplication, never()).deliverMessage(data);
 
