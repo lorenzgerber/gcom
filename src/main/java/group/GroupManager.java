@@ -191,6 +191,10 @@ public class GroupManager {
 			// for a new election
 			try {
 				electLeader(parent);
+				/*
+				 * The newly elected leader will detect failed nodes and remove them so no need
+				 * to retry here
+				 */
 			} catch (RemoteException e1) {
 				// Well we tried...
 				System.err.println("Unable to reach name server");
@@ -284,6 +288,8 @@ public class GroupManager {
 	 */
 	private void electLeader(INode newLeader) throws RemoteException {
 		nameServer.setLeader(currentGroup, newLeader);
+
+		List<INode> failed = new ArrayList<>();
 		// Update all nodes
 		Iterator<INode> iter = peers.keySet().iterator();
 		while (iter.hasNext()) {
@@ -291,8 +297,14 @@ public class GroupManager {
 			try {
 				peer.updateLeader();
 			} catch (RemoteException e) {
-				newLeader.removeFromGroup(peer);
+				failed.add(peer);
 			}
+		}
+
+		for (INode f : failed) {
+			newLeader.removeFromGroup(f);
+			// Note: nodes should try to elect them selves so this should never throw an
+			// exception.
 		}
 	}
 

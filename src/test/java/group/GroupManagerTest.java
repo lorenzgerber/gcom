@@ -252,6 +252,55 @@ public class GroupManagerTest {
 		verify(leader).removeFromGroup(failed);
 	}
 
+	/**
+	 * This test is to verify that the program can handle trying to remove a member,
+	 * detecting a failed leader by electing a new one and removing the crashed
+	 * nodes.
+	 */
+	@Test
+	public void sendToFailedWithFailedLeader() throws RemoteException {
+		String data = "Hello";
+		INode failedMember = getMockedNode();
+		leader = getMockedNode();
+		INode regular = getMockedNode();
+
+		when(orderer.send(any())).thenReturn(Arrays.asList(failedMember));
+		doThrow(new RemoteException()).when(failedMember).updateLeader();
+		// Leader has crashed
+		doThrow(new RemoteException()).when(leader).removeFromGroup(any());
+		doThrow(new RemoteException()).when(leader).updateLeader();
+
+		// Stub the node to forward calls to manager
+		doAnswer(inv -> {
+			manager.removeMember((INode) inv.getArguments()[0]);
+			return null;
+		}).when(node).removeFromGroup(any());
+
+		// Join the group
+		when(nameServer.getLeader(group)).thenReturn(leader);
+		manager.join(group);
+		manager.addToGroup(failedMember);
+		manager.addToGroup(leader);
+		manager.addToGroup(regular);
+		// Now change the mock to reflect the leader change about to happen
+		when(nameServer.getLeader(group)).thenReturn(node);
+
+		manager.send(data);
+
+		/*
+		 * First the failed member should be removed from the leader, but since the
+		 * leader is down, node should be set as the new leader. The new leader should
+		 * update all members and then realize which nodes have failed and remove them.
+		 */
+		verify(leader).removeFromGroup(failedMember);
+		verify(nameServer).setLeader(group, node);
+		verify(regular).updateLeader();
+		verify(node).removeFromGroup(failedMember);
+		verify(node).removeFromGroup(leader);
+		assertThat(manager.peers.containsKey(failedMember), is(false));
+		assertThat(manager.peers.containsKey(leader), is(false));
+	}
+
 	@Test
 	public void leaveNoGroup() throws RemoteException {
 		// Leaving without belonging to a group should be safe.
