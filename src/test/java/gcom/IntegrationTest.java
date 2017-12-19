@@ -103,8 +103,7 @@ public class IntegrationTest {
 	@Test
 	public void holdMessages() {
 		IOrderer orderer = new UnorderedOrderer(new UnreliableMulticaster());
-		Debugger debugger = new Debugger(orderer);
-		gcom.setOrderer(debugger);
+		Debugger debugger = setUpDebugger(orderer);
 
 		debugger.holdMessages(true);
 
@@ -117,13 +116,34 @@ public class IntegrationTest {
 	}
 
 	@Test
-	public void orderCorrectly() {
+	public void doNotOrder() {
+		IMulticaster multicaster = new UnreliableMulticaster();
+		IOrderer orderer = new UnorderedOrderer(multicaster);
+		Debugger debugger = setUpDebugger(orderer);
+
+		debugger.holdMessages(true);
+
+		gcom.Send(data);
+		String data2 = "Second message";
+
+		debugger.holdMessages(false);
+		gcom.Send(data2);
+
+		// The second message should arrive before the first
+		verify(clientApplication).deliverMessage(data2);
+
+		// Now we release the first message
+		debugger.releaseMessages();
+		// both messages should now be delivered in order
+		verify(clientApplication).deliverMessage(data);
+	}
+
+	@Test
+	public void orderCausally() {
 		IMulticaster multicaster = new UnreliableMulticaster();
 		IOrderer causal = new CausalOrderer(gcom.getId(), multicaster);
-		Debugger debugger = new Debugger(causal);
-		gcom.setOrderer(debugger);
+		Debugger debugger = setUpDebugger(causal);
 		InOrder mockOrder = inOrder(clientApplication);
-		gcom.subscribe(clientApplication);
 
 		debugger.holdMessages(true);
 
@@ -141,6 +161,13 @@ public class IntegrationTest {
 		// both messages should now be delivered in order
 		mockOrder.verify(clientApplication).deliverMessage(data);
 		mockOrder.verify(clientApplication).deliverMessage(data2);
+	}
+
+	private Debugger setUpDebugger(IOrderer orderer) {
+		Debugger debugger = new Debugger(orderer);
+		gcom.setOrderer(debugger);
+		gcom.subscribe(clientApplication);
+		return debugger;
 	}
 
 }
