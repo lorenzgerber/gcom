@@ -41,13 +41,6 @@ public interface INode extends Remote {
 	 *            the node to remove
 	 */
 	public void removeFromGroup(INode node) throws RemoteException;
-
-	/**
-	 * Sends a request to the leader, requesting removal of a node
-	 * 
-	 * @param node
-	 */
-	public void requestRemoveFromGroup(INode node) throws RemoteException;
 	
 	/**
 	 * Induce Node to request leader from NameServer

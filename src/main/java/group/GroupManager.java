@@ -128,7 +128,7 @@ public class GroupManager {
 					peer.removeFromGroup(node);
 				} catch (RemoteException e) {
 					// if remove throws exception, this peer has also left
-					// initially, we just ignore that.
+					tryRemoveFromGroup(peer);
 				}
 			}
 		}
@@ -137,7 +137,6 @@ public class GroupManager {
 		peers.remove(node);
 
 		return;
-
 	}
 
 	/**
@@ -155,7 +154,7 @@ public class GroupManager {
 					nameServer.setLeader(currentGroup, null);
 				}
 			} else {
-				currentLeader.requestRemoveFromGroup(parent);
+				currentLeader.removeFromGroup(parent);
 			}
 		} catch (RemoteException e) {
 			// We are leaving anyway
@@ -181,11 +180,7 @@ public class GroupManager {
 		Message<T> message = new Message<T>(data);
 		message.setRecipients(new ArrayList<INode>(peers.keySet()));
 		List<INode> failed = orderer.send(message);
-		failed.forEach(n -> requestRemoveFromGroup(n));
-	}
-
-	private void removeMember(INode member) {
-		// TODO implement this
+		failed.forEach(n -> tryRemoveFromGroup(n));
 	}
 
 	/**
@@ -197,13 +192,19 @@ public class GroupManager {
 	 * @param member
 	 *            node to remove
 	 */
-	public void requestRemoveFromGroup(INode member) {
+	private void tryRemoveFromGroup(INode member) {
 		try {
 			currentLeader.removeFromGroup(member);
 		} catch (RemoteException e) {
 			// If we get an exception, we assume the
 			// leader is down, hence we have to call
 			// for a new election
+			try {
+				electLeader(parent);
+			} catch (RemoteException e1) {
+				// Well we tried...
+				System.err.println("Unable to reach name server");
+			}
 		}
 	}
 
@@ -219,7 +220,7 @@ public class GroupManager {
 		try {
 			receiver.addToGroup(added);
 		} catch (RemoteException e) {
-			removeMember(receiver);
+			removeFromGroup(receiver);
 		}
 	}
 
@@ -272,8 +273,7 @@ public class GroupManager {
 	}
 
 	/**
-	 * Update Leader to current NameServer data
-	 * 
+	 * Update Leader to current NameServer data.
 	 */
 	public void updateLeader() {
 		// request leaderID from Nameserver and update the local value
@@ -284,6 +284,14 @@ public class GroupManager {
 		}
 	}
 
+	/**
+	 * Make the given INode leader of the group.
+	 * 
+	 * @param newLeader
+	 *            the soon to be leader node
+	 * @throws RemoteException
+	 *             if unable to reach name server
+	 */
 	private void electLeader(INode newLeader) throws RemoteException {
 		nameServer.setLeader(currentGroup, newLeader);
 		// Update all nodes
@@ -293,11 +301,16 @@ public class GroupManager {
 			try {
 				peer.updateLeader();
 			} catch (RemoteException e) {
-				newLeader.requestRemoveFromGroup(peer);
+				newLeader.removeFromGroup(peer);
 			}
 		}
 	}
 
+	/**
+	 * Is this node leader?
+	 * 
+	 * @return true if leader, false otherwise
+	 */
 	private boolean isLeader() {
 		return currentLeader.equals(parent);
 	}

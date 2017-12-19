@@ -194,7 +194,7 @@ public class GroupManagerTest {
 	public void leaveGroupWithMembers() throws RemoteException {
 		setUpGroup();
 		manager.leave();
-		verify(leader).requestRemoveFromGroup(node);
+		verify(leader).removeFromGroup(node);
 		verify(nameServer, never()).setLeader(group, null);
 		assertThat(manager.peers.keySet().size(), is(1));
 	}

@@ -30,7 +30,6 @@ public class INodeTest {
 			LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
 		} catch (Exception e) {
 			System.err.println("Failed to create registry");
-			e.printStackTrace();
 		}
 		// TODO: Is it possible to mock this?
 		nameServer = new NameServer();
