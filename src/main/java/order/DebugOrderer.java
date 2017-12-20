@@ -1,19 +1,21 @@
-package gcom;
+package order;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import communication.IMulticaster;
-import order.IOrderer;
-import order.Message;
+import gcom.INode;
+import gcom.ISubscriber;
 
-public class Debugger implements IOrderer {
+public class DebugOrderer implements IOrderer {
 
 	private IOrderer orderer;
 	private boolean holdMessages = false;
 	private List<Message<?>> heldMessages = new ArrayList<Message<?>>();
 
-	public Debugger(IOrderer orderer) {
+	public DebugOrderer(IOrderer orderer) {
 		this.orderer = orderer;
 	}
 
@@ -69,6 +71,21 @@ public class Debugger implements IOrderer {
 	@Override
 	public void reset() {
 		orderer.reset();
+	}
+
+	@Override
+	public long debugGetMessagesSent() {
+		return orderer.debugGetMessagesSent();
+	}
+
+	@Override
+	public HashMap<UUID, Long> debugGetVectorClock() {
+		return orderer.debugGetVectorClock();
+	}
+
+	@Override
+	public List<Message<?>> debugGetBuffer() {
+		return orderer.debugGetBuffer();
 	}
 
 }

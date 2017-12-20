@@ -12,6 +12,7 @@ import communication.UnreliableMulticaster;
 import group.GroupManager;
 import group.INameServer;
 import group.NameServer;
+import order.DebugOrderer;
 import order.IOrderer;
 import order.Message;
 import order.UnorderedOrderer;
@@ -108,5 +109,14 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 	@Override
 	public List<String> getGroups() throws RemoteException {
 		return groupManager.getGroups();
+	}
+
+	@Override
+	public DebugOrderer getDebugger() {
+		if (orderer.getClass().equals(DebugOrderer.class)) {
+			return (DebugOrderer) orderer;
+		} else {
+			return null;
+		}
 	}
 }

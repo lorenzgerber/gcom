@@ -1,6 +1,8 @@
 package order;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import communication.IMulticaster;
 import gcom.INode;
@@ -54,4 +56,25 @@ public interface IOrderer {
 	 * Reset the orderer. This should be called when joining a new group.
 	 */
 	public void reset();
+
+	/**
+	 * Get the number of messages sent from this orderer.
+	 * 
+	 * @return the number of sent messages or -1 if no counter is used
+	 */
+	public long debugGetMessagesSent();
+
+	/**
+	 * Get the vector clock from this orderer.
+	 * 
+	 * @return the vector clock or null if not used
+	 */
+	public HashMap<UUID, Long> debugGetVectorClock();
+
+	/**
+	 * Get a list of messages kept in buffer.
+	 * 
+	 * @return buffered messages, or null if not used
+	 */
+	public List<Message<?>> debugGetBuffer();
 }

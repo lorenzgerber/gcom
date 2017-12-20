@@ -106,4 +106,19 @@ public class CausalOrderer extends AbstractOrderer {
 		buffer = new ArrayList<>();
 		clock = 0;
 	}
+
+	@Override
+	public long debugGetMessagesSent() {
+		return clock;
+	}
+
+	@Override
+	public HashMap<UUID, Long> debugGetVectorClock() {
+		return vectorClock;
+	}
+
+	@Override
+	public List<Message<?>> debugGetBuffer() {
+		return buffer;
+	}
 }

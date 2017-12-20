@@ -18,6 +18,7 @@ import communication.IMulticaster;
 import communication.UnreliableMulticaster;
 import group.NameServer;
 import order.CausalOrderer;
+import order.DebugOrderer;
 import order.IOrderer;
 import order.UnorderedOrderer;
 
@@ -102,7 +103,7 @@ public class IntegrationTest {
 	@Test
 	public void holdMessages() {
 		IOrderer orderer = new UnorderedOrderer(new UnreliableMulticaster());
-		Debugger debugger = setUpDebugger(orderer);
+		DebugOrderer debugger = setUpDebugger(orderer);
 
 		debugger.holdMessages(true);
 
@@ -117,7 +118,7 @@ public class IntegrationTest {
 	public void doNotOrder() {
 		IMulticaster multicaster = new UnreliableMulticaster();
 		IOrderer orderer = new UnorderedOrderer(multicaster);
-		Debugger debugger = setUpDebugger(orderer);
+		DebugOrderer debugger = setUpDebugger(orderer);
 
 		debugger.holdMessages(true);
 
@@ -140,7 +141,7 @@ public class IntegrationTest {
 	public void orderCausally() {
 		IMulticaster multicaster = new UnreliableMulticaster();
 		IOrderer causal = new CausalOrderer(gcom.getId(), multicaster);
-		Debugger debugger = setUpDebugger(causal);
+		DebugOrderer debugger = setUpDebugger(causal);
 		InOrder mockOrder = inOrder(clientApplication);
 
 		debugger.holdMessages(true);
@@ -161,8 +162,8 @@ public class IntegrationTest {
 		mockOrder.verify(clientApplication).deliverMessage(data2);
 	}
 
-	private Debugger setUpDebugger(IOrderer orderer) {
-		Debugger debugger = new Debugger(orderer);
+	private DebugOrderer setUpDebugger(IOrderer orderer) {
+		DebugOrderer debugger = new DebugOrderer(orderer);
 		gcom.setOrderer(debugger);
 		gcom.subscribe(clientApplication);
 		return debugger;
