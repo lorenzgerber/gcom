@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 import java.util.UUID;
 
 import communication.UnreliableMulticaster;
@@ -101,6 +102,11 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 	@Override
 	public void updateLeader() throws RemoteException {
 		groupManager.updateLeader();
-		
+
+	}
+
+	@Override
+	public List<String> getGroups() throws RemoteException {
+		return groupManager.getGroups();
 	}
 }

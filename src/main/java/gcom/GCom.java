@@ -1,6 +1,7 @@
 package gcom;
 
 import java.rmi.RemoteException;
+import java.util.List;
 
 import order.IOrderer;
 
@@ -43,6 +44,14 @@ public interface GCom {
 	 *            the subscriber
 	 */
 	public void unSubscribe(ISubscriber subscriber);
+
+	/**
+	 * Get a list of currently available groups.
+	 * 
+	 * @return a list of group names
+	 * @throws RemoteException 
+	 */
+	public List<String> getGroups() throws RemoteException;
 
 	/**
 	 * Specify ordering and multicasting configurations.

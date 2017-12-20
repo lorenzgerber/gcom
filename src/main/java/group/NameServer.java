@@ -4,29 +4,27 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import gcom.INode;
 
 public class NameServer extends UnicastRemoteObject implements INameServer {
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -8461849108178765576L;
 	public static final String nameServer = "gcomNameServer";
 	private Registry registry;
 	private HashMap<String, INode> nodeList;
-	
+
 	static Logger LOGGER = Logger.getLogger(NameServer.class.getSimpleName());
 	static {
 		System.setProperty("java.util.logging.SimpleFormatter.format", "[%4$-4s] %5$s%n");
 		LOGGER.setLevel(Level.INFO);
 	}
-	
-	
+
 	public NameServer() throws RemoteException {
 		try {
 			registry = LocateRegistry.getRegistry();
@@ -53,9 +51,9 @@ public class NameServer extends UnicastRemoteObject implements INameServer {
 		LOGGER.fine("Leader set");
 		return false;
 	}
-	
+
 	public static void main(String[] args) throws RemoteException {
-		
+
 		@SuppressWarnings("unused")
 		NameServer server = new NameServer();
 		LOGGER.info("Name server started");
@@ -66,6 +64,11 @@ public class NameServer extends UnicastRemoteObject implements INameServer {
 				System.err.println("Interrupted");
 			}
 		}
+	}
+
+	@Override
+	public List<String> getGroups() {
+		return new ArrayList<>(nodeList.keySet());
 	}
 
 }

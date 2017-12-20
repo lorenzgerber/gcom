@@ -5,6 +5,8 @@ import java.rmi.RemoteException;
 import gcom.GCom;
 import gcom.ISubscriber;
 import gcom.Node;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -54,7 +56,13 @@ public class ChatAppController implements ISubscriber {
 
 	@FXML
 	private void loadGroups() {
-		System.out.println("Load groups");
+		try {
+			ObservableList<String> groupNames = FXCollections.observableArrayList(node.getGroups());
+			groups.setItems(groupNames);
+		} catch (RemoteException e) {
+			System.err.println("Unable to get list of groups!");
+			e.printStackTrace();
+		}
 	}
 
 	@FXML

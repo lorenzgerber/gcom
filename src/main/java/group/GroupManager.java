@@ -271,4 +271,14 @@ public class GroupManager {
 	private boolean isLeader() {
 		return currentLeader.equals(parent);
 	}
+
+	/**
+	 * Get a list of available groups.
+	 * 
+	 * @return a list of group names
+	 * @throws RemoteException
+	 */
+	public List<String> getGroups() throws RemoteException {
+		return nameServer.getGroups();
+	}
 }

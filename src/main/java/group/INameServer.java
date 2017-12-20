@@ -2,6 +2,7 @@ package group;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 
 import gcom.INode;
 
@@ -25,4 +26,11 @@ public interface INameServer extends Remote {
 	 * @return true if successful
 	 */
 	public boolean setLeader(String group, INode leader) throws RemoteException;
+
+	/**
+	 * Get a list of available groups.
+	 * 
+	 * @return a list of group names
+	 */
+	public List<String> getGroups() throws RemoteException;
 }
