@@ -12,13 +12,7 @@
 
 <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chatapp.DebugAppController">
    <children>
-      <TextArea id="messageArea" fx:id="messageArea" editable="false" prefHeight="250.0" prefWidth="400.0" />
-      <HBox prefWidth="200.0">
-         <children>
-            <TextField id="textEntry" fx:id="inputArea" alignment="TOP_LEFT" minHeight="27.0" minWidth="400.0" />
-            <Button alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#sendButtonPressed" text="Send" />
-         </children>
-      </HBox>
+      <fx:include source="ChatApp.fxml"/>
       <HBox prefHeight="100.0" prefWidth="200.0">
          <children>
             <ListView>

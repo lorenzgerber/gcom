@@ -1,26 +1,11 @@
 package chatapp;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.Parent;
 
-public class DebugAppController {
-	
-	@FXML 
-	private TextField inputArea; 
+public class DebugAppController extends Parent {
 
-	@FXML
-	private TextArea messageArea; 
-	
-	@FXML
-	private void sendButtonPressed(ActionEvent event) {
-		// do some stuff on button press
-		System.out.println("send the text to everybody");
-	}
-	
 	public void intitialize() {
-		
+
 	}
 
 }
