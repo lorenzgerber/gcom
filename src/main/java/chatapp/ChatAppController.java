@@ -24,6 +24,9 @@ public class ChatAppController implements ISubscriber {
 	@FXML
 	private ComboBox<String> groups;
 
+	@FXML
+	private TextField createGroupField;
+
 	private GCom node;
 
 	public ChatAppController() {
@@ -50,15 +53,24 @@ public class ChatAppController implements ISubscriber {
 	}
 
 	@FXML
+	private void loadGroups() {
+		System.out.println("Load groups");
+	}
+
+	@FXML
 	private void groupHandler(ActionEvent event) {
-		try {
-			node.leave();
-			node.join(groups.getValue());
-			System.out.println("Joined group: " + groups.getValue());
-		} catch (RemoteException e) {
-			System.err.println("Unable to join group!");
-			e.printStackTrace();
-		}
+		joinGroup(groups.getValue());
+	}
+
+	@FXML
+	private void createGroupButtonPressed() {
+		joinGroup(createGroupField.getText());
+		createGroupField.clear();
+	}
+
+	@FXML
+	private void leaveButtonPressed() {
+		node.leave();
 	}
 
 	public void initialize() {
@@ -70,9 +82,17 @@ public class ChatAppController implements ISubscriber {
 		inputArea.clear();
 	}
 
-	@FXML
-	private void loadGroups() {
-		System.out.println("Load groups");
+	private void joinGroup(String name) {
+		try {
+			node.leave();
+			node.join(name);
+			System.out.println("Joined group: " + name);
+		} catch (RemoteException e) {
+			System.err.println("Unable to join group!");
+			e.printStackTrace();
+		}
+		loadGroups();
+		groups.setValue(name);
 	}
 
 	@Override

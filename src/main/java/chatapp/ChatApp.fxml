@@ -27,7 +27,7 @@
       <HBox alignment="CENTER_LEFT">
          <children>
             <Label text="Select group" />
-            <ComboBox fx:id="groups" editable="true" onAction="#groupHandler" promptText="Choose existing group" HBox.hgrow="ALWAYS">
+            <ComboBox fx:id="groups" onAction="#groupHandler" promptText="Choose existing group" HBox.hgrow="ALWAYS">
                <HBox.margin>
                   <Insets left="5.0" right="5.0" />
                </HBox.margin></ComboBox>
@@ -40,12 +40,12 @@
       <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
          <children>
             <Label text="Create group" />
-            <TextField HBox.hgrow="ALWAYS">
+            <TextField fx:id="createGroupField" HBox.hgrow="ALWAYS">
                <HBox.margin>
                   <Insets left="5.0" right="5.0" />
                </HBox.margin>
             </TextField>
-            <Button mnemonicParsing="false" text="Create and Join" />
+            <Button mnemonicParsing="false" onAction="#createGroupButtonPressed" text="Create and Join" />
          </children>
          <VBox.margin>
             <Insets top="5.0" />
