@@ -141,7 +141,10 @@ public class GroupManager {
 					electLeader(other.get());
 				} else {
 					// We are the only ones left, set leader to null
-					nameServer.setLeader(currentGroup, null);
+					// No need to disturb the NameServer if we don't have a group.
+					if (currentGroup != null) {
+						nameServer.setLeader(currentGroup, null);
+					}
 				}
 			} else {
 				currentLeader.removeFromGroup(parent);

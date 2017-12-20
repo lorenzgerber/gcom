@@ -7,6 +7,7 @@ import gcom.ISubscriber;
 import gcom.Node;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -19,6 +20,9 @@ public class ChatAppController implements ISubscriber {
 
 	@FXML
 	private TextArea messageArea;
+
+	@FXML
+	private ComboBox<String> groups;
 
 	private GCom node;
 
@@ -45,6 +49,18 @@ public class ChatAppController implements ISubscriber {
 		}
 	}
 
+	@FXML
+	private void groupHandler(ActionEvent event) {
+		try {
+			node.leave();
+			node.join(groups.getValue());
+			System.out.println("Joined group: " + groups.getValue());
+		} catch (RemoteException e) {
+			System.err.println("Unable to join group!");
+			e.printStackTrace();
+		}
+	}
+
 	public void initialize() {
 
 	}
@@ -52,6 +68,11 @@ public class ChatAppController implements ISubscriber {
 	private void sendMessage() {
 		node.Send(inputArea.getText());
 		inputArea.clear();
+	}
+
+	@FXML
+	private void loadGroups() {
+		System.out.println("Load groups");
 	}
 
 	@Override
