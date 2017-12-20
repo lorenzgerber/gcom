@@ -12,7 +12,7 @@
       <TextArea id="messageArea" fx:id="messageArea" editable="false" prefHeight="250.0" prefWidth="400.0" />
       <HBox prefHeight="100.0" prefWidth="200.0">
          <children>
-            <TextField id="textEntry" fx:id="inputArea" alignment="TOP_LEFT" prefHeight="27.0" prefWidth="397.0" />
+            <TextField id="textEntry" fx:id="inputArea" alignment="TOP_LEFT" onKeyPressed="#handleKeyEvent" prefHeight="27.0" prefWidth="397.0" />
             <Button alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#sendButtonPressed" text="Send" />
          </children>
       </HBox>

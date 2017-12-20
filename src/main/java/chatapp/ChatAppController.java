@@ -9,6 +9,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 public class ChatAppController implements ISubscriber {
 
@@ -32,12 +34,24 @@ public class ChatAppController implements ISubscriber {
 
 	@FXML
 	private void sendButtonPressed(ActionEvent event) {
-		node.Send(inputArea.getText());
-		inputArea.clear();
+		sendMessage();
+	}
+
+	@FXML
+	private void handleKeyEvent(KeyEvent event) {
+		// Send message if enter is pressed
+		if (event.getCode().equals(KeyCode.ENTER)) {
+			sendMessage();
+		}
 	}
 
 	public void initialize() {
 
+	}
+
+	private void sendMessage() {
+		node.Send(inputArea.getText());
+		inputArea.clear();
 	}
 
 	@Override
