@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -26,6 +27,9 @@ public class StartMenuController {
 		startDebugApp();
 	}
 	
+	@FXML
+	private TextField nickName;
+	
 	public Stage startChatApp() {
 		
 		FXMLLoader loader = new FXMLLoader(
@@ -40,6 +44,8 @@ public class StartMenuController {
 		
 		ChatAppController chatController = 
 				loader.<ChatAppController>getController();
+		//System.out.println(nickName.getText());
+		chatController.setNickName(nickName.getText());
 		stage.show();
 		return stage;
 	}

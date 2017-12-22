@@ -16,6 +16,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 public class ChatAppController implements ISubscriber {
+	
+	private String nickName;
 
 	@FXML
 	private TextField inputArea;
@@ -84,9 +86,17 @@ public class ChatAppController implements ISubscriber {
 	public void initialize() {
 
 	}
+	
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
 
 	private void sendMessage() {
-		node.Send(inputArea.getText());
+		StringBuilder message = new StringBuilder();
+		message.append(this.nickName);
+		message.append(": ");
+		message.append(inputArea.getText());
+		node.Send(message.toString());
 		inputArea.clear();
 	}
 
