@@ -1,6 +1,7 @@
 package chatapp;
 
 
+import gcom.Node;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +12,7 @@ import javafx.stage.Stage;
 public class ChatApp extends Application {
 	
 	Stage primaryStage;
+	Node node;
 
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -21,14 +23,14 @@ public class ChatApp extends Application {
 			System.exit(0);
 		});
 		
-		
-		
-		  Parent root = FXMLLoader.load(getClass().getResource("StartMenu.fxml"));
-		  
-		  Scene scene = new Scene(root);
-		  stage.setTitle("GCOM Demo Apps");
-		  stage.setScene(scene);
-		  stage.show();    	
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("StartMenu.fxml"));
+		Parent root = loader.load();
+		StartMenuController startMenuController = loader.getController();
+
+		Scene scene = new Scene(root);
+		stage.setTitle("GCOM Demo Apps");
+		stage.setScene(scene);
+		stage.show();
 	}
 	
 	
