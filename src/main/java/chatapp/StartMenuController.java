@@ -71,6 +71,13 @@ public class StartMenuController {
 		
 		DebugAppController debugController = 
 				loader.<DebugAppController>getController();
+		
+		// configuring the ChatApp instance
+		debugController.setNickName(this.nickName.getText());
+		debugController.setChatApp(this.app);
+		debugController.setNode(this.app.getNode());
+		debugController.setSubscriber();
+		
 		stage.show();
 		return stage;
 	}

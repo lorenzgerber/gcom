@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollBar?>
 <?import javafx.scene.control.TextArea?>
@@ -15,7 +16,7 @@
       <TextArea id="messageArea" fx:id="messageArea" editable="false" prefHeight="250.0" prefWidth="400.0" />
       <HBox prefWidth="200.0">
          <children>
-            <TextField id="textEntry" fx:id="inputArea" alignment="TOP_LEFT" minHeight="27.0" minWidth="400.0" />
+            <TextField id="textEntry" fx:id="inputArea" alignment="TOP_LEFT" minHeight="27.0" minWidth="400.0" onKeyPressed="#handleKeyEvent" />
             <Button alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#sendButtonPressed" text="Send" />
          </children>
       </HBox>
@@ -55,9 +56,27 @@
       </HBox>
       <HBox prefHeight="30.0" prefWidth="200.0">
          <children>
-            <ComboBox editable="true" prefWidth="300.0" promptText="Enter New Group or Choose Existing..." />
-            <Button mnemonicParsing="false" prefWidth="150.0" text="Exit / Reload Group" />
+            <Label text="Select Group">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+               <padding>
+                  <Insets top="2.0" />
+               </padding>
+            </Label>
+            <ComboBox fx:id="groups" onAction="#groupHandler" prefHeight="27.0" prefWidth="195.0" promptText="Enter New Group or Choose Existing..." />
+            <Button mnemonicParsing="false" onAction="#loadGroups" prefWidth="150.0" text="Exit / Reload Group" />
          </children>
+      </HBox>
+      <HBox>
+         <children>
+            <Label prefHeight="17.0" prefWidth="133.0" text="Create New Group" />
+            <TextField fx:id="createGroupField" prefHeight="27.0" prefWidth="219.0" />
+            <Button alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#createGroupButtonPressed" prefHeight="27.0" prefWidth="121.0" text="Create and join" />
+         </children>
+         <VBox.margin>
+            <Insets bottom="5.0" top="5.0" />
+         </VBox.margin>
       </HBox>
    </children>
 </VBox>

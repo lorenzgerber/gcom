@@ -74,7 +74,7 @@ public class ChatAppController implements ISubscriber {
 	}
 
 	public void initialize() {
-		//app.setSubscriber(this);
+
 	}
 	
 	public void setNickName(String nickName) {
