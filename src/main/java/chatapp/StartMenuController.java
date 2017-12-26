@@ -13,6 +13,8 @@ import javafx.stage.StageStyle;
 
 public class StartMenuController {
 	
+	ChatApp app = null;
+	
 	@FXML
 	private void chatAppButtonPressed(ActionEvent event) {
 		// do some stuff on button press
@@ -44,8 +46,13 @@ public class StartMenuController {
 		
 		ChatAppController chatController = 
 				loader.<ChatAppController>getController();
-		//System.out.println(nickName.getText());
-		chatController.setNickName(nickName.getText());
+		
+		// configuring the ChatApp instance
+		chatController.setNickName(this.nickName.getText());
+		chatController.setChatApp(this.app);
+		chatController.setNode(this.app.getNode());
+		chatController.setSubscriber();
+		
 		stage.show();
 		return stage;
 	}
@@ -66,6 +73,10 @@ public class StartMenuController {
 				loader.<DebugAppController>getController();
 		stage.show();
 		return stage;
+	}
+	
+	public void setChatApp(ChatApp app) {
+		this.app = app;
 	}
 	
 	

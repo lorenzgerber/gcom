@@ -2,7 +2,6 @@ package chatapp;
 
 import java.rmi.RemoteException;
 
-import gcom.GCom;
 import gcom.ISubscriber;
 import gcom.Node;
 import javafx.collections.FXCollections;
@@ -17,6 +16,8 @@ import javafx.scene.input.KeyEvent;
 
 public class ChatAppController implements ISubscriber {
 	
+	private ChatApp app;
+	private Node node;
 	private String nickName;
 
 	@FXML
@@ -31,17 +32,6 @@ public class ChatAppController implements ISubscriber {
 	@FXML
 	private TextField createGroupField;
 
-	private GCom node;
-
-	public ChatAppController() {
-		try {
-			node = new Node("localhost");
-			node.subscribe(this);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 	@FXML
 	private void sendButtonPressed(ActionEvent event) {
@@ -84,11 +74,24 @@ public class ChatAppController implements ISubscriber {
 	}
 
 	public void initialize() {
-
+		//app.setSubscriber(this);
 	}
 	
 	public void setNickName(String nickName) {
 		this.nickName = nickName;
+	}
+	
+	public void setChatApp(ChatApp app) {
+		this.app = app;
+	}
+	
+	public void setNode(Node node) {
+		this.node = node;
+	}
+	
+	
+	public void setSubscriber() {
+		this.app.setSubscriber(this);
 	}
 
 	private void sendMessage() {
