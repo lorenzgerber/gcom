@@ -2,6 +2,10 @@ package chatapp;
 
 import java.io.IOException;
 
+import java.rmi.RemoteException;
+
+import gcom.ISubscriber;
+import gcom.Node;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -9,15 +13,26 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class ChatApp extends Application {
+public class ChatApp extends Application implements ISubscriber {
 
 	Stage primaryStage;
+	Node node;
+	ISubscriber subscriber;
+
 	static final String appFxml = "ChatApp.fxml";
 	static final String startMenuFxml = "StartMenu.fxml";
 	static final String debugFxml = "DebugApp.fxml";
 
 	@Override
 	public void start(Stage stage) throws Exception {
+		try {
+			node = new Node("localhost");
+			node.subscribe(this);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		primaryStage = stage;
 		primaryStage.setOnCloseRequest(e -> {
 			Platform.exit();
@@ -27,10 +42,6 @@ public class ChatApp extends Application {
 		stage.setTitle("GCOM Demo Apps");
 		stage.show();
 		showStartMenu();
-	}
-
-	public static void main(String[] args) {
-		launch(args);
 	}
 
 	private void showStartMenu() {
@@ -57,6 +68,23 @@ public class ChatApp extends Application {
 		}
 		primaryStage.sizeToScene();
 		return loader.getController();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
+	}
+
+	public void setSubscriber(ISubscriber subscriber) {
+		this.subscriber = subscriber;
+	}
+
+	public Node getNode() {
+		return this.node;
+	}
+
+	@Override
+	public <T> void deliverMessage(T message) {
+		subscriber.deliverMessage(message);
 	}
 
 }
