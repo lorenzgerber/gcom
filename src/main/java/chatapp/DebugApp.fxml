@@ -32,8 +32,8 @@
             </VBox>
             <VBox>
                <children>
-                  <CheckBox mnemonicParsing="false" text="Hold messages" />
-                  <Button mnemonicParsing="false" text="Release" />
+                  <CheckBox fx:id="holdMessages" mnemonicParsing="false" onAction="#holdMessages" text="Hold messages" />
+                  <Button fx:id="releaseMessages" mnemonicParsing="false" onAction="#releaseMessages" text="Release" />
                   <Button mnemonicParsing="false" text="Button" />
                   <Button mnemonicParsing="false" text="Button" textAlignment="CENTER" VBox.vgrow="ALWAYS" />
                </children>

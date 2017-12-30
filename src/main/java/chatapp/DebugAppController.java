@@ -3,6 +3,7 @@ package chatapp;
 import gcom.GCom;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 
 public class DebugAppController extends Parent {
@@ -11,6 +12,9 @@ public class DebugAppController extends Parent {
 
 	@FXML
 	private CheckBox holdMessages;
+
+	@FXML
+	private Button releaseMessages;
 
 	public void intitialize() {
 

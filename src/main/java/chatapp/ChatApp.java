@@ -12,6 +12,9 @@ import javafx.stage.Stage;
 public class ChatApp extends Application {
 
 	Stage primaryStage;
+	static final String appFxml = "ChatApp.fxml";
+	static final String startMenuFxml = "StartMenu.fxml";
+	static final String debugFxml = "DebugApp.fxml";
 
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -32,7 +35,7 @@ public class ChatApp extends Application {
 
 	private void showStartMenu() {
 		try {
-			StartMenuController controller = (StartMenuController) replaceSceneContent("StartMenu.fxml");
+			StartMenuController controller = (StartMenuController) replaceSceneContent(startMenuFxml);
 			controller.setApp(this);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -47,7 +50,7 @@ public class ChatApp extends Application {
 
 		Scene scene = primaryStage.getScene();
 		if (scene == null) {
-			scene = new Scene(page, 700, 450);
+			scene = new Scene(page, 700, 650);
 			primaryStage.setScene(scene);
 		} else {
 			primaryStage.getScene().setRoot(page);

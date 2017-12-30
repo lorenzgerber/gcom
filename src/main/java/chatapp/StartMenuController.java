@@ -28,11 +28,11 @@ public class StartMenuController extends Parent {
 
 	public Stage startChatApp() {
 		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("ChatApp.fxml"));
+		loader.setLocation(getClass().getResource(ChatApp.appFxml));
 		// TODO: Setup controller with GCom node, orderer, multicaster...
 		loader.setController(new ChatAppController());
 		try {
-			parent.replaceSceneContent("ChatApp.fxml");
+			parent.replaceSceneContent(ChatApp.appFxml);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -42,8 +42,11 @@ public class StartMenuController extends Parent {
 	}
 
 	public Stage startDebugApp() {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(getClass().getResource(ChatApp.debugFxml));
+		loader.setController(new DebugAppController());
 		try {
-			parent.replaceSceneContent("DebugApp.fxml");
+			parent.replaceSceneContent(ChatApp.debugFxml);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
