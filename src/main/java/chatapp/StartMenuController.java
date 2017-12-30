@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 
@@ -30,41 +31,59 @@ public class StartMenuController extends Parent {
 		startDebugApp();
 	}
 	
-	public Stage startChatApp() {
+	public void startChatApp() {
+		
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource(ChatApp.appFxml));
-
-		ChatAppController controller = new ChatAppController();
+		Parent root = null;
+		try {
+			root = loader.load();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		ChatAppController controller = loader.getController();
 		controller.setNickName(nickName.getText());
 		controller.setChatApp(parent);
 		controller.setNode(parent.node);
 		controller.setSubscriber();
-		loader.setController(controller);
-		try {
-			parent.replaceSceneContent(loader);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return parent.primaryStage;
+		parent.replaceScene(root, 500, 300);
+		
 	}
 
-	public Stage startDebugApp() {
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource(ChatApp.debugFxml));
-
-		DebugAppController controller = new DebugAppController();
-		controller.setChatApp(parent);
-		controller.setNode(parent.node);
-		controller.setSubscriber();
-		loader.setController(controller);
+	public void startDebugApp() {
+		
+	 	VBox root = new VBox();
+		
+		FXMLLoader loaderChat = new FXMLLoader();
+		loaderChat.setLocation(getClass().getResource(ChatApp.appFxml));
+	
 		try {
-			parent.replaceSceneContent(loader);
+			root.getChildren().add(loaderChat.load());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return parent.primaryStage;
+		ChatAppController controllerChat = loaderChat.getController();
+		controllerChat.setNickName(nickName.getText());
+		controllerChat.setChatApp(parent);
+		controllerChat.setNode(parent.node);
+		controllerChat.setSubscriber();
+		
+		FXMLLoader loaderDebug = new FXMLLoader();
+		loaderDebug.setLocation(getClass().getResource(ChatApp.debugFxml));
+		
+		try {
+			root.getChildren().add(loaderDebug.load());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		DebugAppController controllerDebug = loaderDebug.getController();
+		//controllerChat.setNickName(nickName.getText());
+		controllerDebug.setChatApp(parent);
+		controllerDebug.setNode(parent.node);
+		controllerDebug.setSubscriber();
+		parent.replaceScene(root,  680,  700);
+	
 	}
 
 	public void initialize() {

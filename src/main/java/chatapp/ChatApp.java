@@ -39,36 +39,34 @@ public class ChatApp extends Application implements ISubscriber {
 			System.exit(0);
 		});
 
-		stage.setTitle("GCOM Demo Apps");
-		stage.show();
+		primaryStage.setTitle("GCOM Demo Apps");
+		primaryStage.show();
 		showStartMenu();
 	}
 
 	private void showStartMenu() {
+		
 		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource(ChatApp.startMenuFxml));
-			StartMenuController controller = (StartMenuController) replaceSceneContent(loader);
+			Parent root = loader.load();
+			StartMenuController controller = loader.getController();
 			controller.setApp(this);
+			replaceScene(root, 200, 150);
+			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+	}
+	
+	public void replaceScene(Parent root, int width, int height) {
+		
+		Scene scene = new Scene(root, width, height);
+		primaryStage.setScene(scene);
+		
 	}
 
-	Parent replaceSceneContent(FXMLLoader loader) throws IOException {
-		Parent page = (Parent) loader.load();
-
-		Scene scene = primaryStage.getScene();
-		if (scene == null) {
-			scene = new Scene(page, 700, 650);
-			primaryStage.setScene(scene);
-		} else {
-			primaryStage.getScene().setRoot(page);
-		}
-		primaryStage.sizeToScene();
-		return loader.getController();
-	}
 
 	public static void main(String[] args) {
 		launch(args);
