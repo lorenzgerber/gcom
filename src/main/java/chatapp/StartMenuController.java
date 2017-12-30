@@ -41,7 +41,7 @@ public class StartMenuController extends Parent {
 		controller.setSubscriber();
 		loader.setController(controller);
 		try {
-			parent.replaceSceneContent(ChatApp.appFxml);
+			parent.replaceSceneContent(loader);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -59,7 +59,7 @@ public class StartMenuController extends Parent {
 		controller.setSubscriber();
 		loader.setController(controller);
 		try {
-			parent.replaceSceneContent(ChatApp.debugFxml);
+			parent.replaceSceneContent(loader);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

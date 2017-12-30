@@ -46,7 +46,9 @@ public class ChatApp extends Application implements ISubscriber {
 
 	private void showStartMenu() {
 		try {
-			StartMenuController controller = (StartMenuController) replaceSceneContent(startMenuFxml);
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource(ChatApp.startMenuFxml));
+			StartMenuController controller = (StartMenuController) replaceSceneContent(loader);
 			controller.setApp(this);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -54,9 +56,7 @@ public class ChatApp extends Application implements ISubscriber {
 		}
 	}
 
-	Parent replaceSceneContent(String fxml) throws IOException {
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource(fxml));
+	Parent replaceSceneContent(FXMLLoader loader) throws IOException {
 		Parent page = (Parent) loader.load();
 
 		Scene scene = primaryStage.getScene();
