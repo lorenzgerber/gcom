@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 
@@ -26,6 +27,10 @@ public class StartMenuController extends Parent {
 	}
 
 	public Stage startChatApp() {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(getClass().getResource("ChatApp.fxml"));
+		// TODO: Setup controller with GCom node, orderer, multicaster...
+		loader.setController(new ChatAppController());
 		try {
 			parent.replaceSceneContent("ChatApp.fxml");
 		} catch (IOException e) {
