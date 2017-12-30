@@ -67,7 +67,6 @@ public class ChatApp extends Application implements ISubscriber {
 		
 	}
 
-
 	public static void main(String[] args) {
 		launch(args);
 	}

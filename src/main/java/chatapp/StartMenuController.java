@@ -8,7 +8,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.Parent;
-import javafx.stage.Stage;
 
 public class StartMenuController extends Parent {
 
@@ -16,7 +15,7 @@ public class StartMenuController extends Parent {
 
 	@FXML
 	private TextField nickName;
-	
+
 	public void setApp(ChatApp parent) {
 		this.parent = parent;
 	}
@@ -30,9 +29,9 @@ public class StartMenuController extends Parent {
 	private void debugAppButtonPressed(ActionEvent event) {
 		startDebugApp();
 	}
-	
+
 	public void startChatApp() {
-		
+
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource(ChatApp.appFxml));
 		Parent root = null;
@@ -47,16 +46,16 @@ public class StartMenuController extends Parent {
 		controller.setNode(parent.node);
 		controller.setSubscriber();
 		parent.replaceScene(root, 500, 300);
-		
+
 	}
 
 	public void startDebugApp() {
-		
-	 	VBox root = new VBox();
-		
+
+		VBox root = new VBox();
+
 		FXMLLoader loaderChat = new FXMLLoader();
 		loaderChat.setLocation(getClass().getResource(ChatApp.appFxml));
-	
+
 		try {
 			root.getChildren().add(loaderChat.load());
 		} catch (IOException e) {
@@ -67,10 +66,10 @@ public class StartMenuController extends Parent {
 		controllerChat.setChatApp(parent);
 		controllerChat.setNode(parent.node);
 		controllerChat.setSubscriber();
-		
+
 		FXMLLoader loaderDebug = new FXMLLoader();
 		loaderDebug.setLocation(getClass().getResource(ChatApp.debugFxml));
-		
+
 		try {
 			root.getChildren().add(loaderDebug.load());
 		} catch (IOException e) {
@@ -78,12 +77,10 @@ public class StartMenuController extends Parent {
 		}
 
 		DebugAppController controllerDebug = loaderDebug.getController();
-		//controllerChat.setNickName(nickName.getText());
-		controllerDebug.setChatApp(parent);
+
 		controllerDebug.setNode(parent.node);
-		controllerDebug.setSubscriber();
-		parent.replaceScene(root,  680,  700);
-	
+		parent.replaceScene(root, 680, 700);
+
 	}
 
 	public void initialize() {
