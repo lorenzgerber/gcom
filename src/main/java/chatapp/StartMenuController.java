@@ -2,11 +2,15 @@ package chatapp;
 
 import java.io.IOException;
 
+import communication.UnreliableMulticaster;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import order.DebugOrderer;
+import order.IOrderer;
+import order.UnorderedOrderer;
 import javafx.scene.Parent;
 
 public class StartMenuController extends Parent {
@@ -52,6 +56,18 @@ public class StartMenuController extends Parent {
 	public void startDebugApp() {
 
 		VBox root = new VBox();
+
+		// TODO: Should allow configuring orderer!
+		// Setup debugger
+		IOrderer orderer = new UnorderedOrderer(new UnreliableMulticaster());
+		DebugOrderer debugger = new DebugOrderer(orderer);
+		parent.node.setOrderer(debugger);
+		/*
+		 * TODO: This is quite ugly, can we automatically make the node update
+		 * subscribers, or should we just remove the setSubscriber method and use a
+		 * constructor instead?
+		 */
+		parent.node.subscribe(parent);
 
 		FXMLLoader loaderChat = new FXMLLoader();
 		loaderChat.setLocation(getClass().getResource(ChatApp.appFxml));

@@ -22,8 +22,7 @@ public class DebugAppController extends Parent {
 
 	@FXML
 	private void holdMessages() {
-		if (holdMessages.isArmed()) {
-			System.out.println("Node: "+node);
+		if (holdMessages.isSelected()) {
 			node.getDebugger().holdMessages(true);
 		} else {
 			node.getDebugger().holdMessages(false);

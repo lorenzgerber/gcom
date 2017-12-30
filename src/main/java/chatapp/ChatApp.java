@@ -45,7 +45,7 @@ public class ChatApp extends Application implements ISubscriber {
 	}
 
 	private void showStartMenu() {
-		
+
 		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource(ChatApp.startMenuFxml));
@@ -53,18 +53,16 @@ public class ChatApp extends Application implements ISubscriber {
 			StartMenuController controller = loader.getController();
 			controller.setApp(this);
 			replaceScene(root, 200, 150);
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	public void replaceScene(Parent root, int width, int height) {
-		
 		Scene scene = new Scene(root, width, height);
 		primaryStage.setScene(scene);
-		
 	}
 
 	public static void main(String[] args) {
