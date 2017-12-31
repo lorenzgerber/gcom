@@ -57,7 +57,9 @@ public class StartMenuController extends Parent {
 			if(orderer.getValue().equals("unordered")){
 				parent.node = new Node("localhost", new UnorderedOrderer(new UnreliableMulticaster()));
 			} else {
-				parent.node = new Node("localhost", new CausalOrderer(UUID.randomUUID(), new UnreliableMulticaster()) );
+				CausalOrderer causalOrderer = new CausalOrderer(UUID.randomUUID(),new UnreliableMulticaster());
+				parent.node = new Node("localhost", causalOrderer );
+				causalOrderer.setId(parent.node.getId());
 			}
 			
 			parent.node.subscribe(parent);
