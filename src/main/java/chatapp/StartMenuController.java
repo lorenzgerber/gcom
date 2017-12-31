@@ -1,8 +1,10 @@
 package chatapp;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 import communication.UnreliableMulticaster;
+import gcom.Node;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -33,8 +35,17 @@ public class StartMenuController extends Parent {
 	private void debugAppButtonPressed(ActionEvent event) {
 		startDebugApp();
 	}
+	
 
 	public void startChatApp() {
+		
+		try {
+			parent.node = new Node("localhost");
+			parent.node.subscribe(parent);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource(ChatApp.appFxml));
@@ -54,6 +65,14 @@ public class StartMenuController extends Parent {
 	}
 
 	public void startDebugApp() {
+		
+		try {
+			parent.node = new Node("localhost");
+			parent.node.subscribe(parent);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		VBox root = new VBox();
 
