@@ -96,10 +96,13 @@ public class CausalOrdererTest {
 	 */
 	@Test
 	public void reversedMessages() {
+		// Initial message to initialize the clock
+		Message<String> initial = new Message<>("Initial");
 		// Id of sender
 		UUID sender = UUID.randomUUID();
 		message.sender = sender;
 		message2.sender = sender;
+		initial.sender = sender;
 
 		// Add subscriber
 		ISubscriber sub = mock(ISubscriber.class);
@@ -107,14 +110,20 @@ public class CausalOrdererTest {
 		// We want to check the order of invocations for this subscriber
 		InOrder mockOrder = inOrder(sub);
 
+		HashMap<UUID, Long> clockInit = new HashMap<>();
 		HashMap<UUID, Long> clock1 = new HashMap<>();
 		HashMap<UUID, Long> clock2 = new HashMap<>();
-		// First clock is for the first message sent
-		clock1.put(sender, 1L);
-		// Set clock2 to 2 since this is the second message
-		clock2.put(sender, 2L);
+
+		clockInit.put(sender, 1L);
+		// First clock is for the first (of the reversed) message sent
+		clock1.put(sender, 2L);
+		// This is for the second (reversed) message
+		clock2.put(sender, 3L);
+		initial.setVectorClock(clockInit);
 		message.setVectorClock(clock1);
 		message2.setVectorClock(clock2);
+
+		orderer.receive(initial);
 
 		// Receive second message first
 		orderer.receive(message2);
@@ -178,5 +187,59 @@ public class CausalOrdererTest {
 		orderer.send(message);
 		expected++;
 		assertThat(message.getVectorClock().get(id), is(expected));
+	}
+
+	/**
+	 * A new member must be able to receive messages also from older members, whose
+	 * clocks are not "starting" from 0.
+	 */
+	@Test
+	public void joinOldGroup() {
+		UUID sender = UUID.randomUUID();
+		HashMap<UUID, Long> clock = new HashMap<>();
+		clock.put(sender, 4L);
+		message.setVectorClock(clock);
+		message.sender = sender;
+
+		ISubscriber sub = mock(ISubscriber.class);
+		orderer.subscribe(sub);
+
+		orderer.receive(message);
+
+		verify(sub).deliverMessage(message.data);
+	}
+
+	/**
+	 * When joining an old group, it is possible to first receive a new message and
+	 * later an old. The old message must not be delivered in this case, since it
+	 * would violate the causal order.
+	 */
+	@Test
+	public void joinOldAndReceiveReversed() {
+		// Id of sender
+		UUID sender = UUID.randomUUID();
+		message.sender = sender;
+		message2.sender = sender;
+
+		// Add subscriber
+		ISubscriber sub = mock(ISubscriber.class);
+		orderer.subscribe(sub);
+
+		HashMap<UUID, Long> clock1 = new HashMap<>();
+		HashMap<UUID, Long> clock2 = new HashMap<>();
+		// First clock is for the first message sent
+		clock1.put(sender, 2L);
+		// This is for the second message (received first)
+		clock2.put(sender, 3L);
+		message.setVectorClock(clock1);
+		message2.setVectorClock(clock2);
+
+		// Receive second message first
+		orderer.receive(message2);
+		// This message should be delivered immediately
+		verify(sub).deliverMessage(message2.data);
+		// Receive the first message, this must not be delivered!
+		orderer.receive(message);
+		verify(sub, never()).deliverMessage(message.data);
 	}
 }
