@@ -2,14 +2,20 @@ package chatapp;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.UUID;
 
 import communication.UnreliableMulticaster;
 import gcom.Node;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import order.CausalOrderer;
 import order.DebugOrderer;
 import order.IOrderer;
 import order.UnorderedOrderer;
@@ -21,6 +27,9 @@ public class StartMenuController extends Parent {
 
 	@FXML
 	private TextField nickName;
+	
+	@FXML
+	private ChoiceBox<String> orderer;
 
 	public void setApp(ChatApp parent) {
 		this.parent = parent;
@@ -36,17 +45,33 @@ public class StartMenuController extends Parent {
 		startDebugApp();
 	}
 	
-
-	public void startChatApp() {
+	private void setNode() {
+		
+		if(orderer.getValue().equals("unordered")){
+			
+		} else {
+			
+		}
 		
 		try {
-			parent.node = new Node("localhost");
+			if(orderer.getValue().equals("unordered")){
+				parent.node = new Node("localhost", new UnorderedOrderer(new UnreliableMulticaster()));
+			} else {
+				parent.node = new Node("localhost", new CausalOrderer(UUID.randomUUID(), new UnreliableMulticaster()) );
+			}
+			
 			parent.node.subscribe(parent);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+	}
 
+	public void startChatApp() {
+		
+		setNode();
+		
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource(ChatApp.appFxml));
 		Parent root = null;
@@ -66,14 +91,7 @@ public class StartMenuController extends Parent {
 
 	public void startDebugApp() {
 		
-		try {
-			parent.node = new Node("localhost");
-			parent.node.subscribe(parent);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		setNode();
 		VBox root = new VBox();
 
 		// TODO: Should allow configuring orderer!
@@ -117,8 +135,16 @@ public class StartMenuController extends Parent {
 		parent.replaceScene(root, 680, 700);
 
 	}
-
+	
+	@FXML
 	public void initialize() {
+		ArrayList<String> ordererChoice = new ArrayList<>();
+		ordererChoice.add("unordered");
+		ordererChoice.add("causal");
+		ObservableList<String> list = FXCollections.observableArrayList(ordererChoice);
+		orderer.setItems(list);
+		orderer.setValue("unordered");
+
 
 	}
 
