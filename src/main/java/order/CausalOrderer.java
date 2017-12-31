@@ -52,6 +52,8 @@ public class CausalOrderer extends AbstractOrderer {
 		}
 
 		if (isAheadOfTime(message)) {
+			// TODO: Should also check for old messages which can never be delivered, since
+			// newer messages have already been delivered.
 			buffer.add(message);
 		} else {
 			subscribers.forEach(sub -> sub.deliverMessage(message.data));
@@ -80,7 +82,7 @@ public class CausalOrderer extends AbstractOrderer {
 		boolean shouldWait = false;
 		for (UUID id : mClock.keySet()) {
 			// Initialize clock if this is the first message from this node
-			vectorClock.putIfAbsent(id, 0L);
+			vectorClock.putIfAbsent(id, mClock.get(id) - 1);
 
 			if (id.equals(message.sender)) {
 				// Senders clock must be exactly one ahead since we must deliver
