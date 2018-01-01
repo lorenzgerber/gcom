@@ -151,6 +151,10 @@ public class IntegrationTest {
 		mockOrder.verify(clientApplication).deliverMessage(data2);
 	}
 
+	/**
+	 * A group of 3 nodes is created. One member leaves, the leader leaves and the
+	 * leader rejoins (not leader any more).
+	 */
 	@Test
 	public void leavingGroup() throws RemoteException {
 		// Create the group by joining it
@@ -191,6 +195,29 @@ public class IntegrationTest {
 		verify(clientApplication, never()).deliverMessage(data3);
 		verify(memberClient1, never()).deliverMessage(data3);
 		verify(memberClient2).deliverMessage(data3);
+
+		// Rejoin group!
+		gcom.join(group);
+
+		String data4 = "Fourth";
+		member2.Send(data4);
+
+		verify(clientApplication).deliverMessage(data4);
+		verify(memberClient2).deliverMessage(data4);
+	}
+
+	/**
+	 * Make sure that it is possible to rejoin safely. This makes sure that the node
+	 * does not remove itself for example.
+	 */
+	@Test
+	public void joinLeaveAndRejoin() throws RemoteException {
+		gcom.join(group);
+		gcom.leave();
+		gcom.join(group);
+
+		gcom.Send(data);
+		verify(clientApplication).deliverMessage(data);
 	}
 
 	private DebugOrderer setUpDebugger(Orderers orderer) throws RemoteException {
