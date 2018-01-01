@@ -14,20 +14,16 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import communication.IMulticaster;
-import communication.UnreliableMulticaster;
 import group.NameServer;
-import order.CausalOrderer;
 import order.DebugOrderer;
-import order.IOrderer;
-import order.UnorderedOrderer;
+import order.Orderers;
 
 public class IntegrationTest {
 
 	private static final String group = "test group";
 	private static final String LOCALHOST = "localhost";
 	static NameServer nameServer;
-	private Node gcom;
+	private GCom gcom;
 	private ISubscriber clientApplication = mock(ISubscriber.class);
 	private String data = "Hello";
 
@@ -43,7 +39,7 @@ public class IntegrationTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gcom = new Node(LOCALHOST);
+		gcom = new GComBuilder().withNameServer(LOCALHOST).build();
 		gcom.subscribe(clientApplication);
 	}
 
@@ -62,7 +58,7 @@ public class IntegrationTest {
 	public void createGroupSendToMember() throws RemoteException {
 		// Create the group by joining it
 		gcom.join(group);
-		assertThat(nameServer.getLeader(group).getId(), is(gcom.getId()));
+		assertThat(nameServer.getLeader(group).getId(), is(((Node) gcom).getId()));
 
 		// Make a group member
 		GCom member = new Node(LOCALHOST);
@@ -70,7 +66,7 @@ public class IntegrationTest {
 		ISubscriber memberClient = mock(ISubscriber.class);
 		member.subscribe(memberClient);
 		member.join(group);
-		assertThat(nameServer.getLeader(group).getId(), is(gcom.getId()));
+		assertThat(nameServer.getLeader(group).getId(), is(((Node) gcom).getId()));
 
 		gcom.Send(data);
 
@@ -90,10 +86,8 @@ public class IntegrationTest {
 	}
 
 	@Test
-	public void useCausalOrderer() {
-		IMulticaster multicaster = new UnreliableMulticaster();
-		IOrderer causal = new CausalOrderer(multicaster);
-		gcom.setOrderer(causal);
+	public void useCausalOrderer() throws RemoteException {
+		gcom = new GComBuilder().withNameServer(LOCALHOST).withOrderer(Orderers.Causal).build();
 
 		gcom.subscribe(clientApplication);
 		gcom.Send(data);
@@ -101,9 +95,8 @@ public class IntegrationTest {
 	}
 
 	@Test
-	public void holdMessages() {
-		IOrderer orderer = new UnorderedOrderer(new UnreliableMulticaster());
-		DebugOrderer debugger = setUpDebugger(orderer);
+	public void holdMessages() throws RemoteException {
+		DebugOrderer debugger = setUpDebugger(Orderers.Unordered);
 
 		debugger.holdMessages(true);
 
@@ -115,10 +108,8 @@ public class IntegrationTest {
 	}
 
 	@Test
-	public void doNotOrder() {
-		IMulticaster multicaster = new UnreliableMulticaster();
-		IOrderer orderer = new UnorderedOrderer(multicaster);
-		DebugOrderer debugger = setUpDebugger(orderer);
+	public void doNotOrder() throws RemoteException {
+		DebugOrderer debugger = setUpDebugger(Orderers.Unordered);
 
 		debugger.holdMessages(true);
 
@@ -138,10 +129,8 @@ public class IntegrationTest {
 	}
 
 	@Test
-	public void orderCausally() {
-		IMulticaster multicaster = new UnreliableMulticaster();
-		IOrderer causal = new CausalOrderer(multicaster);
-		DebugOrderer debugger = setUpDebugger(causal);
+	public void orderCausally() throws RemoteException {
+		DebugOrderer debugger = setUpDebugger(Orderers.Causal);
 		InOrder mockOrder = inOrder(clientApplication);
 
 		debugger.holdMessages(true);
@@ -162,11 +151,10 @@ public class IntegrationTest {
 		mockOrder.verify(clientApplication).deliverMessage(data2);
 	}
 
-	private DebugOrderer setUpDebugger(IOrderer orderer) {
-		DebugOrderer debugger = new DebugOrderer(orderer);
-		gcom.setOrderer(debugger);
+	private DebugOrderer setUpDebugger(Orderers orderer) throws RemoteException {
+		gcom = new GComBuilder().withNameServer(LOCALHOST).withOrderer(orderer).debug(true).build();
 		gcom.subscribe(clientApplication);
-		return debugger;
+		return gcom.getDebugger();
 	}
 
 }

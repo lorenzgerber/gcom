@@ -10,9 +10,8 @@ import order.Orderers;
 import order.UnorderedOrderer;
 
 public class GComBuilder {
-	private Node node;
-	private String nameServerUrl;
-	private IOrderer orderer;
+	private String nameServerUrl = "localhost";
+	private IOrderer orderer = new UnorderedOrderer(new UnreliableMulticaster());
 
 	/**
 	 * Specify the name server host to use for the GCom.
@@ -66,7 +65,7 @@ public class GComBuilder {
 	 * @throws RemoteException
 	 */
 	public GCom build() throws RemoteException {
-		node = new Node(nameServerUrl, orderer);
+		Node node = new Node(nameServerUrl, orderer);
 		return node;
 	}
 }

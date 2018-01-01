@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import order.DebugOrderer;
-import order.IOrderer;
 
 public interface GCom {
 	/**
@@ -53,14 +52,6 @@ public interface GCom {
 	 * @throws RemoteException
 	 */
 	public List<String> getGroups() throws RemoteException;
-
-	/**
-	 * Specify ordering and multicasting configurations.
-	 * 
-	 * @param orderer
-	 *            the orderer to use
-	 */
-	public void setOrderer(IOrderer orderer);
 
 	/**
 	 * Get a debugger if possible.
