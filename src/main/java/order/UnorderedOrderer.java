@@ -1,6 +1,7 @@
 package order;
 
 import java.util.List;
+import java.util.UUID;
 
 import communication.IMulticaster;
 import gcom.INode;
@@ -25,6 +26,11 @@ public class UnorderedOrderer extends AbstractOrderer {
 	@Override
 	public void reset() {
 		// We do not need to do anything here since there is no ordering in this class
+	}
+
+	@Override
+	public void setId(UUID id) {
+		// We do not use id.
 	}
 
 }

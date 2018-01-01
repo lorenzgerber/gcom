@@ -53,6 +53,14 @@ public interface IOrderer {
 	public void setMulticaster(IMulticaster multicaster);
 
 	/**
+	 * Set the id of this orderer. Needed for orderers that use vector clocks.
+	 * 
+	 * @param id
+	 *            the id
+	 */
+	public void setId(UUID id);
+
+	/**
 	 * Reset the orderer. This should be called when joining a new group.
 	 */
 	public void reset();

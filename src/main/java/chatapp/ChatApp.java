@@ -2,10 +2,8 @@ package chatapp;
 
 import java.io.IOException;
 
-import java.rmi.RemoteException;
-
+import gcom.GCom;
 import gcom.ISubscriber;
-import gcom.Node;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -16,7 +14,7 @@ import javafx.stage.Stage;
 public class ChatApp extends Application implements ISubscriber {
 
 	Stage primaryStage;
-	Node node;
+	GCom node;
 	ISubscriber subscriber;
 
 	static final String appFxml = "ChatApp.fxml";
@@ -45,7 +43,7 @@ public class ChatApp extends Application implements ISubscriber {
 			Parent root = loader.load();
 			StartMenuController controller = loader.getController();
 			controller.setApp(this);
-			replaceScene(root, 200, 150);
+			replaceScene(root, 200, 250);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -66,7 +64,7 @@ public class ChatApp extends Application implements ISubscriber {
 		this.subscriber = subscriber;
 	}
 
-	public Node getNode() {
+	public GCom getNode() {
 		return this.node;
 	}
 

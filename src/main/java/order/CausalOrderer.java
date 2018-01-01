@@ -20,17 +20,17 @@ public class CausalOrderer extends AbstractOrderer {
 	 */
 	private List<Message<?>> buffer = new ArrayList<>();
 
-	public CausalOrderer(UUID id, IMulticaster multicaster) {
-		this.id = id;		
+	public CausalOrderer(IMulticaster multicaster) {
 		this.multicaster = multicaster;
 		// Initialize the vector clock
 		vectorClock = new HashMap<>();
 		vectorClock.putIfAbsent(id, (long) 0);
-		
+
 	}
-	
+
+	@Override
 	public void setId(UUID id) {
-		if(this.id != id) {
+		if (this.id != id) {
 			vectorClock.remove(this.id);
 		}
 		this.id = id;

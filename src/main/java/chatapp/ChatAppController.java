@@ -2,8 +2,8 @@ package chatapp;
 
 import java.rmi.RemoteException;
 
+import gcom.GCom;
 import gcom.ISubscriber;
-import gcom.Node;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,7 +18,7 @@ import javafx.scene.input.KeyEvent;
 public class ChatAppController extends Parent implements ISubscriber {
 
 	private ChatApp app;
-	private Node node;
+	private GCom node;
 	private String nickName;
 
 	@FXML
@@ -85,7 +85,7 @@ public class ChatAppController extends Parent implements ISubscriber {
 		this.app = app;
 	}
 
-	public void setNode(Node node) {
+	public void setNode(GCom node) {
 		this.node = node;
 	}
 

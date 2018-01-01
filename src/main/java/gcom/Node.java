@@ -40,6 +40,7 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 			e.printStackTrace();
 		}
 
+		orderer.setId(nodeID);
 		this.orderer = orderer;
 		this.groupManager = new GroupManager(nameServer, this, orderer);
 
@@ -73,6 +74,7 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 
 	@Override
 	public void setOrderer(IOrderer orderer) {
+		orderer.setId(nodeID);
 		this.orderer = orderer;
 		// TODO: Is this a good idea? Changing the orderer cannot happen safely in
 		// operation so maybe this should be done only in the constructor.

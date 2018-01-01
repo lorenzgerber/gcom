@@ -88,4 +88,9 @@ public class DebugOrderer implements IOrderer {
 		return orderer.debugGetBuffer();
 	}
 
+	@Override
+	public void setId(UUID id) {
+		orderer.setId(id);
+	}
+
 }

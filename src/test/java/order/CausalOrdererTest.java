@@ -29,7 +29,8 @@ public class CausalOrdererTest {
 	@Before
 	public void setUp() throws Exception {
 		multicaster = mock(IMulticaster.class);
-		orderer = new CausalOrderer(id, multicaster);
+		orderer = new CausalOrderer(multicaster);
+		orderer.setId(id);
 	}
 
 	@Test

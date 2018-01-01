@@ -1,6 +1,6 @@
 package chatapp;
 
-import gcom.Node;
+import gcom.GCom;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -8,7 +8,7 @@ import javafx.scene.control.CheckBox;
 
 public class DebugAppController extends Parent {
 
-	private Node node;
+	private GCom node;
 
 	@FXML
 	private CheckBox holdMessages;
@@ -34,7 +34,7 @@ public class DebugAppController extends Parent {
 		node.getDebugger().releaseMessages();
 	}
 
-	public void setNode(Node node) {
+	public void setNode(GCom node) {
 		this.node = node;
 	}
 

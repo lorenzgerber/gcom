@@ -92,7 +92,7 @@ public class IntegrationTest {
 	@Test
 	public void useCausalOrderer() {
 		IMulticaster multicaster = new UnreliableMulticaster();
-		IOrderer causal = new CausalOrderer(gcom.getId(), multicaster);
+		IOrderer causal = new CausalOrderer(multicaster);
 		gcom.setOrderer(causal);
 
 		gcom.subscribe(clientApplication);
@@ -140,7 +140,7 @@ public class IntegrationTest {
 	@Test
 	public void orderCausally() {
 		IMulticaster multicaster = new UnreliableMulticaster();
-		IOrderer causal = new CausalOrderer(gcom.getId(), multicaster);
+		IOrderer causal = new CausalOrderer(multicaster);
 		DebugOrderer debugger = setUpDebugger(causal);
 		InOrder mockOrder = inOrder(clientApplication);
 
