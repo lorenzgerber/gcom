@@ -151,6 +151,48 @@ public class IntegrationTest {
 		mockOrder.verify(clientApplication).deliverMessage(data2);
 	}
 
+	@Test
+	public void leavingGroup() throws RemoteException {
+		// Create the group by joining it
+		gcom.join(group);
+
+		// Create group members
+		GCom member1 = new GComBuilder().withNameServer(LOCALHOST).build();
+		GCom member2 = new GComBuilder().withNameServer(LOCALHOST).build();
+
+		// Create a clients for the members
+		ISubscriber memberClient1 = mock(ISubscriber.class);
+		ISubscriber memberClient2 = mock(ISubscriber.class);
+		member1.subscribe(memberClient1);
+		member1.join(group);
+		member2.subscribe(memberClient2);
+		member2.join(group);
+
+		gcom.Send(data);
+
+		verify(clientApplication).deliverMessage(data);
+		verify(memberClient1).deliverMessage(data);
+		verify(memberClient2).deliverMessage(data);
+
+		member1.leave();
+
+		String data2 = "Second message";
+		gcom.Send(data2);
+
+		verify(clientApplication).deliverMessage(data2);
+		verify(memberClient1, never()).deliverMessage(data2);
+		verify(memberClient2).deliverMessage(data2);
+
+		gcom.leave();
+
+		String data3 = "Third";
+		member2.Send(data3);
+
+		verify(clientApplication, never()).deliverMessage(data3);
+		verify(memberClient1, never()).deliverMessage(data3);
+		verify(memberClient2).deliverMessage(data3);
+	}
+
 	private DebugOrderer setUpDebugger(Orderers orderer) throws RemoteException {
 		gcom = new GComBuilder().withNameServer(LOCALHOST).withOrderer(orderer).debug(true).build();
 		gcom.subscribe(clientApplication);

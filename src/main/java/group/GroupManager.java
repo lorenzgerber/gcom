@@ -125,8 +125,10 @@ public class GroupManager {
 			failed.forEach(p -> tryRemoveFromGroup(p));
 		}
 
-		// Remove from self
-		peers.remove(node);
+		// Remove from self, but never remove parent!
+		if (!node.equals(parent)) {
+			peers.remove(node);
+		}
 	}
 
 	/**
@@ -146,9 +148,8 @@ public class GroupManager {
 						nameServer.setLeader(currentGroup, null);
 					}
 				}
-			} else {
-				currentLeader.removeFromGroup(parent);
 			}
+			currentLeader.removeFromGroup(parent);
 		} catch (RemoteException e) {
 			// We are leaving anyway
 		}
