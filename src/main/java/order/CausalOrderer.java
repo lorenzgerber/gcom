@@ -51,17 +51,21 @@ public class CausalOrderer extends AbstractOrderer {
 			return false;
 		}
 
-		if (isAheadOfTime(message)) {
-			// TODO: Should also check for old messages which can never be delivered, since
-			// newer messages have already been delivered.
+		long time = messageTime(message);
+		if (time > 0) {
+			// This message is ahead of time, add it to the buffer.
 			buffer.add(message);
-		} else {
+		} else if (messageTime(message) == 0) {
+			// This message is right on time, deliver it.
 			subscribers.forEach(sub -> sub.deliverMessage(message.data));
 			vectorClock.compute(message.sender, (k, v) -> v += 1);
 		}
+		/*
+		 * Note: if time < 0, the message is old and can never be delivered.
+		 */
 
 		for (Message<?> buffMsg : buffer) {
-			if (!isAheadOfTime(buffMsg)) {
+			if (messageTime(buffMsg) == 0) {
 				subscribers.forEach(sub -> sub.deliverMessage(buffMsg.data));
 				vectorClock.compute(message.sender, (k, v) -> v += 1);
 			}
@@ -71,33 +75,28 @@ public class CausalOrderer extends AbstractOrderer {
 	}
 
 	/**
-	 * Check if this message must wait on some other message before delivery.
+	 * Calculate the message time in relation to this orderers time. If the message
+	 * time is > 0, it is ahead, if it is < 0 it is old.
 	 * 
 	 * @param message
-	 *            the message to check
-	 * @return
+	 *            the message in question
+	 * @return a number indicating how much ahead this message is
 	 */
-	private boolean isAheadOfTime(Message<?> message) {
+	private long messageTime(Message<?> message) {
+		long time = 0;
 		HashMap<UUID, Long> mClock = message.getVectorClock();
-		boolean shouldWait = false;
+
 		for (UUID id : mClock.keySet()) {
 			// Initialize clock if this is the first message from this node
 			vectorClock.putIfAbsent(id, mClock.get(id) - 1);
 
 			if (id.equals(message.sender)) {
-				// Senders clock must be exactly one ahead since we must deliver
-				// the messages in FIFO order.
-				if (mClock.get(message.sender) != vectorClock.get(message.sender) + 1) {
-					shouldWait = true;
-					break;
-				}
-			} else if (mClock.get(id) > vectorClock.get(id)) {
-				// We must wait for any message that could have "caused" this one to be sent
-				shouldWait = true;
-				break;
+				time += mClock.get(message.sender) - (vectorClock.get(message.sender) + 1);
+			} else {
+				time += mClock.get(id) - vectorClock.get(id);
 			}
 		}
-		return shouldWait;
+		return time;
 	}
 
 	@Override
