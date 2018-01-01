@@ -25,13 +25,6 @@ public class ChatApp extends Application implements ISubscriber {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		try {
-			node = new Node("localhost");
-			node.subscribe(this);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		primaryStage = stage;
 		primaryStage.setOnCloseRequest(e -> {
