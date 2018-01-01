@@ -20,6 +20,7 @@ public class ChatAppController extends Parent implements ISubscriber {
 	private ChatApp app;
 	private GCom node;
 	private String nickName;
+	private boolean surpressJoin;
 
 	@FXML
 	private TextField inputArea;
@@ -48,6 +49,7 @@ public class ChatAppController extends Parent implements ISubscriber {
 
 	@FXML
 	private void loadGroups() {
+		surpressJoin = true;
 		try {
 			ObservableList<String> groupNames = FXCollections.observableArrayList(node.getGroups());
 			groups.setItems(groupNames);
@@ -55,11 +57,15 @@ public class ChatAppController extends Parent implements ISubscriber {
 			System.err.println("Unable to get list of groups!");
 			e.printStackTrace();
 		}
+		surpressJoin = false;
 	}
 
 	@FXML
 	private void groupHandler(ActionEvent event) {
-		joinGroup(groups.getValue());
+		if(!surpressJoin) {
+			joinGroup(groups.getValue());
+		}
+		
 	}
 
 	@FXML
@@ -112,7 +118,9 @@ public class ChatAppController extends Parent implements ISubscriber {
 			e.printStackTrace();
 		}
 		loadGroups();
+		surpressJoin = true;
 		groups.setValue(name);
+		surpressJoin = false;
 	}
 
 	@Override
