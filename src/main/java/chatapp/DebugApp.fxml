@@ -5,6 +5,8 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -29,8 +31,14 @@
                <children>
                   <CheckBox fx:id="holdMessages" mnemonicParsing="false" onAction="#holdMessages" text="Hold messages" />
                   <Button fx:id="releaseMessages" mnemonicParsing="false" onAction="#releaseMessages" text="Release" />
-                  <Button mnemonicParsing="false" text="Button" />
-                  <Button mnemonicParsing="false" text="Button" textAlignment="CENTER" VBox.vgrow="ALWAYS" />
+                  <Button mnemonicParsing="false" text="Disconnect" />
+                  <Separator prefWidth="200.0">
+                     <VBox.margin>
+                        <Insets bottom="2.0" top="2.0" />
+                     </VBox.margin>
+                  </Separator>
+                  <Label text="Current Leader" />
+                  <TextField fx:id="currentLeader" />
                </children>
                <padding>
                   <Insets right="5.0" top="10.0" />

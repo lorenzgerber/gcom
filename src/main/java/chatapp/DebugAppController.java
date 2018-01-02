@@ -3,8 +3,6 @@ package chatapp;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.sun.javafx.scene.web.Debugger;
-
 import gcom.GCom;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
