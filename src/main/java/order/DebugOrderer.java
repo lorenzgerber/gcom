@@ -13,7 +13,8 @@ public class DebugOrderer implements IOrderer {
 
 	private IOrderer orderer;
 	private boolean holdMessages = false;
-	private List<Message<?>> heldMessages = new ArrayList<Message<?>>();
+	private List<Message<?>> heldMessages = new ArrayList<>();
+	private List<IDebugSubscriber> subscribers = new ArrayList<>();
 
 	public DebugOrderer(IOrderer orderer) {
 		this.orderer = orderer;
@@ -36,19 +37,25 @@ public class DebugOrderer implements IOrderer {
 	public void releaseMessages() {
 		holdMessages = false;
 		heldMessages.forEach(m -> orderer.receive(m));
+		heldMessages = new ArrayList<>();
+		notifySubscribers();
 	}
 
 	@Override
 	public List<INode> send(Message<?> message) {
-		return orderer.send(message);
+		List<INode> result = orderer.send(message);
+		notifySubscribers();
+		return result;
 	}
 
 	@Override
 	public boolean receive(Message<?> message) {
 		if (holdMessages) {
 			heldMessages.add(message);
+			notifySubscribers();
 			return true;
 		} else {
+			notifySubscribers();
 			return orderer.receive(message);
 		}
 	}
@@ -85,12 +92,21 @@ public class DebugOrderer implements IOrderer {
 
 	@Override
 	public List<Message<?>> debugGetBuffer() {
-		return orderer.debugGetBuffer();
+		return heldMessages;
 	}
 
 	@Override
 	public void setId(UUID id) {
 		orderer.setId(id);
+	}
+
+	@Override
+	public void debugSubscribe(IDebugSubscriber subscriber) {
+		subscribers.add(subscriber);
+	}
+
+	private void notifySubscribers() {
+		subscribers.forEach(s -> s.eventOccured());
 	}
 
 }

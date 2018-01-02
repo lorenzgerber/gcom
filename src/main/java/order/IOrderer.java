@@ -85,4 +85,12 @@ public interface IOrderer {
 	 * @return buffered messages, or null if not used
 	 */
 	public List<Message<?>> debugGetBuffer();
+
+	/**
+	 * Subscribe for debug notifications.
+	 * 
+	 * @param subscriber
+	 *            the subscriber to be notified
+	 */
+	public void debugSubscribe(IDebugSubscriber subscriber);
 }

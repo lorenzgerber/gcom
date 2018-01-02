@@ -1,12 +1,20 @@
 package chatapp;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import gcom.GCom;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ListView;
+import order.DebugOrderer;
+import order.IDebugSubscriber;
 
-public class DebugAppController extends Parent {
+public class DebugAppController extends Parent implements IDebugSubscriber {
 
 	private GCom node;
 
@@ -15,6 +23,9 @@ public class DebugAppController extends Parent {
 
 	@FXML
 	private Button releaseMessages;
+
+	@FXML
+	private ListView<String> messageBuffer = new ListView<>();
 
 	public void intitialize() {
 
@@ -32,10 +43,33 @@ public class DebugAppController extends Parent {
 	@FXML
 	private void releaseMessages() {
 		node.getDebugger().releaseMessages();
+		holdMessages.setSelected(false);
+		eventOccured();
 	}
 
 	public void setNode(GCom node) {
 		this.node = node;
+		this.node.getDebugger().debugSubscribe(this);
+	}
+
+	protected void updateVectorClock() {
+		node.getDebugger().debugGetVectorClock();
+		// TODO
+	}
+
+	private void updateMessageBuffer() {
+		DebugOrderer debugger = node.getDebugger();
+		List<String> buffered = debugger.debugGetBuffer().stream().map(m -> m.data.toString())
+				.collect(Collectors.toList());
+
+		ObservableList<String> items = FXCollections.observableArrayList(buffered);
+		messageBuffer.setItems(items);
+	}
+
+	@Override
+	public void eventOccured() {
+		updateMessageBuffer();
+		updateVectorClock();
 	}
 
 }
