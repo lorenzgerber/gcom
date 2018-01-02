@@ -3,6 +3,8 @@ package chatapp;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.sun.javafx.scene.web.Debugger;
+
 import gcom.GCom;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,7 +27,10 @@ public class DebugAppController extends Parent implements IDebugSubscriber {
 	private Button releaseMessages;
 
 	@FXML
-	private ListView<String> messageBuffer = new ListView<>();
+	private ListView<String> messageBuffer;
+	
+	@FXML
+	private ListView<String> vectorClocks;
 
 	public void intitialize() {
 
@@ -53,8 +58,11 @@ public class DebugAppController extends Parent implements IDebugSubscriber {
 	}
 
 	protected void updateVectorClock() {
-		node.getDebugger().debugGetVectorClock();
-		// TODO
+		DebugOrderer debugger = node.getDebugger();
+		List<String> clocks = debugger.debugGetVectorClock().entrySet().stream().map(entry -> entry.getKey().toString() + " " + entry.getValue().toString()).collect(Collectors.toList());
+		ObservableList<String> items = FXCollections.observableArrayList(clocks);
+		vectorClocks.setItems(items);
+
 	}
 
 	private void updateMessageBuffer() {
