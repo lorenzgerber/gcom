@@ -26,7 +26,7 @@ public class DebugAppController extends Parent implements IDebugSubscriber {
 
 	@FXML
 	private ListView<String> messageBuffer;
-	
+
 	@FXML
 	private ListView<String> vectorClocks;
 
@@ -57,10 +57,16 @@ public class DebugAppController extends Parent implements IDebugSubscriber {
 
 	protected void updateVectorClock() {
 		DebugOrderer debugger = node.getDebugger();
-		List<String> clocks = debugger.debugGetVectorClock().entrySet().stream().map(entry -> entry.getKey().toString() + " " + entry.getValue().toString()).collect(Collectors.toList());
+		if (debugger.debugGetVectorClock() == null) {
+			// The ordered does not appear to use a vector clock...
+			return;
+		}
+
+		List<String> clocks = debugger.debugGetVectorClock().entrySet().stream()
+				.map(entry -> entry.getKey().toString() + " " + entry.getValue().toString())
+				.collect(Collectors.toList());
 		ObservableList<String> items = FXCollections.observableArrayList(clocks);
 		vectorClocks.setItems(items);
-
 	}
 
 	private void updateMessageBuffer() {
