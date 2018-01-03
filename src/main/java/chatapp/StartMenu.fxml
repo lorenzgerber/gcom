@@ -13,7 +13,7 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chatapp.StartMenuController">
    <children>
-      <VBox fillWidth="false" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+      <VBox alignment="TOP_CENTER" fillWidth="false" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
          <children>
             <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="23.0" prefWidth="180.0" text="GCOM Demo App" textAlignment="CENTER" wrapText="true">
                <VBox.margin>
@@ -24,6 +24,8 @@
                </font>
             </Label>
             <Separator prefWidth="200.0" />
+            <Label text="Name server" />
+            <TextField fx:id="nameServer" promptText="Name server host" text="localhost" />
             <ChoiceBox fx:id="ordererChoice" prefWidth="150.0" />
             <Label text="Please enter a nickname:" />
             <TextField fx:id="nickName" />

@@ -23,6 +23,9 @@ public class StartMenuController extends Parent {
 	ChatApp parent;
 
 	@FXML
+	private TextField nameServer;
+
+	@FXML
 	private TextField nickName;
 
 	@FXML
@@ -43,8 +46,8 @@ public class StartMenuController extends Parent {
 	private void setNode() {
 		try {
 			GComBuilder builder = new GComBuilder();
-			parent.node = builder.withNameServer("localhost").withOrderer(Orderers.valueOf(ordererChoice.getValue()))
-					.debug(debug.isSelected()).build();
+			parent.node = builder.withNameServer(nameServer.getText())
+					.withOrderer(Orderers.valueOf(ordererChoice.getValue())).debug(debug.isSelected()).build();
 
 			parent.node.subscribe(parent);
 		} catch (RemoteException e) {
