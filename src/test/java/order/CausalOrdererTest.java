@@ -74,11 +74,14 @@ public class CausalOrdererTest {
 		expected++;
 		// Vector clock should have been incremented
 		assertThat(message.getVectorClock().get(id), is(expected));
+		// Clock should be incremented
+		assertThat(orderer.debugGetMessagesSent(), is(1L));
 
 		// Failure should also increment
 		orderer.send(message);
 		expected++;
 		assertThat(message.getVectorClock().get(id), is(expected));
+		assertThat(orderer.debugGetMessagesSent(), is(2L));
 	}
 
 	/**
@@ -130,11 +133,16 @@ public class CausalOrdererTest {
 		orderer.receive(message2);
 		// This message should not be delivered yet
 		verify(sub, never()).deliverMessage(message2.data);
+		assertThat(orderer.debugGetBuffer().size(), is(1));
 		// Receive the first message
 		orderer.receive(message);
 
 		mockOrder.verify(sub).deliverMessage(message.data);
 		mockOrder.verify(sub).deliverMessage(message2.data);
+		// The buffer should be empty now
+		assertThat(orderer.debugGetBuffer().isEmpty(), is(true));
+		// Vector clock should have been updated
+		assertThat(orderer.debugGetVectorClock().get(sender), is(clock2.get(sender)));
 	}
 
 	/**
@@ -175,6 +183,8 @@ public class CausalOrdererTest {
 
 		mockOrder.verify(sub).deliverMessage(message.data);
 		mockOrder.verify(sub).deliverMessage(message2.data);
+		// The buffer should be empty now
+		assertThat(orderer.debugGetBuffer().isEmpty(), is(true));
 	}
 
 	@Test
