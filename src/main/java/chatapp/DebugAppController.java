@@ -30,6 +30,9 @@ public class DebugAppController extends Parent implements IDebugSubscriber {
 	@FXML
 	private ListView<String> vectorClocks;
 
+	@FXML
+	private ListView<String> heldMessages;
+
 	public void intitialize() {
 
 	}
@@ -78,8 +81,17 @@ public class DebugAppController extends Parent implements IDebugSubscriber {
 		messageBuffer.setItems(items);
 	}
 
+	private void updateHeldMessages() {
+		DebugOrderer debugger = node.getDebugger();
+		List<String> held = debugger.debugHeldMessages().stream().map(m -> m.data.toString())
+				.collect(Collectors.toList());
+		ObservableList<String> messages = FXCollections.observableArrayList(held);
+		heldMessages.setItems(messages);
+	}
+
 	@Override
 	public void eventOccured() {
+		updateHeldMessages();
 		updateMessageBuffer();
 		updateVectorClock();
 	}

@@ -1,6 +1,7 @@
 package order;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -90,9 +91,17 @@ public class DebugOrderer implements IOrderer {
 		return orderer.debugGetVectorClock();
 	}
 
+	/**
+	 * Return the list of messages in the buffer or an empty list if no buffer is
+	 * used.
+	 */
 	@Override
 	public List<Message<?>> debugGetBuffer() {
-		return heldMessages;
+		List<Message<?>> messages = orderer.debugGetBuffer();
+		if (messages == null) {
+			messages = Collections.emptyList();
+		}
+		return messages;
 	}
 
 	@Override
@@ -103,6 +112,10 @@ public class DebugOrderer implements IOrderer {
 	@Override
 	public void debugSubscribe(IDebugSubscriber subscriber) {
 		subscribers.add(subscriber);
+	}
+
+	public List<Message<?>> debugHeldMessages() {
+		return heldMessages;
 	}
 
 	private void notifySubscribers() {

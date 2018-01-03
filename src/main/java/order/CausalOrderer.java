@@ -2,6 +2,7 @@ package order;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,10 +15,6 @@ public class CausalOrderer extends AbstractOrderer {
 	private HashMap<UUID, Long> vectorClock = new HashMap<>();
 	// A clock to keep track of (the number of) sent messages
 	private long clock = 0;
-	/*
-	 * TODO: use a smarter buffer (with timeout?) to make it possible to discard
-	 * messages and possibly detect failing nodes in this way.
-	 */
 	private List<Message<?>> buffer = new ArrayList<>();
 
 	public CausalOrderer(IMulticaster multicaster) {
@@ -73,10 +70,14 @@ public class CausalOrderer extends AbstractOrderer {
 		 * Note: if time < 0, the message is old and can never be delivered.
 		 */
 
-		for (Message<?> buffMsg : buffer) {
+		// Check if any of the buffered messages can be delivered now.
+		Iterator<Message<?>> iter = buffer.iterator();
+		while (iter.hasNext()) {
+			Message<?> buffMsg = iter.next();
 			if (messageTime(buffMsg) == 0) {
 				subscribers.forEach(sub -> sub.deliverMessage(buffMsg.data));
 				vectorClock.compute(message.sender, (k, v) -> v += 1);
+				iter.remove();
 			}
 		}
 
