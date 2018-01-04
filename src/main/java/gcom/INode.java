@@ -49,8 +49,18 @@ public interface INode extends Remote {
 	 */
 	public void updateLeader() throws RemoteException;
 	
+	/**
+	 * Subscribe with NameServer for updates on leader Change
+	 * 
+	 * @throws RemoteException
+	 */
 	public void leaderChangeSubscribe() throws RemoteException;
 	
+	/**
+	 * Method is invoked from NameServer 
+	 * 
+	 * @throws RemoteException
+	 */
 	public void leaderUpdated() throws RemoteException;
 
 }

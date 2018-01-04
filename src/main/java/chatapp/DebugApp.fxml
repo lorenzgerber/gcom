@@ -6,7 +6,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -51,7 +50,7 @@
                      </VBox.margin>
                   </Separator>
                   <Label text="Current Leader" />
-                  <TextField fx:id="currentLeader" />
+                  <ListView prefHeight="200.0" prefWidth="200.0" />
                </children>
                <padding>
                   <Insets right="5.0" top="10.0" />

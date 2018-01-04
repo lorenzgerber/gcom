@@ -36,5 +36,15 @@ public class DebugGroupManager extends AbstractGroupManager {
 	public void notifySubscribers() {
 		subscribers.forEach( s -> s.groupManagerEventOccured());
 	}
+	
+	public HashMap<String,INode> getNodeList(){
+		try {
+			return this.nameServer.getNodeList();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 }

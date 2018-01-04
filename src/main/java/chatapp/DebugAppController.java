@@ -1,9 +1,12 @@
 package chatapp;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import gcom.GCom;
+import gcom.INode;
+import group.DebugGroupManager;
 import group.IDebugGroupManagerSubscriber;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -33,6 +36,9 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 
 	@FXML
 	private ListView<String> heldMessages;
+	
+	@FXML
+	private ListView<String> currentLeaders;
 
 	public void intitialize() {
 
@@ -57,6 +63,7 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 	public void setNode(GCom node) {
 		this.node = node;
 		this.node.getOrdererDebugger().debugSubscribe(this);
+		this.node.getGroupManagerDebugger().debugSubscribe(this);
 	}
 
 	protected void updateVectorClock() {
@@ -89,6 +96,16 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 		ObservableList<String> messages = FXCollections.observableArrayList(held);
 		heldMessages.setItems(messages);
 	}
+	
+	private void updateLeaders() {
+		DebugGroupManager debugger = node.getGroupManagerDebugger();
+		HashMap<String, INode> test = debugger.getNodeList();
+		/*List<String> leaders = debugger.getNodeList().entrySet().stream()
+				.map(entry -> entry.getKey().toString() + " " + entry.getValue()
+				.toString()).collect(Collectors.toList());
+		ObservableList<String> items = FXCollections.observableArrayList(leaders);
+		currentLeaders.setItems(items);*/
+	}
 
 	@Override
 	public void ordererEventOccured() {
@@ -99,7 +116,7 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 
 	@Override
 	public void groupManagerEventOccured() {
-		// TODO Implement updating the group/leader list
+		updateLeaders();
 		
 	}
 
