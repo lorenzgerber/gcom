@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import gcom.GCom;
+import group.IDebugGroupManagerSubscriber;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -12,9 +13,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import order.DebugOrderer;
-import order.IDebugSubscriber;
+import order.IDebugOrdererSubscriber;
 
-public class DebugAppController extends Parent implements IDebugSubscriber {
+public class DebugAppController extends Parent implements IDebugOrdererSubscriber, IDebugGroupManagerSubscriber {
 
 	private GCom node;
 
@@ -50,7 +51,7 @@ public class DebugAppController extends Parent implements IDebugSubscriber {
 	private void releaseMessages() {
 		node.getDebugger().releaseMessages();
 		holdMessages.setSelected(false);
-		eventOccured();
+		ordererEventOccured();
 	}
 
 	public void setNode(GCom node) {
@@ -90,10 +91,16 @@ public class DebugAppController extends Parent implements IDebugSubscriber {
 	}
 
 	@Override
-	public void eventOccured() {
+	public void ordererEventOccured() {
 		updateHeldMessages();
 		updateMessageBuffer();
 		updateVectorClock();
+	}
+
+	@Override
+	public void groupManagerEventOccured() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

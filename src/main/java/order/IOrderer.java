@@ -92,5 +92,5 @@ public interface IOrderer {
 	 * @param subscriber
 	 *            the subscriber to be notified
 	 */
-	public void debugSubscribe(IDebugSubscriber subscriber);
+	public void debugSubscribe(IDebugOrdererSubscriber subscriber);
 }

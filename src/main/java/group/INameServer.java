@@ -2,6 +2,7 @@ package group;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.List;
 
 import gcom.INode;
@@ -33,4 +34,11 @@ public interface INameServer extends Remote {
 	 * @return a list of group names
 	 */
 	public List<String> getGroups() throws RemoteException;
+	
+	/**
+	 * Get node list
+	 * 
+	 * @return HashMap with group names and leader nodeId's
+	 */
+	public HashMap<String, INode> getNodeList() throws RemoteException;
 }

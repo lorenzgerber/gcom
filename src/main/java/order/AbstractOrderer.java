@@ -44,7 +44,7 @@ public abstract class AbstractOrderer implements IOrderer {
 	}
 
 	@Override
-	public void debugSubscribe(IDebugSubscriber subscriber) {
+	public void debugSubscribe(IDebugOrdererSubscriber subscriber) {
 		return;
 	}
 

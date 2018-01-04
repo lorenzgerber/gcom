@@ -65,10 +65,15 @@ public class NameServer extends UnicastRemoteObject implements INameServer {
 			}
 		}
 	}
+	
+	public HashMap<String,INode> getNodeList() throws RemoteException {
+		return this.nodeList;
+	}
 
 	@Override
 	public List<String> getGroups() {
 		return new ArrayList<>(nodeList.keySet());
 	}
+	
 
 }

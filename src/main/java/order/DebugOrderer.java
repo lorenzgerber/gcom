@@ -15,7 +15,7 @@ public class DebugOrderer implements IOrderer {
 	private IOrderer orderer;
 	private boolean holdMessages = false;
 	private List<Message<?>> heldMessages = new ArrayList<>();
-	private List<IDebugSubscriber> subscribers = new ArrayList<>();
+	private List<IDebugOrdererSubscriber> subscribers = new ArrayList<>();
 
 	public DebugOrderer(IOrderer orderer) {
 		this.orderer = orderer;
@@ -110,7 +110,7 @@ public class DebugOrderer implements IOrderer {
 	}
 
 	@Override
-	public void debugSubscribe(IDebugSubscriber subscriber) {
+	public void debugSubscribe(IDebugOrdererSubscriber subscriber) {
 		subscribers.add(subscriber);
 	}
 
@@ -119,7 +119,7 @@ public class DebugOrderer implements IOrderer {
 	}
 
 	private void notifySubscribers() {
-		subscribers.forEach(s -> s.eventOccured());
+		subscribers.forEach(s -> s.ordererEventOccured());
 	}
 
 }
