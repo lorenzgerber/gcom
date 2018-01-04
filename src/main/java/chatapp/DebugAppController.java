@@ -1,13 +1,16 @@
 package chatapp;
 
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import gcom.GCom;
 import gcom.INode;
 import group.DebugGroupManager;
 import group.IDebugGroupManagerSubscriber;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -100,11 +103,25 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 	private void updateLeaders() {
 		DebugGroupManager debugger = node.getGroupManagerDebugger();
 		HashMap<String, INode> test = debugger.getNodeList();
-		/*List<String> leaders = debugger.getNodeList().entrySet().stream()
-				.map(entry -> entry.getKey().toString() + " " + entry.getValue()
-				.toString()).collect(Collectors.toList());
+		test.values().removeIf(Objects::isNull);
+		test.keySet().removeIf(Objects::isNull);
+		List<String> leaders = test.entrySet().stream()
+				.map(entry -> {
+					try {
+						return entry.getKey().toString() + " " + entry.getValue().getId()
+						.toString();
+					} catch (RemoteException e) {
+						return null;
+					}
+				}).collect(Collectors.toList());
 		ObservableList<String> items = FXCollections.observableArrayList(leaders);
-		currentLeaders.setItems(items);*/
+		Platform.runLater(new Runnable() {
+		    @Override
+		    public void run() {
+		    	currentLeaders.setItems(items);
+		    }
+		});
+		
 	}
 
 	@Override

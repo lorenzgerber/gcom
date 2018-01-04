@@ -50,7 +50,7 @@
                      </VBox.margin>
                   </Separator>
                   <Label text="Current Leader" />
-                  <ListView prefHeight="200.0" prefWidth="200.0" />
+                  <ListView fx:id="currentLeaders" prefHeight="200.0" prefWidth="200.0" />
                </children>
                <padding>
                   <Insets right="5.0" top="10.0" />
