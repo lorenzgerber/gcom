@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.UUID;
 
 import communication.UnreliableMulticaster;
+import group.DebugGroupManager;
 import group.GroupManager;
+import group.IGroupManager;
 import group.INameServer;
 import group.NameServer;
 import order.DebugOrderer;
@@ -24,7 +26,7 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 	private INameServer nameServer;
 	private Registry remoteRegistry;
 	private IOrderer orderer;
-	private GroupManager groupManager;
+	private IGroupManager groupManager;
 
 	public Node(String nameServerHost) throws RemoteException {
 		this(nameServerHost, new UnorderedOrderer(new UnreliableMulticaster()));
@@ -35,14 +37,20 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 		this.nodeID = UUID.randomUUID();
 		try {
 			remoteRegistry = LocateRegistry.getRegistry(nameServerHost);
-			nameServer = (INameServer) remoteRegistry.lookup(NameServer.nameServer);
+			this.nameServer = (INameServer) remoteRegistry.lookup(NameServer.nameServer);
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
 		}
 
 		orderer.setId(nodeID);
 		this.orderer = orderer;
-		this.groupManager = new GroupManager(nameServer, this, orderer);
+		if(orderer.getClass().equals(DebugOrderer.class)) {
+			this.groupManager = new DebugGroupManager(nameServer, this, orderer);
+		} else {
+			this.groupManager = new GroupManager(nameServer, this, orderer);
+		}
+		
+		
 
 	}
 
@@ -104,11 +112,34 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 	}
 
 	@Override
-	public DebugOrderer getDebugger() {
+	public DebugOrderer getOrdererDebugger() {
 		if (orderer.getClass().equals(DebugOrderer.class)) {
 			return (DebugOrderer) orderer;
 		} else {
 			return null;
 		}
+	}
+	
+	public void leaderChangeSubscribe() throws RemoteException {
+		nameServer.leaderChangeSubscribe( this);
+		return;
+	}
+	
+	@Override
+	public DebugGroupManager getGroupManagerDebugger() {
+		if (groupManager.getClass().equals(DebugGroupManager.class)) {
+			return (DebugGroupManager) groupManager;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public void leaderUpdated() throws RemoteException {
+		if(this.groupManager.getClass().equals(DebugGroupManager.class)) {
+			DebugGroupManager groupManager = getGroupManagerDebugger();
+			groupManager.notifySubscribers();
+		}
+		
 	}
 }

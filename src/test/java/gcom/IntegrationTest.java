@@ -94,6 +94,7 @@ public class IntegrationTest {
 		verify(clientApplication).deliverMessage(data);
 	}
 
+	
 	@Test
 	public void holdMessages() throws RemoteException {
 		DebugOrderer debugger = setUpDebugger(Orderers.Unordered);
@@ -107,6 +108,7 @@ public class IntegrationTest {
 		verify(clientApplication).deliverMessage(data);
 	}
 
+	
 	@Test
 	public void doNotOrder() throws RemoteException {
 		DebugOrderer debugger = setUpDebugger(Orderers.Unordered);
@@ -128,6 +130,7 @@ public class IntegrationTest {
 		verify(clientApplication).deliverMessage(data);
 	}
 
+	
 	@Test
 	public void orderCausally() throws RemoteException {
 		DebugOrderer debugger = setUpDebugger(Orderers.Causal);
@@ -223,7 +226,7 @@ public class IntegrationTest {
 	private DebugOrderer setUpDebugger(Orderers orderer) throws RemoteException {
 		gcom = new GComBuilder().withNameServer(LOCALHOST).withOrderer(orderer).debug(true).build();
 		gcom.subscribe(clientApplication);
-		return gcom.getDebugger();
+		return gcom.getOrdererDebugger();
 	}
 
 }

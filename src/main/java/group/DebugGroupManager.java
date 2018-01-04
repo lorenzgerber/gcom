@@ -9,11 +9,11 @@ import gcom.INode;
 import order.IOrderer;
 
 
-public class DebugGroupManager extends AbstractGroupManager implements IDebugNameServerSubscriber{
+public class DebugGroupManager extends AbstractGroupManager {
 	
 	private List<IDebugGroupManagerSubscriber> subscribers = new ArrayList<>();
 	
-	public DebugGroupManager(INameServer nameServer, INode parent, IOrderer orderer)  {
+	public DebugGroupManager(INameServer nameServer, INode parent, IOrderer orderer) {
 		this.nameServer = nameServer;
 		this.parent = parent;
 		currentLeader = parent;
@@ -33,13 +33,8 @@ public class DebugGroupManager extends AbstractGroupManager implements IDebugNam
 		subscribers.add(subscriber);
 	}
 	
-	private void notifySubscribers() {
+	public void notifySubscribers() {
 		subscribers.forEach( s -> s.groupManagerEventOccured());
-	}
-
-	@Override
-	public void nameServerEventOccured() {
-		notifySubscribers();
 	}
 
 }

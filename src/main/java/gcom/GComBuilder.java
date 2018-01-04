@@ -66,6 +66,7 @@ public class GComBuilder {
 	 */
 	public GCom build() throws RemoteException {
 		Node node = new Node(nameServerUrl, orderer);
+		node.leaderChangeSubscribe();
 		return node;
 	}
 }

@@ -18,7 +18,7 @@ public class NameServer extends UnicastRemoteObject implements INameServer {
 	public static final String nameServer = "gcomNameServer";
 	private Registry registry;
 	private HashMap<String, INode> nodeList;
-	private List<IDebugNameServerSubscriber> subscribers = new ArrayList<>();
+	private List<INode> subscribers = new ArrayList<>();
 
 	static Logger LOGGER = Logger.getLogger(NameServer.class.getSimpleName());
 	static {
@@ -68,7 +68,8 @@ public class NameServer extends UnicastRemoteObject implements INameServer {
 		}
 	}
 	
-	public HashMap<String,INode> getNodeList() throws RemoteException {
+	@Override
+	public HashMap<String,INode> getNodeList() {
 		return this.nodeList;
 	}
 
@@ -77,12 +78,19 @@ public class NameServer extends UnicastRemoteObject implements INameServer {
 		return new ArrayList<>(nodeList.keySet());
 	}
 	
-	public void debugSubscribe(IDebugNameServerSubscriber subscriber) {
+	@Override
+	public void leaderChangeSubscribe(INode subscriber) {
 		subscribers.add(subscriber);
 	}
 	
 	private void notifySubscriber() {
-		subscribers.forEach( s -> s.nameServerEventOccured());
+		subscribers.forEach( s -> {
+			try {
+				s.leaderUpdated();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 	
 

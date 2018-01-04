@@ -41,26 +41,26 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 	@FXML
 	private void holdMessages() {
 		if (holdMessages.isSelected()) {
-			node.getDebugger().holdMessages(true);
+			node.getOrdererDebugger().holdMessages(true);
 		} else {
-			node.getDebugger().holdMessages(false);
+			node.getOrdererDebugger().holdMessages(false);
 		}
 	}
 
 	@FXML
 	private void releaseMessages() {
-		node.getDebugger().releaseMessages();
+		node.getOrdererDebugger().releaseMessages();
 		holdMessages.setSelected(false);
 		ordererEventOccured();
 	}
 
 	public void setNode(GCom node) {
 		this.node = node;
-		this.node.getDebugger().debugSubscribe(this);
+		this.node.getOrdererDebugger().debugSubscribe(this);
 	}
 
 	protected void updateVectorClock() {
-		DebugOrderer debugger = node.getDebugger();
+		DebugOrderer debugger = node.getOrdererDebugger();
 		if (debugger.debugGetVectorClock() == null) {
 			// The ordered does not appear to use a vector clock...
 			return;
@@ -74,7 +74,7 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 	}
 
 	private void updateMessageBuffer() {
-		DebugOrderer debugger = node.getDebugger();
+		DebugOrderer debugger = node.getOrdererDebugger();
 		List<String> buffered = debugger.debugGetBuffer().stream().map(m -> m.data.toString())
 				.collect(Collectors.toList());
 
@@ -83,7 +83,7 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 	}
 
 	private void updateHeldMessages() {
-		DebugOrderer debugger = node.getDebugger();
+		DebugOrderer debugger = node.getOrdererDebugger();
 		List<String> held = debugger.debugHeldMessages().stream().map(m -> m.data.toString())
 				.collect(Collectors.toList());
 		ObservableList<String> messages = FXCollections.observableArrayList(held);

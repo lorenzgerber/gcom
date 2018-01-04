@@ -258,5 +258,6 @@ public abstract class AbstractGroupManager implements IGroupManager {
 		return nameServer.getGroups();
 	}
 	
+	
 
 }

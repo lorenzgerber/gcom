@@ -48,5 +48,9 @@ public interface INode extends Remote {
 	 * @throws RemoteException
 	 */
 	public void updateLeader() throws RemoteException;
+	
+	public void leaderChangeSubscribe() throws RemoteException;
+	
+	public void leaderUpdated() throws RemoteException;
 
 }

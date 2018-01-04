@@ -3,6 +3,7 @@ package gcom;
 import java.rmi.RemoteException;
 import java.util.List;
 
+import group.DebugGroupManager;
 import order.DebugOrderer;
 
 public interface GCom {
@@ -54,9 +55,18 @@ public interface GCom {
 	public List<String> getGroups() throws RemoteException;
 
 	/**
-	 * Get a debugger if possible.
+	 * Get a orderer debugger if possible.
 	 * 
 	 * @return the debugger or null if not available
 	 */
-	public DebugOrderer getDebugger();
+	public DebugOrderer getOrdererDebugger();
+	
+	/**
+	 * Get a GroupManager debugger if possible.
+	 * 
+	 * @return the debugger or null if not available
+	 */
+	public DebugGroupManager getGroupManagerDebugger();
+	
+	
 }
