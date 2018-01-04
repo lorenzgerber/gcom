@@ -18,6 +18,7 @@ public class NameServer extends UnicastRemoteObject implements INameServer {
 	public static final String nameServer = "gcomNameServer";
 	private Registry registry;
 	private HashMap<String, INode> nodeList;
+	private List<IDebugNameServerSubscriber> subscribers = new ArrayList<>();
 
 	static Logger LOGGER = Logger.getLogger(NameServer.class.getSimpleName());
 	static {
@@ -48,6 +49,7 @@ public class NameServer extends UnicastRemoteObject implements INameServer {
 	public boolean setLeader(String group, INode leader) {
 		LOGGER.fine("Setting leader for group " + group);
 		nodeList.put(group, leader);
+		notifySubscriber();
 		LOGGER.fine("Leader set");
 		return false;
 	}
@@ -73,6 +75,14 @@ public class NameServer extends UnicastRemoteObject implements INameServer {
 	@Override
 	public List<String> getGroups() {
 		return new ArrayList<>(nodeList.keySet());
+	}
+	
+	public void debugSubscribe(IDebugNameServerSubscriber subscriber) {
+		subscribers.add(subscriber);
+	}
+	
+	private void notifySubscriber() {
+		subscribers.forEach( s -> s.nameServerEventOccured());
 	}
 	
 

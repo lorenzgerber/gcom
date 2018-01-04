@@ -23,5 +23,10 @@ public class GroupManager extends AbstractGroupManager{
 		this.orderer = orderer;
 	}
 
+	@Override
+	public void debugSubscribe(IDebugGroupManagerSubscriber subscriber) {
+		return;
+	}
+
 	
 }

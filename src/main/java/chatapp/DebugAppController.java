@@ -99,7 +99,7 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 
 	@Override
 	public void groupManagerEventOccured() {
-		// TODO Auto-generated method stub
+		// TODO Implement updating the group/leader list
 		
 	}
 

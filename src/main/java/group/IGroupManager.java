@@ -28,5 +28,7 @@ public interface IGroupManager {
 	public boolean isLeader();
 	
 	public List<String> getGroups() throws RemoteException;
+	
+	public void debugSubscribe(IDebugGroupManagerSubscriber subscriber);
 
 }
