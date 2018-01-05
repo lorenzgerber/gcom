@@ -43,7 +43,6 @@
                <children>
                   <CheckBox fx:id="holdMessages" mnemonicParsing="false" onAction="#holdMessages" text="Hold messages" />
                   <Button fx:id="releaseMessages" mnemonicParsing="false" onAction="#releaseMessages" text="Release" />
-                  <Button mnemonicParsing="false" text="Disconnect" />
                   <Separator prefWidth="200.0">
                      <VBox.margin>
                         <Insets bottom="2.0" top="2.0" />

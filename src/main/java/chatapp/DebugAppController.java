@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import gcom.GCom;
 import gcom.INode;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -76,7 +77,8 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 				.map(entry -> entry.getKey().toString() + " " + entry.getValue().toString())
 				.collect(Collectors.toList());
 		ObservableList<String> items = FXCollections.observableArrayList(clocks);
-		vectorClocks.setItems(items);
+
+		Platform.runLater(() -> vectorClocks.setItems(items));
 	}
 
 	private void updateMessageBuffer() {
@@ -85,7 +87,8 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 				.collect(Collectors.toList());
 
 		ObservableList<String> items = FXCollections.observableArrayList(buffered);
-		messageBuffer.setItems(items);
+
+		Platform.runLater(() -> messageBuffer.setItems(items));
 	}
 
 	private void updateHeldMessages() {
@@ -93,7 +96,8 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 		List<String> held = debugger.debugHeldMessages().stream().map(m -> m.data.toString())
 				.collect(Collectors.toList());
 		ObservableList<String> messages = FXCollections.observableArrayList(held);
-		heldMessages.setItems(messages);
+
+		Platform.runLater(() -> heldMessages.setItems(messages));
 	}
 
 	private void updateLeaders() {
@@ -109,7 +113,8 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 				}
 			}).filter(Objects::nonNull).collect(Collectors.toList());
 			ObservableList<String> items = FXCollections.observableArrayList(leaders);
-			currentLeaders.setItems(items);
+
+			Platform.runLater(() -> currentLeaders.setItems(items));
 		} catch (RemoteException e1) {
 			System.err.println("Unable to reach name server!");
 		}
