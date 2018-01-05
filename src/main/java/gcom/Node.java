@@ -22,7 +22,6 @@ import order.UnorderedOrderer;
 public class Node extends UnicastRemoteObject implements GCom, INode {
 
 	private static final long serialVersionUID = 6210826964208775888L;
-	private UUID nodeID;
 	private INameServer nameServer;
 	private Registry remoteRegistry;
 	private IOrderer orderer;
@@ -34,7 +33,6 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 
 	public Node(String nameServerHost, IOrderer orderer) throws RemoteException {
 
-		this.nodeID = UUID.randomUUID();
 		try {
 			remoteRegistry = LocateRegistry.getRegistry(nameServerHost);
 			this.nameServer = (INameServer) remoteRegistry.lookup(NameServer.nameServer);
@@ -42,14 +40,13 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 			e.printStackTrace();
 		}
 
-		orderer.setId(nodeID);
 		this.orderer = orderer;
 		this.groupManager = new GroupManager(nameServer, this, orderer);
 	}
 
 	@Override
 	public UUID getId() {
-		return nodeID;
+		return groupManager.getId();
 	}
 
 	@Override

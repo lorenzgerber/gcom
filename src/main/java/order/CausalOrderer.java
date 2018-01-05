@@ -2,8 +2,11 @@ package order;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import communication.IMulticaster;
@@ -16,6 +19,7 @@ public class CausalOrderer extends AbstractOrderer {
 	// A clock to keep track of (the number of) sent messages
 	private long clock = 0;
 	private List<Message<?>> buffer = new ArrayList<>();
+	private Set<UUID> dead = new HashSet<>();
 
 	public CausalOrderer(IMulticaster multicaster) {
 		this.multicaster = multicaster;
@@ -31,7 +35,7 @@ public class CausalOrderer extends AbstractOrderer {
 			vectorClock.remove(this.id);
 		}
 		this.id = id;
-		vectorClock.putIfAbsent(id, (long) 0);
+		reset();
 	}
 
 	@Override
@@ -48,6 +52,30 @@ public class CausalOrderer extends AbstractOrderer {
 		message.sender = id;
 
 		return multicaster.multicast(message);
+	}
+
+	@Override
+	public void removeMember(UUID id) {
+		if (!bufferedMessages(id)) {
+			vectorClock.remove(id);
+		} else {
+			dead.add(id);
+		}
+	}
+
+	/**
+	 * Are there any messages buffered from the sender with this id?
+	 * 
+	 * @param id
+	 *            sender id
+	 * @return true if there are buffered messages from the specified id
+	 */
+	private boolean bufferedMessages(UUID id) {
+		Optional<Message<?>> msg = buffer.stream().filter(m -> m.sender.equals(id)).findAny();
+		if (msg.isPresent()) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -78,6 +106,8 @@ public class CausalOrderer extends AbstractOrderer {
 				subscribers.forEach(sub -> sub.deliverMessage(buffMsg.data));
 				vectorClock.compute(message.sender, (k, v) -> v += 1);
 				iter.remove();
+				// Check if any dead nodes can be removed
+				dead.forEach(id -> removeMember(id));
 			}
 		}
 

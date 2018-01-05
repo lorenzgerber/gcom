@@ -66,6 +66,14 @@ public interface IOrderer {
 	public void reset();
 
 	/**
+	 * Notify the orderer of a member that has left the group.
+	 * 
+	 * @param id
+	 *            the id of the now gone member
+	 */
+	public void removeMember(UUID id);
+
+	/**
 	 * Get the number of messages sent from this orderer.
 	 * 
 	 * @return the number of sent messages or -1 if no counter is used

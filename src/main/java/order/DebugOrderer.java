@@ -122,4 +122,9 @@ public class DebugOrderer implements IOrderer {
 		subscribers.forEach(s -> s.debugEventOccured());
 	}
 
+	@Override
+	public void removeMember(UUID id) {
+		orderer.removeMember(id);
+	}
+
 }

@@ -36,6 +36,9 @@ public class GroupManagerTest {
 		node = getMockedNode();
 		orderer = mock(IOrderer.class);
 		manager = new GroupManager(nameServer, node, orderer);
+		// Reset the orderer, since there are some calls to it from the GroupManager
+		// constructor which we are not concerned with.
+		reset(orderer);
 	}
 
 	@Test
@@ -46,8 +49,8 @@ public class GroupManagerTest {
 
 		manager.join(group);
 		verify(leader).addToGroup(node);
-		// Orderer must reset when joining a new group
-		verify(orderer).reset();
+		// Orderer must set new id when joining a new group
+		verify(orderer).setId(any());
 	}
 
 	@Test

@@ -5,8 +5,11 @@ import gcom.INode;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public interface IGroupManager {
+
+	public UUID getId();
 
 	public void join(String group) throws RemoteException;
 

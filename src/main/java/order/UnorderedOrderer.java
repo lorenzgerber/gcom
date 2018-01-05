@@ -33,4 +33,9 @@ public class UnorderedOrderer extends AbstractOrderer {
 		// We do not use id.
 	}
 
+	@Override
+	public void removeMember(UUID id) {
+		// We do not keep track of members.
+	}
+
 }
