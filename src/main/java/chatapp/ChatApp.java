@@ -55,7 +55,7 @@ public class ChatApp extends Application implements ISubscriber {
 		Scene scene = new Scene(root, width, height);
 		primaryStage.setScene(scene);
 	}
-	
+
 	public void setTitle(String title) {
 		Platform.runLater(() -> primaryStage.setTitle(title));
 	}

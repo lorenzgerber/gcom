@@ -75,8 +75,6 @@ public class StartMenuController extends Parent {
 		controller.setChatApp(parent);
 		controller.setNode(parent.node);
 		controller.setSubscriber();
-		
-		
 
 		if (debug.isSelected()) {
 			FXMLLoader loaderDebug = new FXMLLoader();
@@ -90,7 +88,7 @@ public class StartMenuController extends Parent {
 
 			DebugAppController controllerDebug = loaderDebug.getController();
 			controller.setDebugSubscriber(controllerDebug);
-			
+
 			controllerDebug.setNode(parent.node);
 
 			parent.replaceScene(root, 680, 700);

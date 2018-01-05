@@ -46,9 +46,13 @@ public class NameServer extends UnicastRemoteObject implements INameServer {
 
 	@Override
 	public boolean setLeader(String group, INode leader) {
-		LOGGER.info("Setting leader for group " + group);
-		nodeList.put(group, leader);
-		LOGGER.info("Leader set");
+		if (leader == null) {
+			LOGGER.fine("Group " + group + "removed");
+			nodeList.remove(group);
+		} else {
+			LOGGER.fine("Setting leader for group " + group);
+			nodeList.put(group, leader);
+		}
 		return false;
 	}
 
