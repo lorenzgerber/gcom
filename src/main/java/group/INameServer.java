@@ -34,18 +34,11 @@ public interface INameServer extends Remote {
 	 * @return a list of group names
 	 */
 	public List<String> getGroups() throws RemoteException;
-	
+
 	/**
 	 * Get node list
 	 * 
 	 * @return HashMap with group names and leader nodeId's
 	 */
 	public HashMap<String, INode> getNodeList() throws RemoteException;
-	
-	/**
-	 * Subscribe to get leader updates
-	 * @throws RemoteException 
-	 * 
-	 */
-	public void leaderChangeSubscribe(INode subscriber) throws RemoteException;
 }

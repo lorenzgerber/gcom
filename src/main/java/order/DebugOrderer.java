@@ -119,7 +119,7 @@ public class DebugOrderer implements IOrderer {
 	}
 
 	private void notifySubscribers() {
-		subscribers.forEach(s -> s.ordererEventOccured());
+		subscribers.forEach(s -> s.debugEventOccured());
 	}
 
 }

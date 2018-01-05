@@ -8,9 +8,6 @@ import java.util.stream.Collectors;
 
 import gcom.GCom;
 import gcom.INode;
-import group.DebugGroupManager;
-import group.IDebugGroupManagerSubscriber;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -21,7 +18,7 @@ import javafx.scene.control.ListView;
 import order.DebugOrderer;
 import order.IDebugOrdererSubscriber;
 
-public class DebugAppController extends Parent implements IDebugOrdererSubscriber, IDebugGroupManagerSubscriber {
+public class DebugAppController extends Parent implements IDebugOrdererSubscriber {
 
 	private GCom node;
 
@@ -39,7 +36,7 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 
 	@FXML
 	private ListView<String> heldMessages;
-	
+
 	@FXML
 	private ListView<String> currentLeaders;
 
@@ -60,13 +57,12 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 	private void releaseMessages() {
 		node.getOrdererDebugger().releaseMessages();
 		holdMessages.setSelected(false);
-		ordererEventOccured();
+		debugEventOccured();
 	}
 
 	public void setNode(GCom node) {
 		this.node = node;
 		this.node.getOrdererDebugger().debugSubscribe(this);
-		this.node.getGroupManagerDebugger().debugSubscribe(this);
 	}
 
 	protected void updateVectorClock() {
@@ -99,42 +95,32 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 		ObservableList<String> messages = FXCollections.observableArrayList(held);
 		heldMessages.setItems(messages);
 	}
-	
+
 	private void updateLeaders() {
-		DebugGroupManager debugger = node.getGroupManagerDebugger();
-		HashMap<String, INode> test = debugger.getNodeList();
-		test.values().removeIf(Objects::isNull);
-		test.keySet().removeIf(Objects::isNull);
-		List<String> leaders = test.entrySet().stream()
-				.map(entry -> {
-					try {
-						return entry.getKey().toString() + " " + entry.getValue().getId()
-						.toString();
-					} catch (RemoteException e) {
-						return null;
-					}
-				}).collect(Collectors.toList());
-		ObservableList<String> items = FXCollections.observableArrayList(leaders);
-		Platform.runLater(new Runnable() {
-		    @Override
-		    public void run() {
-		    	currentLeaders.setItems(items);
-		    }
-		});
-		
+		try {
+			HashMap<String, INode> test = node.getNodeList();
+			test.values().removeIf(Objects::isNull);
+			test.keySet().removeIf(Objects::isNull);
+			List<String> leaders = test.entrySet().stream().map(entry -> {
+				try {
+					return entry.getKey().toString() + " " + entry.getValue().getId().toString();
+				} catch (RemoteException e) {
+					return null;
+				}
+			}).filter(Objects::nonNull).collect(Collectors.toList());
+			ObservableList<String> items = FXCollections.observableArrayList(leaders);
+			currentLeaders.setItems(items);
+		} catch (RemoteException e1) {
+			System.err.println("Unable to reach name server!");
+		}
 	}
 
 	@Override
-	public void ordererEventOccured() {
+	public void debugEventOccured() {
 		updateHeldMessages();
 		updateMessageBuffer();
 		updateVectorClock();
-	}
-
-	@Override
-	public void groupManagerEventOccured() {
 		updateLeaders();
-		
 	}
 
 }

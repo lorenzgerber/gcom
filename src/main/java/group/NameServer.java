@@ -18,7 +18,6 @@ public class NameServer extends UnicastRemoteObject implements INameServer {
 	public static final String nameServer = "gcomNameServer";
 	private Registry registry;
 	private HashMap<String, INode> nodeList;
-	private List<INode> subscribers = new ArrayList<>();
 
 	static Logger LOGGER = Logger.getLogger(NameServer.class.getSimpleName());
 	static {
@@ -47,15 +46,13 @@ public class NameServer extends UnicastRemoteObject implements INameServer {
 
 	@Override
 	public boolean setLeader(String group, INode leader) {
-		LOGGER.fine("Setting leader for group " + group);
+		LOGGER.info("Setting leader for group " + group);
 		nodeList.put(group, leader);
-		notifySubscriber();
-		LOGGER.fine("Leader set");
+		LOGGER.info("Leader set");
 		return false;
 	}
 
 	public static void main(String[] args) throws RemoteException {
-
 		@SuppressWarnings("unused")
 		NameServer server = new NameServer();
 		LOGGER.info("Name server started");
@@ -67,9 +64,9 @@ public class NameServer extends UnicastRemoteObject implements INameServer {
 			}
 		}
 	}
-	
+
 	@Override
-	public HashMap<String,INode> getNodeList() {
+	public HashMap<String, INode> getNodeList() {
 		return this.nodeList;
 	}
 
@@ -77,21 +74,5 @@ public class NameServer extends UnicastRemoteObject implements INameServer {
 	public List<String> getGroups() {
 		return new ArrayList<>(nodeList.keySet());
 	}
-	
-	@Override
-	public void leaderChangeSubscribe(INode subscriber) {
-		subscribers.add(subscriber);
-	}
-	
-	private void notifySubscriber() {
-		subscribers.forEach( s -> {
-			try {
-				s.leaderUpdated();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		});
-	}
-	
 
 }

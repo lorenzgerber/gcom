@@ -14,6 +14,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import order.IDebugOrdererSubscriber;
 
 public class ChatAppController extends Parent implements ISubscriber {
 
@@ -21,6 +22,7 @@ public class ChatAppController extends Parent implements ISubscriber {
 	private GCom node;
 	private String nickName;
 	private boolean surpressJoin;
+	private IDebugOrdererSubscriber debugger;
 
 	@FXML
 	private TextField inputArea;
@@ -58,25 +60,28 @@ public class ChatAppController extends Parent implements ISubscriber {
 			e.printStackTrace();
 		}
 		surpressJoin = false;
+		debugger.debugEventOccured();
 	}
 
 	@FXML
 	private void groupHandler(ActionEvent event) {
-		if(!surpressJoin) {
+		if (!surpressJoin) {
 			joinGroup(groups.getValue());
 		}
-		
+		debugger.debugEventOccured();
 	}
 
 	@FXML
 	private void createGroupButtonPressed() {
 		joinGroup(createGroupField.getText());
 		createGroupField.clear();
+		debugger.debugEventOccured();
 	}
 
 	@FXML
 	private void leaveButtonPressed() {
 		node.leave();
+		debugger.debugEventOccured();
 	}
 
 	public void initialize() {
@@ -127,6 +132,10 @@ public class ChatAppController extends Parent implements ISubscriber {
 	public <T> void deliverMessage(T message) {
 		String msg = (String) message;
 		messageArea.appendText(msg + "\n");
+	}
+
+	protected void setDebugSubscriber(IDebugOrdererSubscriber debugger) {
+		this.debugger = debugger;
 	}
 
 }

@@ -5,11 +5,11 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import communication.UnreliableMulticaster;
-import group.DebugGroupManager;
 import group.GroupManager;
 import group.IGroupManager;
 import group.INameServer;
@@ -44,14 +44,7 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 
 		orderer.setId(nodeID);
 		this.orderer = orderer;
-		if(orderer.getClass().equals(DebugOrderer.class)) {
-			this.groupManager = new DebugGroupManager(nameServer, this, orderer);
-		} else {
-			this.groupManager = new GroupManager(nameServer, this, orderer);
-		}
-		
-		
-
+		this.groupManager = new GroupManager(nameServer, this, orderer);
 	}
 
 	@Override
@@ -103,12 +96,16 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 	@Override
 	public void updateLeader() throws RemoteException {
 		groupManager.updateLeader();
-
 	}
 
 	@Override
 	public List<String> getGroups() throws RemoteException {
 		return groupManager.getGroups();
+	}
+
+	@Override
+	public HashMap<String, INode> getNodeList() throws RemoteException {
+		return groupManager.getNodeList();
 	}
 
 	@Override
@@ -119,27 +116,5 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 			return null;
 		}
 	}
-	
-	public void leaderChangeSubscribe() throws RemoteException {
-		nameServer.leaderChangeSubscribe( this);
-		return;
-	}
-	
-	@Override
-	public DebugGroupManager getGroupManagerDebugger() {
-		if (groupManager.getClass().equals(DebugGroupManager.class)) {
-			return (DebugGroupManager) groupManager;
-		} else {
-			return null;
-		}
-	}
 
-	@Override
-	public void leaderUpdated() throws RemoteException {
-		if(this.groupManager.getClass().equals(DebugGroupManager.class)) {
-			DebugGroupManager groupManager = getGroupManagerDebugger();
-			groupManager.notifySubscribers();
-		}
-		
-	}
 }

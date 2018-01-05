@@ -18,7 +18,7 @@ public abstract class AbstractGroupManager implements IGroupManager {
 	INode currentLeader = null;
 	IOrderer orderer;
 	HashMap<INode, UUID> peers;
-	
+
 	public void join(String group) throws RemoteException {
 		INode leaderNameServer = nameServer.getLeader(group);
 		if (leaderNameServer == null) {
@@ -27,8 +27,14 @@ public abstract class AbstractGroupManager implements IGroupManager {
 			nameServer.setLeader(group, parent);
 		} else {
 			currentLeader = leaderNameServer;
-			// Ask the leader to add us to the group
-			leaderNameServer.addToGroup(parent);
+			try {
+				// Ask the leader to add us to the group
+				leaderNameServer.addToGroup(parent);
+			} catch (RemoteException e) {
+				// The leader appears to be dead!
+				currentLeader = parent;
+				nameServer.setLeader(group, parent);
+			}
 		}
 		// Reset the orderer always when joining a new group.
 		this.currentGroup = group;
@@ -254,10 +260,13 @@ public abstract class AbstractGroupManager implements IGroupManager {
 	 * @return a list of group names
 	 * @throws RemoteException
 	 */
+	@Override
 	public List<String> getGroups() throws RemoteException {
 		return nameServer.getGroups();
 	}
-	
-	
+
+	public HashMap<String, INode> getNodeList() throws RemoteException {
+		return nameServer.getNodeList();
+	}
 
 }

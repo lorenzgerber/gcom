@@ -1,9 +1,9 @@
 package gcom;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.List;
 
-import group.DebugGroupManager;
 import order.DebugOrderer;
 
 public interface GCom {
@@ -55,18 +55,18 @@ public interface GCom {
 	public List<String> getGroups() throws RemoteException;
 
 	/**
+	 * Get a list of groups and their leader nodes.
+	 * 
+	 * @return group names and leader nodes
+	 * @throws RemoteException
+	 */
+	public HashMap<String, INode> getNodeList() throws RemoteException;
+
+	/**
 	 * Get a orderer debugger if possible.
 	 * 
 	 * @return the debugger or null if not available
 	 */
 	public DebugOrderer getOrdererDebugger();
-	
-	/**
-	 * Get a GroupManager debugger if possible.
-	 * 
-	 * @return the debugger or null if not available
-	 */
-	public DebugGroupManager getGroupManagerDebugger();
-	
-	
+
 }
