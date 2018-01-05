@@ -21,7 +21,7 @@ import order.IDebugOrdererSubscriber;
 
 public class DebugAppController extends Parent implements IDebugOrdererSubscriber {
 
-	private GCom node;
+	public GCom node;
 
 	@FXML
 	private CheckBox holdMessages;
@@ -74,7 +74,7 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 		}
 
 		List<String> clocks = debugger.debugGetVectorClock().entrySet().stream()
-				.map(entry -> entry.getKey().toString() + " " + entry.getValue().toString())
+				.map(entry -> entry.getKey().toString().substring(0, 10) + " " + entry.getValue().toString())
 				.collect(Collectors.toList());
 		ObservableList<String> items = FXCollections.observableArrayList(clocks);
 
@@ -107,7 +107,7 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 			test.keySet().removeIf(Objects::isNull);
 			List<String> leaders = test.entrySet().stream().map(entry -> {
 				try {
-					return entry.getKey().toString() + " " + entry.getValue().getId().toString();
+					return entry.getKey().toString() + " " + entry.getValue().getId().toString().substring(0, 10);
 				} catch (RemoteException e) {
 					return null;
 				}

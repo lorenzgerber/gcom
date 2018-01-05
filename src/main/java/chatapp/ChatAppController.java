@@ -3,6 +3,7 @@ package chatapp;
 import java.rmi.RemoteException;
 
 import gcom.GCom;
+import gcom.INode;
 import gcom.ISubscriber;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -118,6 +119,11 @@ public class ChatAppController extends Parent implements ISubscriber {
 			node.leave();
 			node.join(name);
 			System.out.println("Joined group: " + name);
+			INode myNode = (INode) node;
+			StringBuilder title = new StringBuilder();
+			title.append("GCOM - Node: ");
+			title.append(myNode.getId().toString());
+			app.setTitle(title.toString());
 		} catch (RemoteException e) {
 			System.err.println("Unable to join group!");
 			e.printStackTrace();
