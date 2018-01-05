@@ -128,13 +128,10 @@ public class GroupManager implements IGroupManager {
 			failed.forEach(p -> tryRemoveFromGroup(p));
 		}
 
-		peers.remove(node);
-		orderer.removeMember(peers.get(node));
 		// Reset peer list if we removed our self
-		if (node.equals(parent)) {
-			peers = new HashMap<>();
-			peers.put(parent, id);
-			orderer.setId(id);
+		if (!node.equals(parent)) {
+			peers.remove(node);
+			orderer.removeMember(peers.get(node));
 		}
 	}
 
