@@ -132,6 +132,7 @@ public class ChatAppController extends Parent implements ISubscriber {
 	public <T> void deliverMessage(T message) {
 		String msg = (String) message;
 		messageArea.appendText(msg + "\n");
+		debugger.debugEventOccured();
 	}
 
 	protected void setDebugSubscriber(IDebugOrdererSubscriber debugger) {
