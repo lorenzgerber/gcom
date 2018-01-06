@@ -31,10 +31,12 @@ public class GroupManager implements IGroupManager {
 		this.orderer.setId(id);
 	}
 
+	@Override
 	public UUID getId() {
 		return id;
 	}
 
+	@Override
 	public void join(String group) throws RemoteException {
 		// Get a new ID when joining a new group
 		id = UUID.randomUUID();
@@ -59,12 +61,7 @@ public class GroupManager implements IGroupManager {
 		orderer.setId(id);
 	}
 
-	/**
-	 * Add the given node to the group. When called on the leader, this should make
-	 * all members add the new node.
-	 * 
-	 * @param node
-	 */
+	@Override
 	public void addToGroup(INode node) {
 
 		if (isLeader()) {
@@ -93,12 +90,7 @@ public class GroupManager implements IGroupManager {
 		}
 	}
 
-	/**
-	 * Remove the provided node. When called on the leader, this should make all
-	 * members remove the provided node.
-	 * 
-	 * @param node
-	 */
+	@Override
 	public void removeMember(INode node) {
 		if (isLeader()) {
 			// The leader need to make sure everyone removes the node.
@@ -135,9 +127,7 @@ public class GroupManager implements IGroupManager {
 		}
 	}
 
-	/**
-	 * Leave the current group.
-	 */
+	@Override
 	public void leave() {
 		try {
 			if (isLeader()) {
@@ -164,12 +154,7 @@ public class GroupManager implements IGroupManager {
 
 	}
 
-	/**
-	 * Send some data to all members in the group.
-	 * 
-	 * @param data
-	 *            the data to send
-	 */
+	@Override
 	public <T> void send(T data) {
 		Message<T> message = new Message<T>(data);
 		message.setRecipients(new ArrayList<INode>(peers.keySet()));
@@ -186,7 +171,7 @@ public class GroupManager implements IGroupManager {
 	 * @param member
 	 *            node to remove
 	 */
-	public void tryRemoveFromGroup(INode member) {
+	private void tryRemoveFromGroup(INode member) {
 		try {
 			currentLeader.removeFromGroup(member);
 		} catch (RemoteException e) {
@@ -214,7 +199,7 @@ public class GroupManager implements IGroupManager {
 	 * @param receiver
 	 *            the node to add to
 	 */
-	public void tryToAdd(INode added, INode receiver) {
+	private void tryToAdd(INode added, INode receiver) {
 		try {
 			receiver.addToGroup(added);
 		} catch (RemoteException e) {
@@ -222,9 +207,7 @@ public class GroupManager implements IGroupManager {
 		}
 	}
 
-	/**
-	 * Update Leader to current NameServer data.
-	 */
+	@Override
 	public void updateLeader() {
 		// request leaderID from Nameserver and update the local value
 		try {
@@ -242,7 +225,7 @@ public class GroupManager implements IGroupManager {
 	 * @throws RemoteException
 	 *             if unable to reach name server
 	 */
-	public void electLeader(INode newLeader) throws RemoteException {
+	private void electLeader(INode newLeader) throws RemoteException {
 		nameServer.setLeader(currentGroup, newLeader);
 
 		List<INode> failed = new ArrayList<>();
@@ -269,21 +252,16 @@ public class GroupManager implements IGroupManager {
 	 * 
 	 * @return true if leader, false otherwise
 	 */
-	public boolean isLeader() {
+	private boolean isLeader() {
 		return currentLeader.equals(parent);
 	}
 
-	/**
-	 * Get a list of available groups.
-	 * 
-	 * @return a list of group names
-	 * @throws RemoteException
-	 */
 	@Override
 	public List<String> getGroups() throws RemoteException {
 		return nameServer.getGroups();
 	}
 
+	@Override
 	public HashMap<String, INode> getNodeList() throws RemoteException {
 		return nameServer.getNodeList();
 	}

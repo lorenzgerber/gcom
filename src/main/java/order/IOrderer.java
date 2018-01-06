@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import communication.IMulticaster;
 import gcom.INode;
 import gcom.ISubscriber;
 
@@ -43,14 +42,6 @@ public interface IOrderer {
 	 *            the subscriber
 	 */
 	public void unSubscribe(ISubscriber subscriber);
-
-	/**
-	 * Set the multicaster that should be used for sending out messages.
-	 * 
-	 * @param multicaster
-	 *            the multicaster
-	 */
-	public void setMulticaster(IMulticaster multicaster);
 
 	/**
 	 * Set the id of this orderer. Needed for orderers that use vector clocks.

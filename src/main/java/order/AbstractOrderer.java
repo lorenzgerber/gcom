@@ -24,11 +24,6 @@ public abstract class AbstractOrderer implements IOrderer {
 	}
 
 	@Override
-	public void setMulticaster(IMulticaster multicaster) {
-		this.multicaster = multicaster;
-	}
-
-	@Override
 	public long debugGetMessagesSent() {
 		return -1;
 	}

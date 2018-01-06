@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import communication.IMulticaster;
 import gcom.INode;
 import gcom.ISubscriber;
 
@@ -72,11 +71,6 @@ public class DebugOrderer implements IOrderer {
 	}
 
 	@Override
-	public void setMulticaster(IMulticaster multicaster) {
-		orderer.setMulticaster(multicaster);
-	}
-
-	@Override
 	public void reset() {
 		orderer.reset();
 	}
@@ -114,6 +108,11 @@ public class DebugOrderer implements IOrderer {
 		subscribers.add(subscriber);
 	}
 
+	/**
+	 * The messages currently held by the debugger.
+	 * 
+	 * @return a list of messages "in transit"
+	 */
 	public List<Message<?>> debugHeldMessages() {
 		return heldMessages;
 	}

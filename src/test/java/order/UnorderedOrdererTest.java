@@ -40,15 +40,4 @@ public class UnorderedOrdererTest {
 		tester.testCancelSubscription(orderer, message);
 	}
 
-	@Test
-	public void setMulticasterTest() {
-		orderer.send(message);
-		verify(multicaster).multicast(message);
-
-		IMulticaster newMulticaster = mock(IMulticaster.class);
-		orderer.setMulticaster(newMulticaster);
-		orderer.send(message);
-		verify(newMulticaster).multicast(message);
-	}
-
 }
