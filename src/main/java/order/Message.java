@@ -10,7 +10,7 @@ import gcom.INode;
 public class Message<T extends Serializable> implements Serializable {
 	public final T data;
 	protected UUID sender;
-	protected HashMap<UUID, Long> vectorClock;
+	private HashMap<UUID, Long> vectorClock;
 	private ArrayList<INode> recipients = new ArrayList<>();
 	private static final long serialVersionUID = 8148518950441165743L;
 
