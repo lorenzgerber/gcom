@@ -1,5 +1,6 @@
 package group;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -155,7 +156,7 @@ public class GroupManager implements IGroupManager {
 	}
 
 	@Override
-	public <T> void send(T data) {
+	public <T extends Serializable> void send(T data) {
 		Message<T> message = new Message<T>(data);
 		message.setRecipients(new ArrayList<INode>(peers.keySet()));
 		List<INode> failed = orderer.send(message);

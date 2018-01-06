@@ -2,6 +2,7 @@ package group;
 
 import gcom.INode;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +53,7 @@ public interface IGroupManager {
 	 * @param data
 	 *            the data to send
 	 */
-	public <T> void send(T data);
+	public <T extends Serializable> void send(T data);
 
 	/**
 	 * Update Leader to current NameServer data.

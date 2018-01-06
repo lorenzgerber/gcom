@@ -1,5 +1,6 @@
 package gcom;
 
+import java.io.Serializable;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -55,7 +56,7 @@ public class Node extends UnicastRemoteObject implements GCom, INode {
 	}
 
 	@Override
-	public <T> void Send(T data) {
+	public <T extends Serializable> void Send(T data) {
 		groupManager.send(data);
 	}
 

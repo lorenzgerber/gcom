@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import gcom.INode;
 
-public class Message<T> implements Serializable {
+public class Message<T extends Serializable> implements Serializable {
 	public final T data;
 	protected UUID sender;
 	protected HashMap<UUID, Long> vectorClock;

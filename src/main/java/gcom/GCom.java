@@ -1,5 +1,6 @@
 package gcom;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,7 @@ public interface GCom {
 	 * @param data
 	 *            the message
 	 */
-	public <T> void Send(T data);
+	public <T extends Serializable> void Send(T data);
 
 	/**
 	 * Leave the current group.
