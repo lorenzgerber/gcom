@@ -16,6 +16,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import order.DebugOrderer;
 import order.IDebugOrdererSubscriber;
 
@@ -40,6 +41,9 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 
 	@FXML
 	private ListView<String> currentLeaders;
+
+	@FXML
+	private TextField performance;
 
 	public void intitialize() {
 
@@ -120,12 +124,18 @@ public class DebugAppController extends Parent implements IDebugOrdererSubscribe
 		}
 	}
 
+	private void updatePerformance() {
+		DebugOrderer debugger = node.getOrdererDebugger();
+		performance.setText(Integer.toString(debugger.getPerformance()));
+	}
+
 	@Override
 	public void debugEventOccured() {
 		updateHeldMessages();
 		updateMessageBuffer();
 		updateVectorClock();
 		updateLeaders();
+		updatePerformance();
 	}
 
 }

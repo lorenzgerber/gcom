@@ -9,6 +9,8 @@ import order.Message;
 
 public class UnreliableMulticaster implements IMulticaster {
 
+	private int performance = 1;
+
 	@Override
 	public List<INode> multicast(Message<?> message) {
 		List<INode> failed = new ArrayList<>();
@@ -19,7 +21,13 @@ public class UnreliableMulticaster implements IMulticaster {
 				failed.add(node);
 			}
 		}
+		performance = message.getRecipients().size();
 		return failed;
+	}
+
+	@Override
+	public int debugPerformance() {
+		return performance;
 	}
 
 }

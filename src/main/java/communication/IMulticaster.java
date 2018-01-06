@@ -14,4 +14,11 @@ public interface IMulticaster {
 	 * @return a list of nodes that failed to receive the message
 	 */
 	public List<INode> multicast(Message<?> message);
+
+	/**
+	 * Get the current performance count.
+	 * 
+	 * @return the number of messages required to send a message
+	 */
+	public int debugPerformance();
 }

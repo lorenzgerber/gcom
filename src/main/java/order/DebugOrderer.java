@@ -118,6 +118,11 @@ public class DebugOrderer implements IOrderer {
 		return heldMessages;
 	}
 
+	@Override
+	public int getPerformance() {
+		return orderer.getPerformance();
+	}
+
 	private void notifySubscribers() {
 		subscribers.forEach(s -> s.debugEventOccured());
 	}

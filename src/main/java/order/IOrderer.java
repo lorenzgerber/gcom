@@ -101,4 +101,11 @@ public interface IOrderer {
 	 *            the subscriber to be notified
 	 */
 	public void debugSubscribe(IDebugOrdererSubscriber subscriber);
+
+	/**
+	 * Get a performance count.
+	 * 
+	 * @return the number of messages required to send a message
+	 */
+	public int getPerformance();
 }

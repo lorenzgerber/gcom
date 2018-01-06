@@ -48,4 +48,9 @@ public abstract class AbstractOrderer implements IOrderer {
 		return;
 	}
 
+	@Override
+	public int getPerformance() {
+		return multicaster.debugPerformance();
+	}
+
 }
