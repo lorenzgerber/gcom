@@ -14,8 +14,8 @@ import gcom.INode;
 
 public class NameServer extends UnicastRemoteObject implements INameServer {
 
-	private static final long serialVersionUID = -8461849108178765576L;
 	public static final String nameServer = "gcomNameServer";
+	private static final long serialVersionUID = -8461849108178765576L;
 	private Registry registry;
 	private HashMap<String, INode> nodeList;
 

@@ -13,13 +13,13 @@ import order.IOrderer;
 import order.Message;
 
 public class GroupManager implements IGroupManager {
-	INameServer nameServer;
-	INode parent;
-	protected UUID id = UUID.randomUUID();
-	String currentGroup;
-	INode currentLeader = null;
-	IOrderer orderer;
-	HashMap<INode, UUID> peers;
+	protected HashMap<INode, UUID> peers;
+	private INameServer nameServer;
+	private INode parent;
+	private UUID id = UUID.randomUUID();
+	private String currentGroup;
+	private INode currentLeader = null;
+	private IOrderer orderer;
 
 	public GroupManager(INameServer nameServer, INode parent, IOrderer orderer) {
 		this.nameServer = nameServer;
