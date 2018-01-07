@@ -12,11 +12,11 @@
   </interface>  
   <class id="2" language="java" name="gcom.Node" project="gcom" file="/gcom/src/main/java/gcom/Node.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="303" y="430"/>    
+    <position height="-1" width="-1" x="347" y="303"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="false" static="true"/>      
-      <operations public="true" package="true" protected="true" private="false" static="true"/>    
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
   <interface id="3" language="java" name="gcom.INode" project="gcom" file="/gcom/src/main/java/gcom/INode.java" 
@@ -30,7 +30,7 @@
   </interface>  
   <class id="4" language="java" name="gcom.GComBuilder" project="gcom" file="/gcom/src/main/java/gcom/GComBuilder.java" 
     binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="572" y="519"/>    
+    <position height="-1" width="-1" x="561" y="376"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="false" static="true"/>      
@@ -39,7 +39,7 @@
   </class>  
   <interface id="5" language="java" name="gcom.ISubscriber" project="gcom" 
     file="/gcom/src/main/java/gcom/ISubscriber.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="565" y="337"/>    
+    <position height="-1" width="-1" x="304" y="409"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="false" private="false" static="true"/>      
@@ -48,11 +48,11 @@
   </interface>  
   <realization id="6">    
     <end type="SOURCE" refId="2"/>    
-    <end type="TARGET" refId="1"/>  
+    <end type="TARGET" refId="3"/>  
   </realization>  
   <realization id="7">    
     <end type="SOURCE" refId="2"/>    
-    <end type="TARGET" refId="3"/>  
+    <end type="TARGET" refId="1"/>  
   </realization>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
     sort-features="false" accessors="true" visibility="true">    
