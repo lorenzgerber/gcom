@@ -55,8 +55,9 @@ public class DebugOrderer implements IOrderer {
 			notifySubscribers();
 			return true;
 		} else {
+			boolean status = orderer.receive(message);
 			notifySubscribers();
-			return orderer.receive(message);
+			return status;
 		}
 	}
 
