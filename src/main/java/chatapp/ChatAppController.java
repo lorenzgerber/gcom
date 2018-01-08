@@ -61,7 +61,7 @@ public class ChatAppController extends Parent implements ISubscriber {
 			e.printStackTrace();
 		}
 		surpressJoin = false;
-		debugger.debugEventOccured();
+		notifyDebugger();
 	}
 
 	@FXML
@@ -69,20 +69,20 @@ public class ChatAppController extends Parent implements ISubscriber {
 		if (!surpressJoin) {
 			joinGroup(groups.getValue());
 		}
-		debugger.debugEventOccured();
+		notifyDebugger();
 	}
 
 	@FXML
 	private void createGroupButtonPressed() {
 		joinGroup(createGroupField.getText());
 		createGroupField.clear();
-		debugger.debugEventOccured();
+		notifyDebugger();
 	}
 
 	@FXML
 	private void leaveButtonPressed() {
 		node.leave();
-		debugger.debugEventOccured();
+		notifyDebugger();
 	}
 
 	public void initialize() {
@@ -138,11 +138,16 @@ public class ChatAppController extends Parent implements ISubscriber {
 	public <T> void deliverMessage(T message) {
 		String msg = (String) message;
 		messageArea.appendText(msg + "\n");
-		debugger.debugEventOccured();
+		notifyDebugger();
 	}
 
 	protected void setDebugSubscriber(IDebugOrdererSubscriber debugger) {
 		this.debugger = debugger;
 	}
 
+	private void notifyDebugger() {
+		if (debugger != null) {
+			debugger.debugEventOccured();
+		}
+	}
 }
